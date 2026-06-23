@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>First Principles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper:   #ece9e1;   /* warm paper, a touch grayer than the usual cream */
+    --ink:     #1a1a18;   /* near-black warm ink */
+    --mid:     #8a857b;   /* muted taupe for secondary text */
+    --accent:  #732b2b;   /* oxblood — the one warm signal */
+    --maxw:    72ch;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "EB Garamond", Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* faint paper grain so flat color doesn't read as a screen */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 2;
+  }
+
+  #graph {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+  }
+
+  .frame {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: clamp(1.4rem, 4vw, 2.6rem) clamp(1.4rem, 5vw, 3.4rem);
+  }
+
+  /* --- top bar --- */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .mark,
+  nav a,
+  .meta {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  nav { display: flex; gap: 1.6rem; }
+  nav a {
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+  nav a:hover, nav a:focus-visible { color: var(--accent); }
+
+  /* --- hero --- */
+  .hero {
+    align-self: center;
+    max-width: var(--maxw);
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1.4rem;
+  }
+
+  h1 {
+    font-weight: 500;
+    font-size: clamp(2.7rem, 9vw, 5.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .lede {
+    font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 46ch;
+    margin: 1.6rem 0 2.4rem;
+  }
+  .lede em { color: var(--mid); font-style: italic; }
+
+  .enter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.7rem 0.2rem;
+    border-bottom: 1px solid var(--ink);
+    transition: color 0.2s ease, border-color 0.2s ease, gap 0.2s ease;
+  }
+  .enter .arrow { transition: transform 0.2s ease; }
+  .enter:hover, .enter:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    gap: 0.9rem;
+  }
+  .enter:hover .arrow, .enter:focus-visible .arrow { transform: translateX(3px); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+  /* --- footer --- */
+  footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .figdock {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(2rem, 6vh, 3rem);
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    width: max-content;
+    max-width: 92vw;
+  }
+
+  .figlabel {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: lowercase;
+    color: var(--mid);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .figlabel.show { opacity: 0.8; }
+  .figlabel b { color: var(--accent); font-weight: 500; }
+
+  .figswitch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .figswitch button {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    color: var(--mid);
+    background: none;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 0.15rem 0.05rem;
+    cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .figswitch button:hover { color: var(--ink); }
+  .figswitch button[aria-current="true"] { color: var(--accent); border-color: var(--accent); }
+  .figswitch .auto[aria-pressed="true"] { color: var(--accent); }
+  .figswitch .sep { color: var(--mid); opacity: 0.45; user-select: none; }
+
+  @media (max-width: 620px) {
+    nav { gap: 1.1rem; }
+    .lede { margin-bottom: 2rem; }
+    .figlabel { font-size: 0.62rem; }
+    .figswitch button { font-size: 0.66rem; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="graph" aria-hidden="true"></canvas>
+  <div class="figdock">
+    <figcaption class="figlabel" id="figlabel" aria-hidden="true"></figcaption>
+    <nav class="figswitch" id="figswitch" aria-label="Choose figure"></nav>
+  </div>
+
+  <div class="frame">
+    <header>
+      <span class="mark">first-principles.xyz</span>
+      <nav>
+        <a href="#">Articles</a>
+        <a href="#">Topics</a>
+        <a href="#">About</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <p class="eyebrow">Notes in LaTeX · Est. 2026</p>
+      <h1>First&nbsp;Principles</h1>
+      <p class="lede">Essays and lecture notes on physics and mathematics, set like paper and <em>built to be read slowly.</em></p>
+      <a class="enter" href="#">Read the articles <span class="arrow">&rarr;</span></a>
+    </main>
+
+    <footer>
+      <span class="meta">24 articles</span>
+      <span class="meta">Latest — On least action</span>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('graph');
+  const ctx = canvas.getContext('2d');
+  const label = document.getElementById('figlabel');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let w = 0, h = 0, dpr = 1, nodes = [], cx = 0, cy = 0, R = 0, raf = null;
+  const mouse = { x: null, y: null };
+
+  const LINK = 120;        // ambient node-to-node radius
+  const MOUSE_LINK = 175;  // cursor radius
+  const GOLDEN = Math.PI * (3 - Math.sqrt(5)); // golden angle ~137.5deg
+
+  // Each formation maps node index i (0..n-1) to a target offset {x,y} from
+  // centre, scaled by R. `edges` picks the structural overlay. Add your own.
+  const formations = [
+    {
+      name: 'times table mod n &middot; &times;2 &rarr; cardioid',
+      short: 'cardioid',
+      edges: 'times2',
+      at: (i, n) => {
+        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+        return { x: Math.cos(a) * R, y: Math.sin(a) * R };
+      }
+    },
+    {
+      name: 'phyllotaxis &middot; 137.5&deg;',
+      short: 'phyllotaxis',
+      edges: 'proximity',
+      at: (i, n) => {
+        const r = R * Math.sqrt(i / n);
+        const a = i * GOLDEN;
+        return { x: Math.cos(a) * r, y: Math.sin(a) * r };
+      }
+    },
+    {
+      name: 'lissajous &middot; 3 : 2',
+      short: 'lissajous',
+      edges: 'path',
+      at: (i, n) => {
+        const t = (i / n) * Math.PI * 2;
+        return { x: Math.sin(3 * t + Math.PI / 2) * R, y: Math.sin(2 * t) * R };
+      }
+    },
+    {
+      name: 'rose &middot; r = cos 4&theta;',
+      short: 'rose',
+      edges: 'path',
+      at: (i, n) => {
+        const t = (i / n) * Math.PI * 2;
+        const r = Math.cos(4 * t) * R;
+        return { x: Math.cos(t) * r, y: Math.sin(t) * r };
+      }
+    }
+  ];
+
+  const PERIOD = 7000; // ms held per formation (when auto-cycling)
+  let fi = 0, phaseStart = 0, auto = true;
+
+  const now0 = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+
+  // --- build the figure switcher from the formations above ---
+  const switchEl = document.getElementById('figswitch');
+  const buttons = [];
+  let autoBtn = null;
+  if (switchEl) {
+    formations.forEach((f, idx) => {
+      if (idx) {
+        const s = document.createElement('span');
+        s.className = 'sep'; s.textContent = '\u00B7';
+        switchEl.appendChild(s);
+      }
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = f.short;
+      b.addEventListener('click', () => selectFigure(idx));
+      switchEl.appendChild(b);
+      buttons.push(b);
+    });
+    if (!reduce) {
+      const s = document.createElement('span');
+      s.className = 'sep'; s.textContent = '\u00B7';
+      switchEl.appendChild(s);
+      autoBtn = document.createElement('button');
+      autoBtn.type = 'button';
+      autoBtn.className = 'auto';
+      autoBtn.textContent = '\u21BB auto';
+      autoBtn.addEventListener('click', toggleAuto);
+      switchEl.appendChild(autoBtn);
+    }
+  }
+
+  function updateUI() {
+    buttons.forEach((b, i) => b.setAttribute('aria-current', i === fi ? 'true' : 'false'));
+    if (autoBtn) autoBtn.setAttribute('aria-pressed', auto ? 'true' : 'false');
+    setLabel(formations[fi].name);
+  }
+
+  function selectFigure(idx) {
+    fi = idx;
+    auto = false;
+    phaseStart = now0();
+    updateUI();
+    if (reduce) drawStatic();
+  }
+
+  function toggleAuto() {
+    auto = !auto;
+    if (auto) phaseStart = now0();
+    updateUI();
+  }
+
+  function nodeCount() {
+    return Math.max(40, Math.min(96, Math.round((w * h) / 16000)));
+  }
+
+  function initNodes() {
+    const n = nodeCount();
+    nodes = [];
+    for (let i = 0; i < n; i++) {
+      // start scattered so the first figure visibly assembles
+      nodes.push({ x: Math.random() * w, y: Math.random() * h, sx: Math.random() * 6.28 });
+    }
+  }
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.clientWidth; h = canvas.clientHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = w / 2; cy = h / 2;
+    R = Math.min(w, h) * 0.34;
+    initNodes();
+    if (reduce) drawStatic();
+  }
+
+  function setLabel(text) {
+    if (!label) return;
+    label.innerHTML = 'fig. &mdash; <b>' + text + '</b>';
+    label.classList.add('show');
+  }
+
+  // structural edges fade in after the morph and out before the next switch
+  function envelope(elapsed) {
+    const up = Math.min(1, Math.max(0, (elapsed - 900) / 1100));
+    const down = Math.min(1, Math.max(0, (PERIOD - elapsed) / 900));
+    return Math.min(up, down);
+  }
+
+  function drawStructural(form, n, alpha) {
+    if (alpha <= 0.002) return;
+    ctx.strokeStyle = 'rgba(115,43,43,' + (alpha * 0.5) + ')';
+    ctx.lineWidth = 0.7;
+    if (form.edges === 'times2') {
+      for (let i = 0; i < n; i++) {
+        const a = nodes[i], b = nodes[(2 * i) % n];
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+    } else if (form.edges === 'path') {
+      ctx.beginPath();
+      ctx.moveTo(nodes[0].x, nodes[0].y);
+      for (let i = 1; i < n; i++) ctx.lineTo(nodes[i].x, nodes[i].y);
+      ctx.lineTo(nodes[0].x, nodes[0].y);
+      ctx.stroke();
+    }
+  }
+
+  function frame(now) {
+    if (!phaseStart) { phaseStart = now; updateUI(); }
+    const n = nodes.length;
+    let elapsed = now - phaseStart;
+    if (auto && elapsed > PERIOD) {
+      fi = (fi + 1) % formations.length;
+      phaseStart = now; elapsed = 0;
+      updateUI();
+    }
+    const form = formations[fi];
+    // when paused on a figure, ramp structural edges in and keep them
+    const env = auto ? envelope(elapsed)
+                     : Math.min(1, Math.max(0, (elapsed - 900) / 1100));
+
+    ctx.clearRect(0, 0, w, h);
+
+    // ease every node toward its formation target, with a soft shimmer
+    for (let i = 0; i < n; i++) {
+      const p = nodes[i];
+      const t = form.at(i, n);
+      const sh = Math.sin(now * 0.0007 + p.sx) * 1.3;
+      p.x += (cx + t.x + sh - p.x) * 0.05;
+      p.y += (cy + t.y + sh - p.y) * 0.05;
+    }
+
+    // ambient proximity links (the graph itself)
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+        const d = Math.hypot(dx, dy);
+        if (d < LINK) {
+          ctx.strokeStyle = 'rgba(26,26,24,' + ((1 - d / LINK) * 0.28) + ')';
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    drawStructural(form, n, env);
+
+    // cursor "annotation" links
+    if (mouse.x !== null) {
+      for (let i = 0; i < n; i++) {
+        const dx = nodes[i].x - mouse.x, dy = nodes[i].y - mouse.y;
+        const d = Math.hypot(dx, dy);
+        if (d < MOUSE_LINK) {
+          ctx.strokeStyle = 'rgba(115,43,43,' + ((1 - d / MOUSE_LINK) * 0.8) + ')';
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // nodes
+    for (let i = 0; i < n; i++) {
+      const p = nodes[i];
+      const near = mouse.x !== null &&
+        Math.hypot(p.x - mouse.x, p.y - mouse.y) < MOUSE_LINK;
+      ctx.fillStyle = near ? 'rgba(115,43,43,0.95)' : 'rgba(26,26,24,0.5)';
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.1, 0, Math.PI * 2); ctx.fill();
+    }
+
+    raf = requestAnimationFrame(frame);
+  }
+
+  function drawStatic() {
+    // a single settled figure for reduced-motion users / manual selection
+    const n = nodes.length, form = formations[fi];
+    for (let i = 0; i < n; i++) {
+      const t = form.at(i, n);
+      nodes[i].x = cx + t.x; nodes[i].y = cy + t.y;
+    }
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+        const d = Math.hypot(dx, dy);
+        if (d < LINK) {
+          ctx.strokeStyle = 'rgba(26,26,24,' + ((1 - d / LINK) * 0.28) + ')';
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    drawStructural(form, n, 1);
+    for (let i = 0; i < n; i++) {
+      ctx.fillStyle = 'rgba(26,26,24,0.5)';
+      ctx.beginPath(); ctx.arc(nodes[i].x, nodes[i].y, 1.1, 0, 6.2832); ctx.fill();
+    }
+    updateUI();
+  }
+
+  window.addEventListener('resize', resize);
+  window.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('pointerleave', () => { mouse.x = mouse.y = null; });
+
+  if (reduce) fi = 1;        // show a settled phyllotaxis when motion is reduced
+  resize();                  // resize() renders the static frame in reduced-motion mode
+  if (!reduce) raf = requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
