@@ -13,7 +13,10 @@
 <script>
 /* MathJax: physics package + the dhortcmds macro set, AMS numbering */
 window.MathJax = {
-  loader: { load: ['[tex]/physics', 'ui/lazy'] },
+  loader: { load: ['[tex]/physics'] },
+  /* we typeset explicitly once the article is fetched; the automatic
+     startup pass would register AMS \label twice and blank the equations */
+  startup: { typeset: false },
   tex: {
     packages: { '[+]': ['physics'] },
     inlineMath: [['\\(', '\\)']],
@@ -88,7 +91,7 @@ window.MathJax = {
       highlightlt: ['\\bbox[#1561bd33,4px]{#1}', 1]
     }
   },
-  chtml: { scale: 1.02 },
+  chtml: { scale: 0.96, matchFontHeight: true, mtextInheritFont: true },
   options: { enableMenu: false }
 };
 </script>
@@ -98,6 +101,7 @@ window.MathJax = {
     <header class="top">
       <a class="mark" href="index.html">First Principles</a>
       <nav>
+        <a href="index.html">Home</a>
         <a href="articles.html">Articles</a>
         <a href="about.html">About</a>
       </nav>
@@ -105,8 +109,11 @@ window.MathJax = {
 
     <main class="reader">
       <details class="sidebar" id="sidebar" open>
-        <summary>Index of articles</summary>
-        <div class="fold" id="sidebar-groups"></div>
+        <summary>Contents</summary>
+        <div class="fold">
+          <p class="allback"><a href="articles.html">&larr; all articles</a></p>
+          <nav class="toc" id="toc" aria-label="Sections in this article"></nav>
+        </div>
       </details>
 
       <article class="essay" id="essay">
@@ -120,6 +127,7 @@ window.MathJax = {
           <circle cx="49" cy="7" r="1" fill="currentColor"/>
         </svg>
         <div id="body"></div>
+        <img class="garden" id="garden" src="art/garden.png" alt="" hidden />
         <a class="backlink" href="articles.html">&larr; All articles</a>
       </article>
     </main>
@@ -188,6 +196,7 @@ window.MathJax = {
       md.use(texmath, { engine: katex, delimiters: 'dollars', katexOptions: { throwOnError: false } });
     }
     bodyEl.innerHTML = md.render(body);
+    finishRender();
   }
 
   /* --- LaTeX path --- */
@@ -198,47 +207,67 @@ window.MathJax = {
     bodyEl.innerHTML = html;
     LatexArticle.inlineSVGs(bodyEl);
     const typeset = () => MathJax.typesetPromise([bodyEl]).then(() => {
+      finishRender();
       /* if the URL carries a #hash to an equation/section, jump after typeset */
       if (location.hash) {
         const t = document.getElementById(decodeURIComponent(location.hash.slice(1)));
         if (t) t.scrollIntoView();
       }
-    }).catch(() => {});
+    }).catch(err => {
+      console.error('MathJax typeset failed:', err);
+      finishRender();
+    });
     (function waitForMathJax() {
       if (window.MathJax && MathJax.typesetPromise) typeset();
       else setTimeout(waitForMathJax, 80);
     })();
   }
 
-  /* --- sidebar: every article, grouped by topic, current highlighted --- */
-  function buildSidebar(articles) {
-    const groupsEl = document.getElementById('sidebar-groups');
-    const byTopic = new Map();
-    articles.forEach(a => {
-      const t = a.topic || 'misc';
-      if (!byTopic.has(t)) byTopic.set(t, []);
-      byTopic.get(t).push(a);
+  /* --- sidebar: the sections of THIS article --- */
+  function buildTOC() {
+    const tocEl = document.getElementById('toc');
+    tocEl.textContent = '';
+    const heads = bodyEl.querySelectorAll('h2, h3');
+    if (!heads.length) return;
+    const root = document.createElement('ul');
+    let lastTop = null, subList = null;
+    heads.forEach(h => {
+      if (!h.id) {
+        h.id = h.textContent.trim().toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'sec';
+      }
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      /* clone the heading's content (minus its number) so typeset math
+         inside a title carries over to the sidebar */
+      const copy = h.cloneNode(true);
+      const num = copy.querySelector('.secnum');
+      let numTxt = '';
+      if (num) { numTxt = num.textContent; num.remove(); }
+      if (numTxt) {
+        const s = document.createElement('span');
+        s.className = 'tocnum';
+        s.textContent = numTxt;
+        a.appendChild(s);
+      }
+      while (copy.firstChild) a.appendChild(copy.firstChild);
+      li.appendChild(a);
+      if (h.tagName === 'H3' && lastTop) {
+        if (!subList) { subList = document.createElement('ul'); lastTop.appendChild(subList); }
+        subList.appendChild(li);
+      } else {
+        root.appendChild(li);
+        lastTop = li;
+        subList = null;
+      }
     });
-    [...byTopic.keys()].sort().forEach(topic => {
-      const lbl = document.createElement('p');
-      lbl.className = 'grouplbl';
-      lbl.textContent = topic;
-      groupsEl.appendChild(lbl);
-      const ul = document.createElement('ul');
-      byTopic.get(topic)
-        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
-        .forEach(a => {
-          const s = a.slug || (a.file || '').replace(/\.(md|tex)$/, '');
-          const li = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = 'article.html?p=' + encodeURIComponent(s);
-          link.textContent = a.title || s;
-          if (s === slug) link.setAttribute('aria-current', 'page');
-          li.appendChild(link);
-          ul.appendChild(li);
-        });
-      groupsEl.appendChild(ul);
-    });
+    tocEl.appendChild(root);
+  }
+
+  function finishRender() {
+    buildTOC();
+    document.getElementById('garden').hidden = false;
   }
 
   /* sidebar folds on mobile, stays open on desktop */
@@ -258,7 +287,6 @@ window.MathJax = {
     .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(list => {
       const articles = Array.isArray(list) ? list : [];
-      buildSidebar(articles);
       const entry = articles.find(a =>
         (a.slug || (a.file || '').replace(/\.(md|tex)$/, '')) === slug) || {};
       const file = entry.file || (slug + '.md');

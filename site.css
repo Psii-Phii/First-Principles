@@ -168,14 +168,24 @@ body::after {
   cursor: pointer;
   margin-bottom: 0.8rem;
 }
-.sidebar .grouplbl {
+.sidebar .allback {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.66rem;
-  letter-spacing: 0.18em;
-  color: var(--accent);
-  margin: 1.1rem 0 0.3rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
 }
+.sidebar .allback a { color: var(--mid); }
+.sidebar .allback a:hover, .sidebar .allback a:focus-visible { color: var(--accent); }
 .sidebar ul { list-style: none; margin: 0; padding: 0; }
+.sidebar ul ul { padding-left: 1.1rem; margin: 0.15rem 0 0.35rem; }
 .sidebar li { margin: 0.25rem 0; }
+.sidebar .tocnum {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.68em;
+  color: var(--accent);
+  margin-right: 0.55em;
+}
 .sidebar a {
   font-size: 0.95rem;
   color: var(--ink);
@@ -252,9 +262,10 @@ body::after {
 }
 #body ol.lalpha { list-style: lower-alpha; }
 
-/* display math */
+/* display math — only display containers may scroll; inline math must sit
+   in the text flow untouched or selection and baselines break */
 #body .disp { margin: 0.4em 0 1.05em; overflow-x: auto; overflow-y: hidden; }
-mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 
 /* boxed key equations (empheq mathbox) */
 #body .mathbox {
@@ -336,6 +347,18 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 .backlink:hover, .backlink:focus-visible { color: var(--accent); }
 
 .smallcaps { font-variant: small-caps; }
+
+/* text selection that reads clearly on the paper */
+::selection { background: rgba(115, 43, 43, 0.22); }
+mjx-container ::selection, mjx-container::selection { background: rgba(115, 43, 43, 0.28); }
+
+/* the garden bed that closes every article */
+.garden {
+  display: block;
+  width: min(100%, 36rem);
+  margin: 3.2rem auto 0;
+  opacity: 0.88;
+}
 
 @media (max-width: 620px) {
   .top nav { gap: 1.1rem; }
