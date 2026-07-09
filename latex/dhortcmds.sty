@@ -1,0 +1,200 @@
+\ProvidesPackage{dhortcmds}
+\usepackage{amsmath}
+\usepackage{soul}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{physics}
+\usepackage{float}
+% font/style shortcuts
+\newcommand{\ms}{\mathscr}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mf}{\mathfrak}
+\newcommand{\mb}{\mathbb}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ol}{\overline}
+% \ul{...} with smarter underlining is provided by
+% the soul package ( https://www.ctan.org/pkg/soul )
+
+% mathbb shortcuts
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\mathbb{R}^n}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\h}{\mathcal{H}}
+\newcommand{\rel}{\mathcal{R}}
+\newcommand{\lin}{\mathcal{L}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\p}{\mathcal{P}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\li}{\mathcal{L}}
+\newcommand{\Mn}{Mn(\F)}
+% complex numbers
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+
+% stats
+\DeclareMathOperator{\var}{Var}
+
+% linear algebra
+\DeclareMathOperator{\spn}{Span} % \span already exists so I'm using \spn
+\DeclareMathOperator{\ran}{Range}
+\DeclareMathOperator{\rank}{Rank}
+\DeclareMathOperator{\nul}{Null}
+\DeclareMathOperator{\nulty}{Nullity}
+\DeclareMathOperator{\tr}{Tr}
+\newcommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\newcommand{\smallmat}[1]{\begin{smallbmatrix}#1\end{smallbmatrix}}
+\DeclareMathOperator{\form}{Form}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\gal}{Gal}
+
+% groups & rings
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\ch}{ch}
+
+% calculus
+\newcommand{\dif}[3][]{\frac{d^{#1}#2}{d#3^{#1}}}
+\newcommand{\pd}[3][]{\frac{\partial^{#1}#2}{\partial#3^{#1}}}
+\newcommand{\ip}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+\newcommand{\grad}{\nabla}
+\newcommand{\hess}{\nabla^2}
+
+% dirac notation and quantum
+\newcommand{\bra}[1]{\left\langle#1\right|}
+\newcommand{\ket}[1]{\left|#1\right\rangle}
+\newcommand{\bk}[2]{\left\langle#1\middle|#2\right\rangle}
+\newcommand{\kb}[2]{\left|#1\middle\rangle\middle\langle#2\right|}
+\newcommand{\com}[2]{\left[#1,#2\right]}
+\newcommand{\hb}{\hbar}
+\newcommand{\dg}{\dagger}
+\newcommand{\kpsi}{\ket{\psi}}
+\newcommand{\kPsi}{\ket{\Psi}}
+\newcommand{\kphi}{\ket{\phi}}
+\newcommand{\kPhi}{\ket{\Phi}}
+\newcommand{\ot}{\otimes}
+
+%Analysis 
+\newcommand{\sub}{\subseteq}
+\newcommand{\nsub}{\nsubseteq}
+\newcommand{\bl}[1]{B_{#1}}
+\newcommand{\cbr}[1]{\left \{ #1 \right \}}
+\newcommand{\lbr}[1]{\left  \langle #1 \right \rangle}
+\newcommand{\br}[1]{\left( #1 \right)}
+\newcommand{\sbr}[1]{\left[ #1 \right]}
+\newcommand{\mcl}[1]{\mathcal{#1}}
+\newcommand{\creq}[1]{\underset{#1}{\approx}}
+\newcommand{\seq}[2]{\br{#1_#2}_{#2 =1}^{\infty}}
+\DeclareMathOperator{\diam}{diam}
+\newcommand{\Int}[1]{\text{Int}\br{#1}}
+
+
+
+%trig
+\newcommand{\cs}[1]{\cos\br{#1}}
+\newcommand{\sn}[1]{\sin{\br{#1}}}
+\newcommand{\tn}[1]{\tan{\br{#1}}}
+\newcommand{\css}[1]{\cos^2\br{#1}}
+\newcommand{\snn}[1]{\sin^2{\br{#1}}}
+\newcommand{\tnn}[1]{\tan^2{\br{#1}}}
+\newcommand{\csh}[1]{\cosh\br{#1}}
+\newcommand{\snh}[1]{\sinh{\br{#1}}}
+\newcommand{\cshh}[1]{\cosh^2\br{#1}}
+\newcommand{\snhh}[1]{\sinh^2{\br{#1}}}
+\newcommand{\Lg}[1]{\log\br{#1}}
+
+
+
+
+%Relativity 
+\newcommand{\gam}[1]{\sqrt{1 - \frac{#1}{c^2}}}
+\newcommand{\pgam}[1]{\sqrt{1 + \frac{#1}{c^2}}}
+\newcommand{\ring}[1]{\mathring{#1}}
+\newcommand\ringring[1]{%
+  {% make an Ord atom
+   \mathop{\kern0pt #1}\limits^{% set a box over the variable
+     \vbox to-1.85ex{
+       \kern-2ex % lower the ring accents
+       \hbox to 0pt{\hss\normalfont\kern.1em \r{}\kern-.45em \r{}\hss}%
+       \vss % fill
+     }% end of \vbox
+   }% end of the superscript
+  }% end of \mathop
+}
+
+
+\newcommand{\bigbmatrix}[1]{%
+  \begingroup
+    \renewcommand{\arraystretch}{1.5}% Increase vertical spacing
+    \setlength{\arraycolsep}{12pt}% Increase horizontal spacing
+    \mathlarger{%
+      \begin{bmatrix}
+        #1%
+      \end{bmatrix}%
+    }%
+  \endgroup
+}
+
+\newcommand{\chris}[3]{\Gamma^{#1}_{\phantom{#1}#2#3}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% other/misc
+\newcommand{\iso}{\cong}
+\newcommand{\nd}{\hspace{-3pt}\not|\,}
+
+\makeatletter
+\newcommand*\bigcdot{\mathpalette\bigcdot@{.5}}
+\newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
+\makeatother
+
+\newcommand{\w}{\wedge}
+\newcommand{\md}[2]{#1\bigl/ #2}
+
+
+
+
+
+
+
+\definecolor{limegreen}{rgb}{0.2, 0.8, 0.2}
+\definecolor{orange-red}{rgb}{1.0, 0.27, 0.0}
+\definecolor{darkpastelblue}{rgb}{0.47, 0.62, 0.8}
+\definecolor{denim}{rgb}{0.08, 0.38, 0.74}
+\definecolor{coralpink}{rgb}{0.97, 0.51, 0.47}
+\definecolor{ashgrey}{rgb}{0.7, 0.75, 0.71}
+\newcommand{\highlight}[1]{%
+  \colorbox{darkpastelblue!50}{$\displaystyle#1$}}
+
+\newcommand{\highlightone}[1]{%
+  \colorbox{limegreen!50}{$\displaystyle#1$}}
+
+\newcommand{\highlighttwo}[1]{%
+  \colorbox{ashgrey!50}{$\displaystyle#1$}}
+
+\newcommand{\highlightthree}[1]{%
+  \colorbox{coralpink!50}{$\displaystyle#1$}}
+
+\newcommand{\highlightlt}[1]{%
+  \colorbox{denim!20}{$\displaystyle#1$}}
+  
+\newcommand{\white}{{\color{white}-}\\}

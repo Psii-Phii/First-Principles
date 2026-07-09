@@ -1,0 +1,10 @@
+.DS_Store
+*.rtf
+# LaTeX build junk
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.toc

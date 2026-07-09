@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Articles — First Principles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="site.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <a class="mark" href="index.html">First Principles</a>
+      <nav>
+        <a href="articles.html" aria-current="page">Articles</a>
+        <a href="articles.html#topics">Topics</a>
+        <a href="about.html">About</a>
+      </nav>
+    </header>
+
+    <main>
+      <p class="eyebrow">The collection</p>
+      <h1 class="pagetitle">Articles</h1>
+      <p class="meta" id="count"></p>
+
+      <svg class="ornament" width="72" height="14" viewBox="0 0 72 14" aria-hidden="true">
+        <path d="M7 7 L13 1 L19 7 L13 13 Z M25 7 L31 1 L37 7 L31 13 Z M43 7 L49 1 L55 7 L49 13 Z"
+              fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+        <circle cx="13" cy="7" r="1" fill="currentColor"/>
+        <circle cx="31" cy="7" r="1" fill="currentColor"/>
+        <circle cx="49" cy="7" r="1" fill="currentColor"/>
+      </svg>
+
+      <div class="topics" id="topics" hidden>
+        <span class="lbl">topics</span>
+      </div>
+
+      <ul class="articlelist" id="list"></ul>
+      <p class="empty" id="empty" hidden>
+        Nothing here yet. Add a LaTeX (or markdown) file to <code>content/</code>
+        and one line to <code>content/articles.json</code> — see the README.
+      </p>
+    </main>
+  </div>
+
+<script>
+(function () {
+  const list = document.getElementById('list');
+  const topicsRow = document.getElementById('topics');
+  const countEl = document.getElementById('count');
+  const emptyEl = document.getElementById('empty');
+  let articles = [], activeTopic = 'all';
+
+  function slugOf(a) { return a.slug || (a.file || '').replace(/\.md$/, ''); }
+
+  function renderList() {
+    while (list.firstChild) list.removeChild(list.firstChild);
+    const shown = articles.filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic);
+    shown.forEach(a => {
+      const li = document.createElement('li');
+      li.dataset.topic = a.topic || '';
+
+      const when = document.createElement('p');
+      when.className = 'when';
+      when.innerHTML = (a.date || '') + ' &nbsp;&mdash;&nbsp; <b></b>';
+      when.querySelector('b').textContent = a.topic || 'article';
+      li.appendChild(when);
+
+      const h2 = document.createElement('h2');
+      const link = document.createElement('a');
+      link.href = 'article.html?p=' + encodeURIComponent(slugOf(a));
+      link.textContent = a.title || slugOf(a);
+      h2.appendChild(link);
+      li.appendChild(h2);
+
+      if (a.excerpt) {
+        const p = document.createElement('p');
+        p.textContent = a.excerpt;
+        li.appendChild(p);
+      }
+      list.appendChild(li);
+    });
+    emptyEl.hidden = shown.length > 0;
+    countEl.textContent = activeTopic === 'all'
+      ? articles.length + (articles.length === 1 ? ' article' : ' articles')
+      : shown.length + ' in ' + activeTopic;
+  }
+
+  function buildTopics() {
+    const topics = [...new Set(articles.map(a => a.topic).filter(Boolean))].sort();
+    if (!topics.length) return;
+    const mk = (name, val) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = name;
+      b.setAttribute('aria-pressed', val === activeTopic ? 'true' : 'false');
+      b.addEventListener('click', () => {
+        activeTopic = val;
+        topicsRow.querySelectorAll('button').forEach(x =>
+          x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+        renderList();
+      });
+      topicsRow.appendChild(b);
+    };
+    mk('all', 'all');
+    topics.forEach(t => mk(t, t));
+    topicsRow.hidden = false;
+  }
+
+  fetch('content/articles.json', { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      articles = (Array.isArray(data) ? data : [])
+        .slice()
+        .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      buildTopics();
+      renderList();
+    })
+    .catch(() => {
+      emptyEl.hidden = false;
+      countEl.textContent = '';
+    });
+})();
+</script>
+</body>
+</html>

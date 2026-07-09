@@ -1,0 +1,26 @@
+[
+  {
+    "file": "geometric-mechanics.tex",
+    "slug": "geometric-mechanics",
+    "title": "Geometric Formulation of Classical Mechanics",
+    "date": "2026-07-08",
+    "topic": "mechanics",
+    "excerpt": "Where does a Hamiltonian live? Mechanics, at its heart, is geometric: configuration space, phase space, the symplectic form, and the road from Poisson brackets to quantization."
+  },
+  {
+    "file": "on-least-action.md",
+    "slug": "on-least-action",
+    "title": "On Least Action",
+    "date": "2026-06-28",
+    "topic": "mechanics",
+    "excerpt": "Nature is lazy in a very precise way. Of all the paths a particle could take, the one it does take makes a certain integral stationary — and everything else follows."
+  },
+  {
+    "file": "why-fourier-works.md",
+    "slug": "why-fourier-works",
+    "title": "Why Fourier Series Work",
+    "date": "2026-06-14",
+    "topic": "analysis",
+    "excerpt": "Sines and cosines are not just convenient — they are the eigenfunctions of the operator that physics keeps handing us. That is the whole secret."
+  }
+]

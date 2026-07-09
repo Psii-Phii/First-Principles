@@ -82,10 +82,11 @@
   }
   nav a:hover, nav a:focus-visible { color: var(--accent); }
 
-  /* --- hero --- */
+  /* --- hero: slightly above the vertical middle, flush left --- */
   .hero {
     align-self: center;
     max-width: var(--maxw);
+    transform: translateY(-7vh);
   }
 
   .eyebrow {
@@ -145,6 +146,8 @@
     gap: 1rem;
     flex-wrap: wrap;
   }
+  footer a { color: inherit; text-decoration: none; transition: color 0.18s ease; }
+  footer a:hover, footer a:focus-visible { color: var(--accent); }
 
   .figdock {
     position: fixed;
@@ -194,7 +197,7 @@
     cursor: pointer;
     transition: color 0.18s ease, border-color 0.18s ease;
   }
-  .figswitch button:hover { color: var(--ink); }
+  .figswitch button:hover, .figswitch button:focus-visible { color: var(--accent); }
   .figswitch button[aria-current="true"] { color: var(--accent); border-color: var(--accent); }
   .figswitch .auto[aria-pressed="true"] { color: var(--accent); }
   .figswitch .sep { color: var(--mid); opacity: 0.45; user-select: none; }
@@ -218,149 +221,287 @@
     <header>
       <span class="mark">first-principles.xyz</span>
       <nav>
-        <a href="#">Articles</a>
-        <a href="#">Topics</a>
-        <a href="#">About</a>
+        <a href="articles.html">Articles</a>
+        <a href="articles.html#topics">Topics</a>
+        <a href="about.html">About</a>
       </nav>
     </header>
 
     <main class="hero">
-      <p class="eyebrow">Notes in LaTeX · Est. 2026</p>
+      <p class="eyebrow">Notes in LaTeX &middot; Est. 2026</p>
       <h1>First&nbsp;Principles</h1>
-      <p class="lede">Essays and lecture notes on physics and mathematics.</em></p>
-      <a class="enter" href="#">Read the articles <span class="arrow">&rarr;</span></a>
+      <p class="lede">Essays and lecture notes on physics and mathematics, set like paper and <em>built to be read slowly.</em></p>
+      <a class="enter" href="articles.html">Read the articles <span class="arrow">&rarr;</span></a>
     </main>
 
     <footer>
-      <span class="meta"> 0 articles</span>
-      <span class="meta">Latest — </span>
+      <span class="meta" id="stat-count"></span>
+      <span class="meta" id="stat-latest"></span>
     </footer>
   </div>
 
 <script>
+/* ---- footer stats from the article manifest ---- */
+(function () {
+  fetch('content/articles.json', { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw 0; return r.json(); })
+    .then(list => {
+      if (!Array.isArray(list) || !list.length) return;
+      const sorted = list.slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      const latest = sorted[0];
+      const slug = latest.slug || (latest.file || '').replace(/\.(md|tex)$/, '');
+      document.getElementById('stat-count').textContent =
+        list.length + (list.length === 1 ? ' article' : ' articles');
+      const el = document.getElementById('stat-latest');
+      el.innerHTML = 'Latest &mdash; ';
+      const a = document.createElement('a');
+      a.href = 'article.html?p=' + encodeURIComponent(slug);
+      a.textContent = latest.title || slug;
+      el.appendChild(a);
+    })
+    .catch(() => {});
+})();
+
+/* ---- the figures: fine line-art traced on the paper ---- */
 (function () {
   const canvas = document.getElementById('graph');
   const ctx = canvas.getContext('2d');
   const label = document.getElementById('figlabel');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let w = 0, h = 0, dpr = 1, nodes = [], cx = 0, cy = 0, R = 0, raf = null;
+  const INK = '26,26,24';
+  const OX  = '115,43,43';
+  const TAU = Math.PI * 2;
+
+  let w = 0, h = 0, dpr = 1, cx = 0, cy = 0, R = 0, raf = null;
   const mouse = { x: null, y: null };
+  const HL = 150; /* pointer highlight radius */
 
-  const LINK = 120;        // ambient node-to-node radius
-  const MOUSE_LINK = 175;  // cursor radius
-  const GOLDEN = Math.PI * (3 - Math.sqrt(5)); // golden angle ~137.5deg
-
-  // Each formation maps node index i (0..n-1) to a target offset {x,y} from
-  // centre, scaled by R. `edges` picks the structural overlay. Add your own.
-  const formations = [
-    {
-      name: 'times table mod n &middot; &times;2 &rarr; cardioid',
-      short: 'cardioid',
-      edges: 'times2',
-      at: (i, n) => {
-        const a = (i / n) * Math.PI * 2 - Math.PI / 2;
-        return { x: Math.cos(a) * R, y: Math.sin(a) * R };
-      }
-    },
-    {
-      name: 'phyllotaxis &middot; 137.5&deg;',
-      short: 'phyllotaxis',
-      edges: 'proximity',
-      at: (i, n) => {
-        const r = R * Math.sqrt(i / n);
-        const a = i * GOLDEN;
-        return { x: Math.cos(a) * r, y: Math.sin(a) * r };
-      }
-    },
-    {
-      name: 'lissajous &middot; 3 : 2',
-      short: 'lissajous',
-      edges: 'path',
-      at: (i, n) => {
-        const t = (i / n) * Math.PI * 2;
-        return { x: Math.sin(3 * t + Math.PI / 2) * R, y: Math.sin(2 * t) * R };
-      }
-    },
-    {
-      name: 'rose &middot; r = cos 4&theta;',
-      short: 'rose',
-      edges: 'path',
-      at: (i, n) => {
-        const t = (i / n) * Math.PI * 2;
-        const r = Math.cos(4 * t) * R;
-        return { x: Math.cos(t) * r, y: Math.sin(t) * r };
+  /* stroke a segment in ink, tinting oxblood near the pointer */
+  function seg(x1, y1, x2, y2, a) {
+    let color = INK, alpha = a, width = 0.6;
+    if (mouse.x !== null) {
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const d = Math.hypot(mx - mouse.x, my - mouse.y);
+      if (d < HL) {
+        const k = 1 - d / HL;
+        color = OX; alpha = Math.min(1, a + k * 0.55); width = 0.6 + k * 0.5;
       }
     }
-  ];
+    ctx.strokeStyle = 'rgba(' + color + ',' + alpha + ')';
+    ctx.lineWidth = width;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
 
-  const PERIOD = 7000; // ms held per formation (when auto-cycling)
-  let fi = 0, phaseStart = 0, auto = true;
+  /* ---------- figure definitions ---------- */
+
+  /* 1. Fourier epicycles — rotating circles tracing a 4-fold star */
+  const epi = {
+    short: 'epicycles',
+    name: 'fourier epicycles &middot; three terms',
+    trace: [],
+    draw(now, progress) {
+      const terms = [[0.58, 1], [0.27, -3], [0.13, 5]];
+      const a0 = reduce ? 1.2 : now * 0.00058;
+      /* the chain */
+      let x = cx, y = cy;
+      const pts = [[x, y]];
+      for (const [r, f] of terms) {
+        const rr = r * R;
+        /* circle at current anchor */
+        ctx.strokeStyle = 'rgba(' + INK + ',0.16)';
+        ctx.lineWidth = 0.6;
+        ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.stroke();
+        x += Math.cos(a0 * f) * rr;
+        y += Math.sin(a0 * f) * rr;
+        pts.push([x, y]);
+      }
+      /* radius rods */
+      for (let i = 0; i < pts.length - 1; i++)
+        seg(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], 0.35);
+      /* pen point */
+      ctx.fillStyle = 'rgba(' + OX + ',0.9)';
+      ctx.beginPath(); ctx.arc(x, y, 2.2, 0, TAU); ctx.fill();
+      /* trace */
+      if (!reduce) {
+        this.trace.push([x, y]);
+        const cap = Math.ceil(TAU / 0.00058 / 16.7);   /* ~one full period */
+        if (this.trace.length > cap) this.trace.shift();
+      } else if (!this.trace.length) {
+        for (let t = 0; t <= TAU + 0.01; t += 0.01) {
+          let tx = cx, ty = cy;
+          for (const [r, f] of terms) { tx += Math.cos(t * f) * r * R; ty += Math.sin(t * f) * r * R; }
+          this.trace.push([tx, ty]);
+        }
+      }
+      const n = this.trace.length;
+      for (let i = 1; i < n; i++) {
+        const age = i / n; /* older -> fainter */
+        ctx.strokeStyle = 'rgba(' + OX + ',' + (0.1 + 0.65 * age) + ')';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.moveTo(this.trace[i - 1][0], this.trace[i - 1][1]);
+        ctx.lineTo(this.trace[i][0], this.trace[i][1]);
+        ctx.stroke();
+      }
+    },
+    reset() { this.trace = []; }
+  };
+
+  /* 2. trefoil torus knot, slowly turning in 3d */
+  const knot = {
+    short: 'torus knot',
+    name: 'torus knot &middot; (2, 3) trefoil',
+    draw(now) {
+      const N = 420, p = 2, q = 3;
+      const ay = reduce ? 0.9 : now * 0.00022;
+      const ax = 0.55;
+      const cyr = Math.cos(ay), syr = Math.sin(ay);
+      const cxr = Math.cos(ax), sxr = Math.sin(ax);
+      const S = R / 3.15;
+      const pts = [];
+      for (let i = 0; i <= N; i++) {
+        const t = (i / N) * TAU;
+        let X = (2.1 + Math.cos(q * t)) * Math.cos(p * t);
+        let Y = (2.1 + Math.cos(q * t)) * Math.sin(p * t);
+        let Z = Math.sin(q * t) * 1.25;
+        /* rotate about y then x */
+        let X2 = X * cyr + Z * syr, Z2 = -X * syr + Z * cyr;
+        let Y2 = Y * cxr - Z2 * sxr, Z3 = Y * sxr + Z2 * cxr;
+        pts.push([cx + X2 * S, cy + Y2 * S, Z3]);
+      }
+      for (let i = 1; i <= N; i++) {
+        const [x1, y1, z1] = pts[i - 1], [x2, y2] = pts[i];
+        const depth = (z1 + 3.4) / 6.8;              /* 0 far .. 1 near */
+        const near = depth > 0.82;
+        const alpha = 0.10 + depth * 0.5;
+        if (near && mouse.x === null) {
+          ctx.strokeStyle = 'rgba(' + OX + ',' + (alpha * 0.9) + ')';
+          ctx.lineWidth = 0.9 + depth * 0.7;
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        } else {
+          ctx.lineWidth = 0.5 + depth * 0.9;
+          seg(x1, y1, x2, y2, alpha);
+        }
+      }
+    },
+    reset() {}
+  };
+
+  /* 3. Maurer rose — chords of r = sin(6θ) stepped by 71° */
+  const maurer = {
+    short: 'maurer rose',
+    name: 'maurer rose &middot; n = 6, d = 71&deg;',
+    draw(now, progress) {
+      const n = 6, d = 71, STEPS = 361;
+      const reveal = reduce ? STEPS : Math.min(STEPS, Math.floor(progress * STEPS * 1.35));
+      const pt = k => {
+        const th = k * d * Math.PI / 180;
+        const r = Math.sin(n * th) * R;
+        return [cx + Math.cos(th) * r, cy + Math.sin(th) * r];
+      };
+      let prev = pt(0);
+      for (let k = 1; k < reveal; k++) {
+        const cur = pt(k);
+        seg(prev[0], prev[1], cur[0], cur[1], 0.15);
+        prev = cur;
+      }
+      /* the rose itself, in oxblood over the chord web */
+      ctx.strokeStyle = 'rgba(' + OX + ',0.55)';
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      const rosePts = Math.floor((reveal / STEPS) * 720);
+      for (let i = 0; i <= rosePts; i++) {
+        const th = (i / 720) * TAU;
+        const r = Math.sin(n * th) * R;
+        const x = cx + Math.cos(th) * r, y = cy + Math.sin(th) * r;
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    },
+    reset() {}
+  };
+
+  /* 4. cardioid times-table — chords i -> 2i on a circle */
+  const cardioid = {
+    short: 'cardioid',
+    name: 'times table mod n &middot; &times;2 &rarr; cardioid',
+    draw(now, progress) {
+      const N = 210;
+      const reveal = reduce ? N : Math.min(N, Math.floor(progress * N * 1.35));
+      const spin = reduce ? 0 : now * 0.00004;
+      const pt = i => {
+        const a = (i / N) * TAU - Math.PI / 2 + spin;
+        return [cx + Math.cos(a) * R, cy + Math.sin(a) * R];
+      };
+      ctx.strokeStyle = 'rgba(' + INK + ',0.25)';
+      ctx.lineWidth = 0.6;
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+      for (let i = 1; i < reveal; i++) {
+        const [x1, y1] = pt(i), [x2, y2] = pt((2 * i) % N);
+        seg(x1, y1, x2, y2, 0.13);
+      }
+    },
+    reset() {}
+  };
+
+  const figures = [epi, knot, maurer, cardioid];
+
+  /* ---------- cycling, switching, fading ---------- */
+  const PERIOD = 9000, FADE = 650;
+  let fi = 0, phaseStart = 0, auto = true, fadeStart = -1;
 
   const now0 = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
 
-  // --- build the figure switcher from the formations above ---
   const switchEl = document.getElementById('figswitch');
   const buttons = [];
   let autoBtn = null;
-  if (switchEl) {
-    formations.forEach((f, idx) => {
-      if (idx) {
-        const s = document.createElement('span');
-        s.className = 'sep'; s.textContent = '\u00B7';
-        switchEl.appendChild(s);
-      }
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = f.short;
-      b.addEventListener('click', () => selectFigure(idx));
-      switchEl.appendChild(b);
-      buttons.push(b);
-    });
-    if (!reduce) {
+  figures.forEach((f, idx) => {
+    if (idx) {
       const s = document.createElement('span');
-      s.className = 'sep'; s.textContent = '\u00B7';
+      s.className = 'sep'; s.textContent = '·';
       switchEl.appendChild(s);
-      autoBtn = document.createElement('button');
-      autoBtn.type = 'button';
-      autoBtn.className = 'auto';
-      autoBtn.textContent = '\u21BB auto';
-      autoBtn.addEventListener('click', toggleAuto);
-      switchEl.appendChild(autoBtn);
     }
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = f.short;
+    b.addEventListener('click', () => selectFigure(idx));
+    switchEl.appendChild(b);
+    buttons.push(b);
+  });
+  if (!reduce) {
+    const s = document.createElement('span');
+    s.className = 'sep'; s.textContent = '·';
+    switchEl.appendChild(s);
+    autoBtn = document.createElement('button');
+    autoBtn.type = 'button';
+    autoBtn.className = 'auto';
+    autoBtn.textContent = '↻ auto';
+    autoBtn.addEventListener('click', toggleAuto);
+    switchEl.appendChild(autoBtn);
   }
 
   function updateUI() {
     buttons.forEach((b, i) => b.setAttribute('aria-current', i === fi ? 'true' : 'false'));
     if (autoBtn) autoBtn.setAttribute('aria-pressed', auto ? 'true' : 'false');
-    setLabel(formations[fi].name);
+    label.innerHTML = 'fig. &mdash; <b>' + figures[fi].name + '</b>';
+    label.classList.add('show');
   }
 
-  function selectFigure(idx) {
+  function switchTo(idx) {
     fi = idx;
-    auto = false;
+    figures[fi].reset();
     phaseStart = now0();
+    fadeStart = phaseStart;
     updateUI();
     if (reduce) drawStatic();
   }
 
+  function selectFigure(idx) { auto = false; switchTo(idx); }
   function toggleAuto() {
     auto = !auto;
     if (auto) phaseStart = now0();
     updateUI();
-  }
-
-  function nodeCount() {
-    return Math.max(40, Math.min(96, Math.round((w * h) / 16000)));
-  }
-
-  function initNodes() {
-    const n = nodeCount();
-    nodes = [];
-    for (let i = 0; i < n; i++) {
-      // start scattered so the first figure visibly assembles
-      nodes.push({ x: Math.random() * w, y: Math.random() * h, sx: Math.random() * 6.28 });
-    }
   }
 
   function resize() {
@@ -370,147 +511,44 @@
     canvas.height = Math.floor(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cx = w / 2; cy = h / 2;
-    R = Math.min(w, h) * 0.34;
-    initNodes();
+    R = Math.min(w, h) * 0.33;
+    figures.forEach(f => f.reset());
     if (reduce) drawStatic();
   }
 
-  function setLabel(text) {
-    if (!label) return;
-    label.innerHTML = 'fig. &mdash; <b>' + text + '</b>';
-    label.classList.add('show');
-  }
-
-  // structural edges fade in after the morph and out before the next switch
-  function envelope(elapsed) {
-    const up = Math.min(1, Math.max(0, (elapsed - 900) / 1100));
-    const down = Math.min(1, Math.max(0, (PERIOD - elapsed) / 900));
-    return Math.min(up, down);
-  }
-
-  function drawStructural(form, n, alpha) {
-    if (alpha <= 0.002) return;
-    ctx.strokeStyle = 'rgba(115,43,43,' + (alpha * 0.5) + ')';
-    ctx.lineWidth = 0.7;
-    if (form.edges === 'times2') {
-      for (let i = 0; i < n; i++) {
-        const a = nodes[i], b = nodes[(2 * i) % n];
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-      }
-    } else if (form.edges === 'path') {
-      ctx.beginPath();
-      ctx.moveTo(nodes[0].x, nodes[0].y);
-      for (let i = 1; i < n; i++) ctx.lineTo(nodes[i].x, nodes[i].y);
-      ctx.lineTo(nodes[0].x, nodes[0].y);
-      ctx.stroke();
-    }
-  }
-
   function frame(now) {
-    if (!phaseStart) { phaseStart = now; updateUI(); }
-    const n = nodes.length;
+    if (!phaseStart) { phaseStart = now; fadeStart = now; updateUI(); }
     let elapsed = now - phaseStart;
-    if (auto && elapsed > PERIOD) {
-      fi = (fi + 1) % formations.length;
-      phaseStart = now; elapsed = 0;
-      updateUI();
-    }
-    const form = formations[fi];
-    // when paused on a figure, ramp structural edges in and keep them
-    const env = auto ? envelope(elapsed)
-                     : Math.min(1, Math.max(0, (elapsed - 900) / 1100));
+    if (auto && elapsed > PERIOD) { switchTo((fi + 1) % figures.length); elapsed = 0; }
 
     ctx.clearRect(0, 0, w, h);
-
-    // ease every node toward its formation target, with a soft shimmer
-    for (let i = 0; i < n; i++) {
-      const p = nodes[i];
-      const t = form.at(i, n);
-      const sh = Math.sin(now * 0.0007 + p.sx) * 1.3;
-      p.x += (cx + t.x + sh - p.x) * 0.05;
-      p.y += (cy + t.y + sh - p.y) * 0.05;
-    }
-
-    // ambient proximity links (the graph itself)
-    for (let i = 0; i < n; i++) {
-      for (let j = i + 1; j < n; j++) {
-        const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
-        const d = Math.hypot(dx, dy);
-        if (d < LINK) {
-          ctx.strokeStyle = 'rgba(26,26,24,' + ((1 - d / LINK) * 0.28) + ')';
-          ctx.lineWidth = 0.6;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    drawStructural(form, n, env);
-
-    // cursor "annotation" links
-    if (mouse.x !== null) {
-      for (let i = 0; i < n; i++) {
-        const dx = nodes[i].x - mouse.x, dy = nodes[i].y - mouse.y;
-        const d = Math.hypot(dx, dy);
-        if (d < MOUSE_LINK) {
-          ctx.strokeStyle = 'rgba(115,43,43,' + ((1 - d / MOUSE_LINK) * 0.8) + ')';
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(mouse.x, mouse.y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // nodes
-    for (let i = 0; i < n; i++) {
-      const p = nodes[i];
-      const near = mouse.x !== null &&
-        Math.hypot(p.x - mouse.x, p.y - mouse.y) < MOUSE_LINK;
-      ctx.fillStyle = near ? 'rgba(115,43,43,0.95)' : 'rgba(26,26,24,0.5)';
-      ctx.beginPath(); ctx.arc(p.x, p.y, 1.1, 0, Math.PI * 2); ctx.fill();
-    }
+    const fadeIn = fadeStart < 0 ? 1 : Math.min(1, (now - fadeStart) / FADE);
+    ctx.globalAlpha = 0.25 + 0.75 * fadeIn;
+    figures[fi].draw(now, Math.min(1, elapsed / (PERIOD * 0.72)));
+    ctx.globalAlpha = 1;
 
     raf = requestAnimationFrame(frame);
   }
 
   function drawStatic() {
-    // a single settled figure for reduced-motion users / manual selection
-    const n = nodes.length, form = formations[fi];
-    for (let i = 0; i < n; i++) {
-      const t = form.at(i, n);
-      nodes[i].x = cx + t.x; nodes[i].y = cy + t.y;
-    }
     ctx.clearRect(0, 0, w, h);
-    for (let i = 0; i < n; i++) {
-      for (let j = i + 1; j < n; j++) {
-        const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
-        const d = Math.hypot(dx, dy);
-        if (d < LINK) {
-          ctx.strokeStyle = 'rgba(26,26,24,' + ((1 - d / LINK) * 0.28) + ')';
-          ctx.lineWidth = 0.6;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-    drawStructural(form, n, 1);
-    for (let i = 0; i < n; i++) {
-      ctx.fillStyle = 'rgba(26,26,24,0.5)';
-      ctx.beginPath(); ctx.arc(nodes[i].x, nodes[i].y, 1.1, 0, 6.2832); ctx.fill();
-    }
+    figures[fi].draw(now0(), 1);
     updateUI();
   }
 
   window.addEventListener('resize', resize);
-  window.addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-  window.addEventListener('pointerleave', () => { mouse.x = mouse.y = null; });
+  window.addEventListener('pointermove', e => {
+    mouse.x = e.clientX; mouse.y = e.clientY;
+    if (reduce) drawStatic();
+  });
+  window.addEventListener('pointerleave', () => {
+    mouse.x = mouse.y = null;
+    if (reduce) drawStatic();
+  });
 
-  if (reduce) fi = 1;        // show a settled phyllotaxis when motion is reduced
-  resize();                  // resize() renders the static frame in reduced-motion mode
+  resize();
   if (!reduce) raf = requestAnimationFrame(frame);
+  else { fi = 2; drawStatic(); }  /* a settled maurer rose for reduced motion */
 })();
 </script>
 </body>
