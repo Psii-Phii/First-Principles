@@ -268,9 +268,11 @@
   fetch('content/articles.json', { cache: 'no-store' })
     .then(r => { if (!r.ok) throw 0; return r.json(); })
     .then(list => {
-      if (!Array.isArray(list) || !list.length) return;
+      if (!Array.isArray(list)) return;
+      const n = list.filter(a => a.published !== false).length;
+      if (!n) return;
       document.getElementById('stat-count').textContent =
-        list.length + (list.length === 1 ? ' article' : ' articles');
+        n + (n === 1 ? ' article' : ' articles');
     })
     .catch(() => {});
 })();

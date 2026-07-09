@@ -265,8 +265,37 @@ window.MathJax = {
     tocEl.appendChild(root);
   }
 
+  /* light the entry for the section under the reader, and keep it in view
+     inside the scrollable index */
+  function setupScrollSpy() {
+    const tocBox = document.getElementById('toc');
+    const pairs = [...tocBox.querySelectorAll('a')]
+      .map(a => [document.getElementById(a.getAttribute('href').slice(1)), a])
+      .filter(p => p[0]);
+    if (!pairs.length) return;
+    let active = null, ticking = false;
+    function update() {
+      ticking = false;
+      let cur = pairs[0][1];
+      for (const [h, a] of pairs) {
+        if (h.getBoundingClientRect().top <= 150) cur = a;
+        else break;
+      }
+      if (cur === active) return;
+      if (active) active.removeAttribute('aria-current');
+      active = cur;
+      active.setAttribute('aria-current', 'location');
+      tocBox.scrollTop = active.offsetTop - tocBox.clientHeight / 2 + active.offsetHeight / 2;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  }
+
   function finishRender() {
     buildTOC();
+    setupScrollSpy();
     document.getElementById('garden').hidden = false;
   }
 
@@ -289,6 +318,14 @@ window.MathJax = {
       const articles = Array.isArray(list) ? list : [];
       const entry = articles.find(a =>
         (a.slug || (a.file || '').replace(/\.(md|tex)$/, '')) === slug) || {};
+      /* unpublished articles are invisible unless this browser is in admin
+         mode (see articles.html?admin=on) or has an admin preview override */
+      const ovr = localStorage.getItem('fp-pub-' + slug);
+      const published = ovr !== null ? ovr === '1' : entry.published !== false;
+      if (!published && localStorage.getItem('fp-admin') !== '1') {
+        showError('This article could not be found. It may have been moved or renamed.');
+        return;
+      }
       const file = entry.file || (slug + '.md');
       return fetch('content/' + file, { cache: 'no-store' })
         .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })

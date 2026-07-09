@@ -133,6 +133,24 @@ body::after {
   margin: 0 0 0.35rem;
 }
 .articlelist .when b { color: var(--accent); font-weight: 500; }
+.articlelist .pubtoggle {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  color: var(--mid);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.1rem 0.45rem;
+  margin-left: 0.8rem;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.articlelist .pubtoggle:hover, .articlelist .pubtoggle:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
 .articlelist h2 { margin: 0 0 0.4rem; font-weight: 500; font-size: 1.55rem; line-height: 1.15; }
 .articlelist h2 a {
   color: var(--ink);
@@ -177,9 +195,23 @@ body::after {
 }
 .sidebar .allback a { color: var(--mid); }
 .sidebar .allback a:hover, .sidebar .allback a:focus-visible { color: var(--accent); }
+/* the index is a compact scrolling window; it follows the reader */
+.sidebar .toc {
+  position: relative;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 0.9rem, #000 calc(100% - 0.9rem), transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 0.9rem, #000 calc(100% - 0.9rem), transparent);
+}
+.sidebar .toc::-webkit-scrollbar { width: 4px; }
+.sidebar .toc::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
 .sidebar ul { list-style: none; margin: 0; padding: 0; }
 .sidebar ul ul { padding-left: 1.1rem; margin: 0.15rem 0 0.35rem; }
 .sidebar li { margin: 0.25rem 0; }
+.sidebar .toc a[aria-current="location"] { color: var(--accent); opacity: 1; }
 .sidebar .tocnum {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.68em;

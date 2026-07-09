@@ -79,25 +79,63 @@
 
 <script>
 (function () {
+  /* ---- admin mode: never linked from the site; flip it by visiting
+     articles.html?admin=on (or =off). State lives in this browser only. ---- */
+  const adminParam = new URLSearchParams(location.search).get('admin');
+  if (adminParam === 'on' || adminParam === 'off') {
+    if (adminParam === 'on') localStorage.setItem('fp-admin', '1');
+    else localStorage.removeItem('fp-admin');
+    location.replace(location.pathname);
+    return;
+  }
+  const ADMIN = localStorage.getItem('fp-admin') === '1';
+
   const list = document.getElementById('list');
   const topicsRow = document.getElementById('topics');
   const countEl = document.getElementById('count');
   const emptyEl = document.getElementById('empty');
   let articles = [], activeTopic = 'all';
 
-  function slugOf(a) { return a.slug || (a.file || '').replace(/\.md$/, ''); }
+  function slugOf(a) { return a.slug || (a.file || '').replace(/\.(md|tex)$/, ''); }
+
+  /* published unless the manifest says "published": false; an admin's
+     toggle stores a this-browser-only override so drafts can be previewed */
+  function isPublished(a) {
+    const o = localStorage.getItem('fp-pub-' + slugOf(a));
+    if (o !== null) return o === '1';
+    return a.published !== false;
+  }
+
+  function visible() { return articles.filter(a => ADMIN || isPublished(a)); }
 
   function renderList() {
     while (list.firstChild) list.removeChild(list.firstChild);
-    const shown = articles.filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic);
+    const pool = visible();
+    const shown = pool.filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic);
     shown.forEach(a => {
       const li = document.createElement('li');
       li.dataset.topic = a.topic || '';
+      const pub = isPublished(a);
+      if (!pub) li.style.opacity = '0.55';
 
       const when = document.createElement('p');
       when.className = 'when';
       when.innerHTML = (a.date || '') + ' &nbsp;&mdash;&nbsp; <b></b>';
       when.querySelector('b').textContent = a.topic || 'article';
+      if (ADMIN) {
+        const tag = document.createElement('b');
+        tag.textContent = pub ? '' : ' · draft';
+        when.appendChild(tag);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pubtoggle';
+        btn.textContent = pub ? 'unpublish' : 'publish';
+        btn.addEventListener('click', () => {
+          localStorage.setItem('fp-pub-' + slugOf(a), pub ? '0' : '1');
+          renderList();
+        });
+        when.appendChild(btn);
+      }
       li.appendChild(when);
 
       const h2 = document.createElement('h2');
@@ -115,13 +153,15 @@
       list.appendChild(li);
     });
     emptyEl.hidden = shown.length > 0;
-    countEl.textContent = activeTopic === 'all'
-      ? articles.length + (articles.length === 1 ? ' article' : ' articles')
-      : shown.length + ' in ' + activeTopic;
+    const total = pool.length;
+    countEl.textContent = (activeTopic === 'all'
+      ? total + (total === 1 ? ' article' : ' articles')
+      : shown.length + ' in ' + activeTopic)
+      + (ADMIN ? ' · admin (toggles preview in this browser; set "published" in content/articles.json to change the live site)' : '');
   }
 
   function buildTopics() {
-    const topics = [...new Set(articles.map(a => a.topic).filter(Boolean))].sort();
+    const topics = [...new Set(visible().map(a => a.topic).filter(Boolean))].sort();
     if (!topics.length) return;
     const mk = (name, val) => {
       const b = document.createElement('button');

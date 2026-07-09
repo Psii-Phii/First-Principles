@@ -44,6 +44,16 @@ pushing the folder to GitHub (or copying it to any static host).
    - `date` is `YYYY-MM-DD` — it orders the list and picks the homepage "latest".
    - `topic` is one lowercase word; articles sharing it are grouped/filterable.
    - Mind the commas: every entry except the last ends with one.
+   - Add `"published": false` to keep an article as a draft: it disappears
+     from the list, the counts, and direct links. Remove the flag (or set it
+     to `true`) and push to publish.
+
+   **Admin preview:** visit `articles.html?admin=on` to turn on admin mode in
+   your own browser (nothing changes for visitors — the state lives in
+   localStorage). Drafts then appear with a publish/unpublish toggle so you can
+   preview either state locally; `?admin=off` turns it back off. Actually
+   publishing for everyone is always the JSON flag + a push — a static site
+   has no server to do it for you.
 
 3. That's it. The homepage stats, the article list, the topic filters and the
    sidebar all read `articles.json`.
