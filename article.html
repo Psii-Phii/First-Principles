@@ -4,11 +4,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>First Principles</title>
+<meta name="description" content="Essays and lecture notes on physics and mathematics, written in LaTeX and built to be read slowly." />
+<meta name="theme-color" content="#ece9e1" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5 L14.5 8 L8 14.5 L1.5 8 Z' fill='none' stroke='%23732b2b' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8' r='1.4' fill='%23732b2b'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-<link rel="stylesheet" href="site.css" />
+<link rel="stylesheet" href="site.css?v=3" />
 
 <script>
 /* MathJax: physics package + the dhortcmds macro set, AMS numbering */
@@ -133,11 +136,14 @@ window.MathJax = {
     </main>
   </div>
 
+  <img class="sideart reader-art" id="readerart" alt="" aria-hidden="true" hidden />
+
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" id="MathJax-script" async></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath@1.0.0/texmath.js"></script>
-<script src="latex.js"></script>
+<script src="site.js?v=3"></script>
+<script src="latex.js?v=3"></script>
 <script>
 (function () {
   const qs = new URLSearchParams(location.search);
@@ -145,6 +151,11 @@ window.MathJax = {
   const bodyEl = document.getElementById('body');
   const titleEl = document.getElementById('title');
   const kickerEl = document.getElementById('kicker');
+
+  /* pinned side art (very wide screens only; see .reader-art) */
+  const artEl = document.getElementById('readerart');
+  artEl.src = FP.randomArt();
+  artEl.hidden = false;
 
   /* --- front matter for .md articles: leading --- block, key: value --- */
   function parseFrontMatter(text) {
@@ -320,9 +331,8 @@ window.MathJax = {
         (a.slug || (a.file || '').replace(/\.(md|tex)$/, '')) === slug) || {};
       /* unpublished articles are invisible unless this browser is in admin
          mode (see articles.html?admin=on) or has an admin preview override */
-      const ovr = localStorage.getItem('fp-pub-' + slug);
-      const published = ovr !== null ? ovr === '1' : entry.published !== false;
-      if (!published && localStorage.getItem('fp-admin') !== '1') {
+      const published = FP.isPublished(Object.assign({ slug: slug }, entry));
+      if (!published && !FP.isAdmin()) {
         showError('This article could not be found. It may have been moved or renamed.');
         return;
       }

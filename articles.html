@@ -4,10 +4,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Articles — First Principles</title>
+<meta name="description" content="Essays and lecture notes on physics and mathematics, written in LaTeX and built to be read slowly." />
+<meta name="theme-color" content="#ece9e1" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5 L14.5 8 L8 14.5 L1.5 8 Z' fill='none' stroke='%23732b2b' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8' r='1.4' fill='%23732b2b'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="site.css" />
+<link rel="stylesheet" href="site.css?v=3" />
+<script src="site.js?v=3"></script>
 </head>
 <body>
   <div class="page">
@@ -33,6 +37,11 @@
         <circle cx="49" cy="7" r="1" fill="currentColor"/>
       </svg>
 
+      <div class="searchrow">
+        <input id="search" type="search" placeholder="search title, topic, or excerpt&hellip;"
+               aria-label="Search articles" autocomplete="off" />
+      </div>
+
       <div class="topics" id="topics" hidden>
         <span class="lbl">topics</span>
       </div>
@@ -45,73 +54,46 @@
     </main>
   </div>
 
-  <img id="sideart" alt="" aria-hidden="true" hidden />
-
-<style>
-  /* one of the ink drawings, picked at random per visit, resting in the
-     otherwise-empty right margin */
-  .page { position: relative; z-index: 1; }
-  #sideart {
-    position: fixed;
-    right: clamp(1.5rem, 5vw, 5rem);
-    top: 50%;
-    transform: translateY(-50%);
-    max-width: min(26vw, 400px);
-    max-height: 72vh;
-    object-fit: contain;
-    z-index: 0;
-    opacity: 0.9;
-    pointer-events: none;
-    display: none;
-  }
-  @media (min-width: 1100px) { #sideart { display: block; } }
-</style>
+  <img class="sideart" id="sideart" alt="" aria-hidden="true" hidden />
 
 <script>
 /* ---- side art: one of the ink pieces, chosen fresh on every load ---- */
 (function () {
-  const pieces = ['art/spiral.png', 'art/waves.png'];
   const img = document.getElementById('sideart');
-  img.src = pieces[Math.floor(Math.random() * pieces.length)];
+  img.src = FP.randomArt();
   img.hidden = false;
 })();
 </script>
 
 <script>
 (function () {
-  /* ---- admin mode: never linked from the site; flip it by visiting
-     articles.html?admin=on (or =off). State lives in this browser only. ---- */
-  const adminParam = new URLSearchParams(location.search).get('admin');
-  if (adminParam === 'on' || adminParam === 'off') {
-    if (adminParam === 'on') localStorage.setItem('fp-admin', '1');
-    else localStorage.removeItem('fp-admin');
-    location.replace(location.pathname);
-    return;
-  }
-  const ADMIN = localStorage.getItem('fp-admin') === '1';
+  if (FP.handleAdminParam()) { location.replace(location.pathname); return; }
+  const ADMIN = FP.isAdmin();
+  const slugOf = FP.slugOf, isPublished = FP.isPublished;
 
   const list = document.getElementById('list');
   const topicsRow = document.getElementById('topics');
   const countEl = document.getElementById('count');
   const emptyEl = document.getElementById('empty');
+  const searchEl = document.getElementById('search');
+  const emptyDefault = emptyEl.innerHTML;
   let articles = [], activeTopic = 'all';
-
-  function slugOf(a) { return a.slug || (a.file || '').replace(/\.(md|tex)$/, ''); }
-
-  /* published unless the manifest says "published": false; an admin's
-     toggle stores a this-browser-only override so drafts can be previewed */
-  function isPublished(a) {
-    const o = localStorage.getItem('fp-pub-' + slugOf(a));
-    if (o !== null) return o === '1';
-    return a.published !== false;
-  }
 
   function visible() { return articles.filter(a => ADMIN || isPublished(a)); }
 
+  function matchesQuery(a, q) {
+    if (!q) return true;
+    return [a.title, a.excerpt, a.topic, a.date, slugOf(a)]
+      .join(' ').toLowerCase().includes(q);
+  }
+
   function renderList() {
     while (list.firstChild) list.removeChild(list.firstChild);
+    const q = (searchEl.value || '').trim().toLowerCase();
     const pool = visible();
-    const shown = pool.filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic);
+    const shown = pool
+      .filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic)
+      .filter(a => matchesQuery(a, q));
     shown.forEach(a => {
       const li = document.createElement('li');
       li.dataset.topic = a.topic || '';
@@ -131,7 +113,7 @@
         btn.className = 'pubtoggle';
         btn.textContent = pub ? 'unpublish' : 'publish';
         btn.addEventListener('click', () => {
-          localStorage.setItem('fp-pub-' + slugOf(a), pub ? '0' : '1');
+          FP.setPublished(slugOf(a), !pub);
           renderList();
         });
         when.appendChild(btn);
@@ -153,12 +135,18 @@
       list.appendChild(li);
     });
     emptyEl.hidden = shown.length > 0;
+    if (!shown.length && q) emptyEl.textContent = 'Nothing matches “' + q + '”.';
+    else if (!shown.length) emptyEl.innerHTML = emptyDefault;
     const total = pool.length;
-    countEl.textContent = (activeTopic === 'all'
-      ? total + (total === 1 ? ' article' : ' articles')
-      : shown.length + ' in ' + activeTopic)
+    countEl.textContent = (q
+      ? shown.length + ' matching “' + q + '”'
+      : activeTopic === 'all'
+        ? total + (total === 1 ? ' article' : ' articles')
+        : shown.length + ' in ' + activeTopic)
       + (ADMIN ? ' · admin (toggles preview in this browser; set "published" in content/articles.json to change the live site)' : '');
   }
+
+  searchEl.addEventListener('input', renderList);
 
   function buildTopics() {
     const topics = [...new Set(visible().map(a => a.topic).filter(Boolean))].sort();

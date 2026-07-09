@@ -98,6 +98,15 @@ so run a tiny local server first:
 2. Run `python3 -m http.server`.
 3. Visit `http://localhost:8000`.
 
+## Changing the site's CSS or JS
+
+Static hosts and browsers cache stylesheets and scripts for a while. Every
+page therefore links them with a version query (`site.css?v=3`,
+`site.js?v=3`, `latex.js?v=3`). **When you edit any of those files, bump the
+number everywhere it appears** (a project-wide find-and-replace of `?v=3` →
+`?v=4`) so every visitor gets the new copy immediately instead of a stale
+cached one.
+
 ## What lives where
 
 | File | What it is | Edit it? |

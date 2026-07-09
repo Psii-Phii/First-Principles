@@ -13,6 +13,10 @@
 
 * { box-sizing: border-box; }
 
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
 html, body {
   margin: 0;
   min-height: 100%;
@@ -34,10 +38,35 @@ body::after {
 }
 
 .page {
+  position: relative;   /* above the pinned side art */
+  z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
   padding: clamp(1.4rem, 4vw, 2.6rem) clamp(1.4rem, 5vw, 3.4rem) 4rem;
 }
+
+/* ---------------- pinned side art ----------------
+   One of the ink drawings, chosen at random per visit. position:fixed
+   pins it to the viewport: it never moves while the page scrolls. */
+.sideart {
+  position: fixed;
+  right: clamp(1.2rem, 3.5vw, 4.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: min(24vw, 400px);
+  max-height: 72vh;
+  object-fit: contain;
+  z-index: 0;
+  opacity: 0.9;
+  pointer-events: none;
+  display: none;
+}
+@media (min-width: 1100px) { .sideart { display: block; } }
+
+/* on the article reader the drawing is quieter, and only appears on
+   screens wide enough that it never competes with the text */
+.reader-art { max-width: min(13vw, 300px); opacity: 0.55; display: none; }
+@media (min-width: 1440px) { .reader-art { display: block; } }
 
 /* ---------------- top bar ---------------- */
 .top {
@@ -87,6 +116,25 @@ body::after {
 .meta { font-size: 0.72rem; color: var(--mid); margin: 0 0 1rem; }
 
 .ornament { color: var(--mid); opacity: 0.75; margin: 0.6rem 0 1.6rem; }
+
+/* ---------------- search ---------------- */
+.searchrow { margin: 0 0 1.4rem; max-width: var(--maxw); }
+#search {
+  width: min(100%, 36ch);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 0.45rem 0.1rem;
+  transition: border-color 0.18s ease;
+}
+#search:focus { outline: none; border-color: var(--accent); }
+#search::placeholder { color: var(--mid); }
+#search::-webkit-search-cancel-button { -webkit-appearance: none; }
 
 /* ---------------- topic filter buttons ---------------- */
 .topics {
@@ -173,7 +221,7 @@ body::after {
   gap: 2.4rem;
 }
 @media (min-width: 900px) {
-  .reader { grid-template-columns: 15rem minmax(0, 1fr); align-items: start; }
+  .reader { grid-template-columns: 10.5rem minmax(0, 1fr); align-items: start; }
   .sidebar { position: sticky; top: 2rem; }
 }
 
@@ -219,7 +267,7 @@ body::after {
   margin-right: 0.55em;
 }
 .sidebar a {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--ink);
   opacity: 0.8;
   text-decoration: none;
@@ -228,8 +276,8 @@ body::after {
 .sidebar a:hover, .sidebar a:focus-visible { color: var(--accent); opacity: 1; }
 .sidebar a[aria-current="page"] { color: var(--accent); opacity: 1; font-style: italic; }
 
-/* ---------------- the essay ---------------- */
-.essay { max-width: var(--maxw); min-width: 0; }
+/* ---------------- the essay: the center of attention ---------------- */
+.essay { max-width: var(--maxw); min-width: 0; margin: 0 auto; }
 
 .kicker {
   font-size: 0.7rem;
@@ -258,6 +306,7 @@ body::after {
   line-height: 1.15;
   margin: 2.2em 0 0.7em;
 }
+#body h2, #body h3, #body [id] { scroll-margin-top: 1.4rem; }
 #body h3 {
   font-weight: 500;
   font-size: 1.32rem;
