@@ -196,6 +196,11 @@ window.LatexArticle = (function () {
       });
     body = body.replace(/\\end\{(theorem|proposition|lemma|claim|corollary|example|note|remark|definition|notation|axiom|question)\}/g, '\n\n</div>\n\n');
 
+    /* derivation environment — optional [title], collapsed by default */
+    body = body.replace(/\\begin\{derivation\}(\[([^\]]*)\])?/g, (_, __, label) =>
+      '\n\n<details class="derivation"><summary>' + (label || 'Show derivation') + '</summary>\n\n')
+      .replace(/\\end\{derivation\}/g, '\n\n</details>\n\n');
+
     /* proof environment */
     body = body.replace(/\\begin\{proof\}/g, '\n\n<div class="proof"><em>Proof.</em> ')
                .replace(/\\end\{proof\}/g, ' <span class="qed">&#8718;</span></div>\n\n');
@@ -289,7 +294,7 @@ window.LatexArticle = (function () {
     body = body.split(/\n{2,}/).map(chunk => {
       const c = chunk.trim();
       if (!c) return '';
-      if (/^<\/?(h2|h3|div|ol|ul|img|p\b|section)/.test(c) || tokBlock.test(c)) return c;
+      if (/^<\/?(h2|h3|div|ol|ul|img|p\b|section|details|summary)/.test(c) || tokBlock.test(c)) return c;
       return '<p>' + c + '</p>';
     }).filter(Boolean).join('\n');
 

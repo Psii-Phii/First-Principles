@@ -23,8 +23,13 @@ pushing the folder to GitHub (or copying it to any static host).
      (numbered and clickable, AMS style)
    - `empheq` with `box=\mathbox` → the boxed key-equation look
    - `mybox` → a bordered prose box
+   - `derivation` (optional `[title]`) → a collapsed `<details>` block for a
+     step-by-step derivation the reader can expand; e.g.
+     `\begin{derivation}[Deriving the Euler–Lagrange equation]...\end{derivation}`
    - `\section` / `\subsection` (auto-numbered), `\S\ref{sec:…}` links,
-     `\footnote`, `enumerate[label=(\roman*)]`, `\emph`, `\textbf`, …
+     `\footnote` (shown as margin notes next to their reference on wide
+     screens, and as a numbered endnote list on narrow ones),
+     `enumerate[label=(\roman*)]`, `\emph`, `\textbf`, …
    - theorem environments from `dhortthms.sty` (theorem / definition / remark…)
      rendered as colour-coded boxes matching the .sty legend
 
@@ -57,6 +62,11 @@ pushing the folder to GitHub (or copying it to any static host).
 
 3. That's it. The homepage stats, the article list, the topic filters and the
    sidebar all read `articles.json`.
+
+4. **Optional: regenerate the RSS feed.** Run `node scripts/build_feed.js`
+   and commit the updated `feed.xml` alongside your change. There's no
+   build step for this either — the feed is a static file, just like
+   `articles.json`, so it only updates when you re-run the script.
 
 Markdown still works too: drop a `.md` file (front matter block on top,
 `$…$` math) in `content/` and reference it the same way.

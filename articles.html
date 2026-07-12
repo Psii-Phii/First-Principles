@@ -7,11 +7,12 @@
 <meta name="description" content="Essays and lecture notes on physics and mathematics, written in LaTeX and built to be read slowly." />
 <meta name="theme-color" content="#ece9e1" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5 L14.5 8 L8 14.5 L1.5 8 Z' fill='none' stroke='%23732b2b' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8' r='1.4' fill='%23732b2b'/%3E%3C/svg%3E" />
+<link rel="alternate" type="application/rss+xml" title="First Principles" href="feed.xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="site.css?v=3" />
-<script src="site.js?v=3"></script>
+<link rel="stylesheet" href="site.css?v=4" />
+<script src="site.js?v=4"></script>
 </head>
 <body>
   <div class="page">
@@ -38,7 +39,7 @@
       </svg>
 
       <div class="searchrow">
-        <input id="search" type="search" placeholder="search title, topic, or excerpt&hellip;"
+        <input id="search" type="search" placeholder="search title, topic, or full text&hellip;"
                aria-label="Search articles" autocomplete="off" />
       </div>
 
@@ -81,10 +82,30 @@
 
   function visible() { return articles.filter(a => ADMIN || isPublished(a)); }
 
+  const bodyText = {}; // slug -> lowercased plain text, once loaded
+
+  function stripMarkup(raw) {
+    return raw
+      .replace(/\\[a-zA-Z]+\*?(\[[^\]]*\])?(\{[^}]*\})?/g, ' ')
+      .replace(/[{}$#*_\[\]()`~^]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+  }
+
+  function loadBodies() {
+    articles.forEach(a => {
+      fetch('content/' + a.file, { cache: 'no-store' })
+        .then(r => r.ok ? r.text() : '')
+        .then(text => { bodyText[slugOf(a)] = stripMarkup(text); renderList(); })
+        .catch(() => {});
+    });
+  }
+
   function matchesQuery(a, q) {
     if (!q) return true;
-    return [a.title, a.excerpt, a.topic, a.date, slugOf(a)]
-      .join(' ').toLowerCase().includes(q);
+    const hay = [a.title, a.excerpt, a.topic, a.date, slugOf(a), bodyText[slugOf(a)] || '']
+      .join(' ').toLowerCase();
+    return q.split(/\s+/).filter(Boolean).every(term => hay.includes(term));
   }
 
   function renderList() {
@@ -94,6 +115,17 @@
     const shown = pool
       .filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic)
       .filter(a => matchesQuery(a, q));
+    if (q) {
+      const terms = q.split(/\s+/).filter(Boolean);
+      const rank = a => {
+        const t = (a.title || '').toLowerCase();
+        if (terms.every(term => t.includes(term))) return 0;
+        const e = ((a.excerpt || '') + ' ' + (a.topic || '')).toLowerCase();
+        if (terms.every(term => e.includes(term))) return 1;
+        return 2;
+      };
+      shown.sort((x, y) => rank(x) - rank(y));
+    }
     shown.forEach(a => {
       const li = document.createElement('li');
       li.dataset.topic = a.topic || '';
@@ -134,9 +166,8 @@
       }
       list.appendChild(li);
     });
-    emptyEl.hidden = shown.length > 0;
-    if (!shown.length && q) emptyEl.textContent = 'Nothing matches “' + q + '”.';
-    else if (!shown.length) emptyEl.innerHTML = emptyDefault;
+    emptyEl.hidden = shown.length > 0 || !!q;
+    if (!shown.length && !q) emptyEl.innerHTML = emptyDefault;
     const total = pool.length;
     countEl.textContent = (q
       ? shown.length + ' matching “' + q + '”'
@@ -177,6 +208,7 @@
         .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
       buildTopics();
       renderList();
+      loadBodies();
     })
     .catch(() => {
       emptyEl.hidden = false;

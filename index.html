@@ -7,6 +7,7 @@
 <meta name="description" content="Essays and lecture notes on physics and mathematics, written in LaTeX and built to be read slowly." />
 <meta name="theme-color" content="#ece9e1" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5 L14.5 8 L8 14.5 L1.5 8 Z' fill='none' stroke='%23732b2b' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8' r='1.4' fill='%23732b2b'/%3E%3C/svg%3E" />
+<link rel="alternate" type="application/rss+xml" title="First Principles" href="feed.xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -518,22 +519,22 @@
   };
 
   const knot = {
-    short: 'torus knot',
-    name: 'torus knot &middot; (2, 3) trefoil',
+    short: 'trefoil knot',
+    name: 'trefoil knot',
     kind: 'plot',
     draw(now) {
-      const N = 420, p = 2, q = 3;
+      const N = 420;
       const ay = reduce ? 0.9 : now * 0.00022;
       const ax = 0.55;
       const cyr = Math.cos(ay), syr = Math.sin(ay);
       const cxr = Math.cos(ax), sxr = Math.sin(ax);
-      const S = R / 3.15;
+      const S = R / 3.6;
       const pts = [];
       for (let i = 0; i <= N; i++) {
         const t = (i / N) * TAU;
-        let X = (2.1 + Math.cos(q * t)) * Math.cos(p * t);
-        let Y = (2.1 + Math.cos(q * t)) * Math.sin(p * t);
-        let Z = Math.sin(q * t) * 1.25;
+        let X = Math.sin(t) + 2 * Math.sin(2 * t);
+        let Y = Math.cos(t) - 2 * Math.cos(2 * t);
+        let Z = -Math.sin(3 * t);
         let X2 = X * cyr + Z * syr, Z2 = -X * syr + Z * cyr;
         let Y2 = Y * cxr - Z2 * sxr, Z3 = Y * sxr + Z2 * cxr;
         pts.push([cx + X2 * S, cy + Y2 * S, Z3]);

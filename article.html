@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-<link rel="stylesheet" href="site.css?v=3" />
+<link rel="stylesheet" href="site.css?v=4" />
 
 <script>
 /* MathJax: physics package + the dhortcmds macro set, AMS numbering */
@@ -136,14 +136,12 @@ window.MathJax = {
     </main>
   </div>
 
-  <img class="sideart reader-art" id="readerart" alt="" aria-hidden="true" hidden />
-
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" id="MathJax-script" async></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/markdown-it-texmath@1.0.0/texmath.js"></script>
-<script src="site.js?v=3"></script>
-<script src="latex.js?v=3"></script>
+<script src="site.js?v=4"></script>
+<script src="latex.js?v=4"></script>
 <script>
 (function () {
   const qs = new URLSearchParams(location.search);
@@ -151,11 +149,6 @@ window.MathJax = {
   const bodyEl = document.getElementById('body');
   const titleEl = document.getElementById('title');
   const kickerEl = document.getElementById('kicker');
-
-  /* pinned side art (very wide screens only; see .reader-art) */
-  const artEl = document.getElementById('readerart');
-  artEl.src = FP.randomArt();
-  artEl.hidden = false;
 
   /* --- front matter for .md articles: leading --- block, key: value --- */
   function parseFrontMatter(text) {
@@ -304,9 +297,46 @@ window.MathJax = {
     update();
   }
 
+  /* footnotes -> right-margin sidenotes on wide screens; narrow screens
+     keep the plain endnote list latex.js already renders at the bottom */
+  const marginMQ = window.matchMedia('(min-width: 1440px)');
+  function layoutMarginNotes() {
+    document.querySelectorAll('.sidenote').forEach(n => n.remove());
+    document.body.classList.remove('has-marginalia');
+    if (!marginMQ.matches) return;
+    const refs = bodyEl.querySelectorAll('.fnref');
+    if (!refs.length) return;
+    const essayRect = document.getElementById('essay').getBoundingClientRect();
+    let lastBottom = -Infinity;
+    refs.forEach(ref => {
+      const link = ref.querySelector('a');
+      const id = link && link.getAttribute('href'); // "#fn-N"
+      const li = id && bodyEl.querySelector(id);
+      if (!li) return;
+      const note = document.createElement('aside');
+      note.className = 'sidenote';
+      note.innerHTML = '<b>' + link.textContent + '</b>&ensp;' + li.innerHTML;
+      const back = note.querySelector('.fnback');
+      if (back) back.remove();
+      document.getElementById('essay').appendChild(note);
+      let top = ref.getBoundingClientRect().top - essayRect.top;
+      if (top < lastBottom + 8) top = lastBottom + 8;
+      note.style.top = top + 'px';
+      lastBottom = top + note.getBoundingClientRect().height;
+    });
+    document.body.classList.add('has-marginalia');
+  }
+
+  let marginResizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(marginResizeTimer);
+    marginResizeTimer = setTimeout(layoutMarginNotes, 150);
+  });
+
   function finishRender() {
     buildTOC();
     setupScrollSpy();
+    layoutMarginNotes();
     document.getElementById('garden').hidden = false;
   }
 
