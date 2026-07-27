@@ -599,7 +599,27 @@
     build() {
       const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
       const F = 0.42;                       /* each generation this much shorter */
-      const L0 = Math.min(w, h) * 0.21;
+      /* Keep the tree out of the copy. On a wide screen the words sit in the
+         left column, so root it in the empty half. On a narrow one the words
+         run full width, so drop it into the gap between the last line and the
+         figure caption. Either way it stays whole instead of being cut up. */
+      const rectOf = sel => {
+        const el = document.querySelector(sel);
+        return el ? el.getBoundingClientRect() : null;
+      };
+      const wide = w > 900;
+      let ox, oy, L0;
+      if (wide) {
+        ox = w * 0.655; oy = cy;
+        L0 = Math.min(w, h) * 0.19;
+      } else {
+        const hero = rectOf('.hero'), dock = rectOf('.figdock');
+        const top = (hero ? hero.bottom : h * 0.55) + 18;
+        const bot = (dock ? dock.top : h * 0.9) - 14;
+        const half = Math.max(52, Math.min(w * 0.46, (bot - top) / 2));
+        ox = cx; oy = top + half;
+        L0 = half / 1.72;                 /* 1 + F + F^2 + ... ~ 1.72 */
+      }
       const edges = [];
       let maxPath = 1e-6;
 
@@ -613,16 +633,45 @@
           if (d1 > maxPath) maxPath = d1;
           walk(x2, y2, d, gen + 1, len * F, d1);
         }
-      })(cx, cy, -1, 0, L0, 0);
+      })(ox, oy, -1, 0, L0, 0);
 
       /* birth times: distance along the path from the identity, so the
          reveal and the pulse both travel outward from the centre */
       for (const e of edges) { e.b0 = e.d0 / maxPath; e.b1 = e.d1 / maxPath; }
-      this.geo = { edges, L0 };
+
+      /* text shield -- the real on-screen boxes of every piece of copy, so
+         the tree can fade out behind words instead of tangling with them.
+         Canvas coordinates are viewport coordinates here, so client rects
+         drop straight in. */
+      const shield = [];
+      document.querySelectorAll(
+        '.hero .eyebrow, .hero h1, .hero .lede, .hero .enter,' +
+        ' header nav a, footer .meta, footer .modeswitch, .figdock'
+      ).forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (r.width && r.height) shield.push(r);
+      });
+
+      this.geo = { edges, L0, shield, ox, oy };
+    },
+
+    /* 1 well clear of any text, easing down to 0.09 underneath it */
+    shade(shield, x, y) {
+      const PAD = 4, FEATHER = 46;
+      let m = 1;
+      for (const r of shield) {
+        const dx = Math.max(r.left - PAD - x, x - (r.right + PAD), 0);
+        const dy = Math.max(r.top - PAD - y, y - (r.bottom + PAD), 0);
+        const d = Math.hypot(dx, dy);
+        if (d >= FEATHER) continue;
+        const k = d / FEATHER;
+        m = Math.min(m, 0.22 + 0.78 * k * k * (3 - 2 * k));
+      }
+      return m;
     },
     draw(now, progress) {
       if (!this.geo) this.build();
-      const { edges, L0 } = this.geo;
+      const { edges, L0, shield, ox, oy } = this.geo;
 
       /* first pass: ink the tree outward from the identity */
       const reveal = reduce ? 1 : Math.min(1, progress * 1.25);
@@ -646,22 +695,30 @@
           if (d < HL) { const k = 1 - d / HL; a += k * 0.45; lw += k * 0.5; }
         }
 
+        /* keep the copy readable: dim anything sitting under text */
+        const sh = this.shade(shield, (e.x1 + x2) / 2, (e.y1 + y2) / 2);
+        if (sh < 0.10) continue;
+        a *= sh; lw *= 0.55 + 0.45 * sh;
+
         ctx.strokeStyle = 'rgba(' + (e.axis ? INK : OX) + ',' + Math.min(0.95, a) + ')';
         ctx.lineWidth = lw;
         ctx.beginPath(); ctx.moveTo(e.x1, e.y1); ctx.lineTo(x2, y2); ctx.stroke();
 
         /* the group element sitting at the end of a completed edge */
         if (t === 1 && e.gen < 4) {
-          ctx.fillStyle = 'rgba(' + DOT + ',' + Math.min(0.9, 0.30 + glow * 0.55) + ')';
-          ctx.beginPath();
-          ctx.arc(e.x2, e.y2, Math.max(0.7, 2.3 * Math.pow(0.66, e.gen)), 0, TAU);
-          ctx.fill();
+          const sd = this.shade(shield, e.x2, e.y2);
+          if (sd > 0.3) {
+            ctx.fillStyle = 'rgba(' + DOT + ',' + Math.min(0.9, (0.30 + glow * 0.55) * sd) + ')';
+            ctx.beginPath();
+            ctx.arc(e.x2, e.y2, Math.max(0.7, 2.3 * Math.pow(0.66, e.gen)), 0, TAU);
+            ctx.fill();
+          }
         }
       }
 
       /* the identity */
       ctx.fillStyle = 'rgba(' + INK + ',0.85)';
-      ctx.beginPath(); ctx.arc(cx, cy, 3, 0, TAU); ctx.fill();
+      ctx.beginPath(); ctx.arc(ox, oy, 3, 0, TAU); ctx.fill();
 
       /* generator labels */
       const la = Math.min(1, Math.max(0, (reveal - 0.2) * 4));
@@ -669,16 +726,16 @@
         ctx.font = 'italic 15px Georgia, "Times New Roman", serif';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillStyle = 'rgba(' + OX + ',' + (0.8 * la) + ')';
-        ctx.fillText('a', cx + L0 * 0.58, cy - 14);
+        ctx.fillText('a', ox + L0 * 0.58, oy - 14);
         ctx.fillStyle = 'rgba(' + INK + ',' + (0.8 * la) + ')';
-        ctx.fillText('b', cx + 14, cy - L0 * 0.58);
+        ctx.fillText('b', ox + 14, oy - L0 * 0.58);
       }
     }
   };
 
   const modes = {
     kolams: [sikku, weave],
-    plots: [epi, knot, cayley, cardioid]
+    plots: [cayley, epi, knot, cardioid]
   };
   let mode = 'plots';
   let figures = modes[mode];
