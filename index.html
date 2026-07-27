@@ -250,9 +250,8 @@
     </header>
 
     <main class="hero">
-      <p class="eyebrow">Notes in LaTeX &middot; Est. 2026</p>
       <h1>First&nbsp;Principles</h1>
-      <p class="lede">Essays and lecture notes on physics and mathematics, set like paper and <em>built to be read slowly.</em></p>
+      <p class="lede">Essays and lecture notes on physics and mathematics.</p>
       <a class="enter" href="articles.html">Read the articles <span class="arrow">&rarr;</span></a>
     </main>
 
@@ -627,7 +626,7 @@
          drop straight in. */
       const shield = [];
       document.querySelectorAll(
-        '.hero .eyebrow, .hero h1, .hero .lede, .hero .enter,' +
+        '.hero h1, .hero .lede, .hero .enter,' +
         ' header nav a, footer .meta, footer .modeswitch, .figdock'
       ).forEach(el => {
         const r = el.getBoundingClientRect();
@@ -677,11 +676,10 @@
           if (d < HL) { const k = 1 - d / HL; a += k * 0.45; lw += k * 0.5; }
         }
 
-        /* keep the copy readable: lighten anything sitting under text, and
-           damp the pulse there harder than the resting ink (sh^2), so the
-           sweep never flares up behind a word */
+        /* keep the copy readable: everything under a word is lightened by the
+           same factor, ink and pulse alike, so the sweep stays even */
         const sh = this.shade(shield, (e.x1 + x2) / 2, (e.y1 + y2) / 2);
-        a = (a - glow * 0.45) * sh + glow * 0.45 * sh * sh;
+        a *= sh;
         lw *= 0.6 + 0.4 * sh;
 
         ctx.strokeStyle = 'rgba(' + (e.axis ? INK : OX) + ',' + Math.min(0.95, a) + ')';
