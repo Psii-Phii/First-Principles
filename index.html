@@ -599,27 +599,9 @@
     build() {
       const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
       const F = 0.42;                       /* each generation this much shorter */
-      /* Keep the tree out of the copy. On a wide screen the words sit in the
-         left column, so root it in the empty half. On a narrow one the words
-         run full width, so drop it into the gap between the last line and the
-         figure caption. Either way it stays whole instead of being cut up. */
-      const rectOf = sel => {
-        const el = document.querySelector(sel);
-        return el ? el.getBoundingClientRect() : null;
-      };
-      const wide = w > 900;
-      let ox, oy, L0;
-      if (wide) {
-        ox = w * 0.655; oy = cy;
-        L0 = Math.min(w, h) * 0.19;
-      } else {
-        const hero = rectOf('.hero'), dock = rectOf('.figdock');
-        const top = (hero ? hero.bottom : h * 0.55) + 18;
-        const bot = (dock ? dock.top : h * 0.9) - 14;
-        const half = Math.max(52, Math.min(w * 0.46, (bot - top) / 2));
-        ox = cx; oy = top + half;
-        L0 = half / 1.72;                 /* 1 + F + F^2 + ... ~ 1.72 */
-      }
+      /* centred, like every other figure */
+      const ox = cx, oy = cy;
+      const L0 = Math.min(w, h) * 0.19;
       const edges = [];
       let maxPath = 1e-6;
 
@@ -655,9 +637,9 @@
       this.geo = { edges, L0, shield, ox, oy };
     },
 
-    /* 1 well clear of any text, easing down to 0.09 underneath it */
+    /* 1 well clear of any text, easing down to 0.2 underneath it */
     shade(shield, x, y) {
-      const PAD = 4, FEATHER = 46;
+      const PAD = 4, FEATHER = 54;
       let m = 1;
       for (const r of shield) {
         const dx = Math.max(r.left - PAD - x, x - (r.right + PAD), 0);
@@ -665,7 +647,7 @@
         const d = Math.hypot(dx, dy);
         if (d >= FEATHER) continue;
         const k = d / FEATHER;
-        m = Math.min(m, 0.22 + 0.78 * k * k * (3 - 2 * k));
+        m = Math.min(m, 0.20 + 0.80 * k * k * (3 - 2 * k));
       }
       return m;
     },
@@ -695,10 +677,12 @@
           if (d < HL) { const k = 1 - d / HL; a += k * 0.45; lw += k * 0.5; }
         }
 
-        /* keep the copy readable: dim anything sitting under text */
+        /* keep the copy readable: lighten anything sitting under text, and
+           damp the pulse there harder than the resting ink (sh^2), so the
+           sweep never flares up behind a word */
         const sh = this.shade(shield, (e.x1 + x2) / 2, (e.y1 + y2) / 2);
-        if (sh < 0.10) continue;
-        a *= sh; lw *= 0.55 + 0.45 * sh;
+        a = (a - glow * 0.45) * sh + glow * 0.45 * sh * sh;
+        lw *= 0.6 + 0.4 * sh;
 
         ctx.strokeStyle = 'rgba(' + (e.axis ? INK : OX) + ',' + Math.min(0.95, a) + ')';
         ctx.lineWidth = lw;
