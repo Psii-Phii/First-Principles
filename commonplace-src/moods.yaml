@@ -1,0 +1,103 @@
+# Mood → typography map. Every entry in quotes.yaml carries a `mood`; this file
+# decides how that entry is set, both in the PDF and on the website.
+#
+#   quote_font  : family used for the quote itself   (must exist in fonts/)
+#   body_font   : family used for the commentary
+#   quote_style : upright | italic   — how the quote is set
+#   quote_scale : size multiplier applied to the quote relative to body text
+#   accent      : hex colour for attribution, rules and filter chips (light theme)
+#   accent_dark : same, on the dark theme of the website
+#   label       : human-readable name shown on the site
+#   quote_variation : (optional) CSS font-variation-settings for the quote on the
+#                 website, for variable fonts with extra axes (e.g. Fraunces).
+#
+# Fonts available out of the box (all SIL Open Font License, bundled in fonts/):
+#   CormorantGaramond, EBGaramond, PlayfairDisplay, Lora, Spectral, Fraunces, Alegreya
+# To add a font, drop static TTFs into fonts/static/ (Regular, Italic, SemiBold,
+# SemiBoldItalic) and the variable TTFs into fonts/web/, then list it in `fonts:`.
+
+fonts:
+  CormorantGaramond: { css: "Cormorant Garamond", web_upright: CormorantGaramond-VF.ttf, web_italic: CormorantGaramond-Italic-VF.ttf, variable: true }
+  EBGaramond:        { css: "EB Garamond",        web_upright: EBGaramond-VF.ttf,        web_italic: EBGaramond-Italic-VF.ttf,        variable: true }
+  PlayfairDisplay:   { css: "Playfair Display",   web_upright: PlayfairDisplay-VF.ttf,   web_italic: PlayfairDisplay-Italic-VF.ttf,   variable: true }
+  Lora:              { css: "Lora",               web_upright: Lora-VF.ttf,              web_italic: Lora-Italic-VF.ttf,              variable: true }
+  Fraunces:          { css: "Fraunces",           web_upright: Fraunces-VF.ttf,          web_italic: Fraunces-Italic-VF.ttf,          variable: true }
+  Alegreya:          { css: "Alegreya",           web_upright: Alegreya-VF.ttf,          web_italic: Alegreya-Italic-VF.ttf,          variable: true }
+  Spectral:          { css: "Spectral",           web_upright: Spectral-Regular.ttf,     web_italic: Spectral-Italic.ttf,             variable: false,
+                       web_bold: Spectral-SemiBold.ttf, web_bold_italic: Spectral-SemiBoldItalic.ttf }
+
+default_mood: reflection
+
+moods:
+  philosophy:
+    label: Philosophy
+    quote_font: CormorantGaramond
+    body_font: EBGaramond
+    quote_style: italic
+    quote_scale: 1.55
+    accent: "#3b4a6b"
+    accent_dark: "#9fb0d6"
+
+  poetry:
+    label: Poetry
+    quote_font: PlayfairDisplay
+    body_font: Lora
+    quote_style: italic
+    quote_scale: 1.30
+    accent: "#7a2e3f"
+    accent_dark: "#d98a9b"
+
+  fiction:
+    label: Fiction
+    quote_font: EBGaramond
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.40
+    accent: "#2f5d46"
+    accent_dark: "#8fc7a8"
+
+  science:
+    label: Science
+    quote_font: Spectral
+    body_font: Spectral
+    quote_style: upright
+    quote_scale: 1.25
+    accent: "#1f5f6e"
+    accent_dark: "#7cc3d2"
+
+  memoir:
+    label: Memoir
+    quote_font: Lora
+    body_font: Lora
+    quote_style: italic
+    quote_scale: 1.30
+    accent: "#8a5a1e"
+    accent_dark: "#e0b070"
+
+  humour:
+    label: Humour
+    quote_font: Fraunces
+    body_font: Fraunces
+    quote_style: upright
+    quote_scale: 1.30
+    quote_variation: "'SOFT' 100, 'WONK' 1, 'opsz' 72"
+    accent: "#b8472a"
+    accent_dark: "#f29a7c"
+
+  history:
+    label: History
+    quote_font: Alegreya
+    body_font: Alegreya
+    quote_style: upright
+    quote_scale: 1.35
+    accent: "#6b4f2a"
+    accent_dark: "#cfae7a"
+
+  reflection:
+    label: Reflection
+    quote_font: CormorantGaramond
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.50
+    accent: "#4a4a4a"
+    accent_dark: "#bdbdbd"

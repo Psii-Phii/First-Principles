@@ -1,0 +1,16 @@
+title: Poems
+author: Emily Dickinson
+year: "1890"
+mood: poetry
+
+entries:
+  - quote: |
+      Hope is the thing with feathers
+      That perches in the soul,
+      And sings the tune without the words,
+      And never stops at all,
+    where: "254"
+    date: 2026-08-28
+    commentary: |
+      Note the comma at the end — the stanza doesn't close, it hands off. Line
+      breaks in the `quote:` block are preserved, which is what you want for verse.

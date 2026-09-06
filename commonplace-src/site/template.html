@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{{page_title}} — First Principles</title>
+<meta name="description" content="{{description}}" />
+<meta name="theme-color" content="#ece9e1" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.5 L14.5 8 L8 14.5 L1.5 8 Z' fill='none' stroke='%23732b2b' stroke-width='1.4'/%3E%3Ccircle cx='8' cy='8' r='1.4' fill='%23732b2b'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{root}}site.css?v=4" />
+<link rel="stylesheet" href="{{prefix}}commonplace.css?v={{stamp}}" />
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <a class="mark" href="{{root}}index.html">First Principles</a>
+      <nav>
+        <a href="{{root}}index.html">Home</a>
+        <a href="{{root}}articles.html">Articles</a>
+        <a href="{{root}}commonplace/" aria-current="page">Commonplace</a>
+        <a href="{{root}}about.html">About</a>
+      </nav>
+    </header>
+
+    <main class="cp">
+{{body}}
+    </main>
+  </div>
+
+<script>
+(function () {
+  var chips = document.querySelectorAll('.topics button[data-filter]');
+  if (!chips.length) return;
+  var entries = document.querySelectorAll('.entry');
+  var empty = document.querySelector('.empty');
+  function apply(mood, push) {
+    var shown = 0;
+    entries.forEach(function (el) {
+      var on = mood === 'all' || el.dataset.mood === mood;
+      el.hidden = !on; if (on) shown++;
+    });
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', c.dataset.filter === mood ? 'true' : 'false'); });
+    if (empty) empty.hidden = shown > 0;
+    if (push) history.replaceState(null, '', mood === 'all' ? location.pathname : '?mood=' + mood);
+  }
+  chips.forEach(function (c) { c.addEventListener('click', function () { apply(c.dataset.filter, true); }); });
+  var m = new URLSearchParams(location.search).get('mood');
+  if (m) apply(m, false);
+})();
+</script>
+</body>
+</html>
