@@ -42,7 +42,14 @@
 .mood-history{--accent:#6b4f2a;--accent-dark:#cfae7a;--quote-font:'Alegreya',Georgia,serif;--body-font:'Alegreya',Georgia,serif;--quote-style:normal;--quote-scale:1.35;--quote-variation:normal}
 .mood-reflection{--accent:#4a4a4a;--accent-dark:#bdbdbd;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.5;--quote-variation:normal}
 
-/* ---------------- headings (mirror site.css) ---------------- */
+/* ---------------- headings: everything on these pages is centred ---------------- */
+.cp { text-align: center; }
+.cp .eyebrow, .cp .pagetitle, .cp .meta { text-align: center; }
+.cp .ornament.fleuron { display: block; margin-left: auto; margin-right: auto; }
+.cp .topics { justify-content: center; }
+.book-notes { margin-left: auto; margin-right: auto; text-align: center; }
+.booklist { margin-left: auto; margin-right: auto; text-align: center; }
+.cp .empty { text-align: center; }
 .cp .pagetitle.booktitle {
   font-family: var(--quote-font);
   font-style: italic;
@@ -195,20 +202,11 @@
    hairlines and ornaments are run through an SVG displacement filter so
    nothing is perfectly straight; the quote text gets a hint of ink bleed. */
 .cp { position: relative; }
-.cp::before {
-  content: "";
-  position: absolute; inset: -1rem;
-  pointer-events: none;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  z-index: 0;
-}
-.cp > * { position: relative; z-index: 1; }
 
 .cp .ornament.fleuron {
   color: var(--mid);
   opacity: 0.85;
-  margin: 0.4rem 0 1.6rem -0.2rem;
+  margin: 0.4rem auto 1.6rem;
   filter: url(#rough);
   transform: rotate(-1.2deg);
 }
