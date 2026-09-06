@@ -422,6 +422,9 @@ def render_entry(e, moodcfg, *, prefix="", show_book=False) -> str:
 </article>"""
 
 
+CSS_STAMP = "0"
+
+
 def page(cfg, *, title, body, depth=0, description="") -> str:
     """depth = how many folders below the impressions root (0 = impressions/, 1 = impressions/books/)."""
     prefix = "../" * depth                 # to the impressions folder
@@ -429,7 +432,7 @@ def page(cfg, *, title, body, depth=0, description="") -> str:
     return (read_asset("template.html")
             .replace("{{prefix}}", prefix)
             .replace("{{root}}", root)
-            .replace("{{stamp}}", dt.date.today().strftime("%Y%m%d"))
+            .replace("{{stamp}}", CSS_STAMP)
             .replace("{{page_title}}", html.escape(title))
             .replace("{{description}}", html.escape(description or cfg.get("subtitle", "")))
             .replace("{{body}}", body))
@@ -449,6 +452,9 @@ def write_site(cfg, books, moodcfg):
            .replace("/*{{font-faces}}*/", font_faces(moodcfg))
            .replace("/*{{mood-rules}}*/", mood_css(moodcfg)))
     (sdir / "impressions.css").write_text(css, encoding="utf-8")
+    global CSS_STAMP
+    import hashlib
+    CSS_STAMP = hashlib.md5(css.encode("utf-8")).hexdigest()[:8]  # cache-buster changes with the CSS
 
     for b in books:
         seen = {}
