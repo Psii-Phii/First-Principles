@@ -132,6 +132,103 @@ def save(payload: dict) -> dict:
     return {"ok": True, "log": log, "slug": path.stem}
 
 
+def _clean_entry(e: dict) -> dict:
+    """Strip the private keys load_books adds, keep only what belongs in the file."""
+    keep = ("quote", "where", "date", "mood", "verse", "tags", "commentary")
+    return {k: e[k] for k in keep if k in e and e[k] not in (None, "")}
+
+
+def list_entries(slug: str) -> dict:
+    path = B.BOOKS_DIR / f"{slug}.yaml"
+    if not path.exists():
+        raise B.BuildError("No such book.")
+    book = B.load_yaml(path) or {}
+    out = []
+    for i, e in enumerate(book.get("entries") or []):
+        out.append({"index": i, "quote": str(e.get("quote", "")).strip("\n"), "where": e.get("where") or "",
+                    "mood": e.get("mood") or "", "verse": e.get("verse"), "tags": ", ".join(e.get("tags") or []),
+                    "commentary": str(e.get("commentary", "") or "").strip("\n"),
+                    "date": B.iso_date(e.get("date")) if e.get("date") else ""})
+    return {"ok": True, "book": {"title": book.get("title"), "mood": book.get("mood")}, "entries": out}
+
+
+def _rebuild_and_publish(path: Path, payload: dict, log: list, message: str):
+    do_pdf = bool(payload.get("pdf", True)) and state()["tex"]
+    try:
+        log += B.build(pdf=do_pdf, only_slug=path.stem)
+    except B.BuildError as ex:
+        tail = "\n".join(l for l in str(ex).splitlines() if l.startswith("!") or "error" in l.lower())[-600:]
+        log.append("PDF build failed — the site was still rebuilt. " + (tail or str(ex)[-400:]))
+        log += B.build(pdf=False)
+    if payload.get("publish"):
+        git("add", "-A", str((ROOT / B.load_yaml(ROOT / "config.yaml").get("site_dir", "../impressions")).resolve().relative_to(REPO)),
+            str(ROOT.relative_to(REPO)))
+        if git("status", "--porcelain").strip():
+            git("commit", "-q", "-m", message)
+            log.append("committed")
+            git("push")
+            log.append("pushed")
+        else:
+            log.append("nothing to commit")
+
+
+def update_entry(payload: dict) -> dict:
+    path = B.BOOKS_DIR / f"{payload.get('book', '')}.yaml"
+    if not path.exists():
+        raise B.BuildError("No such book.")
+    book = B.load_yaml(path) or {}
+    entries = book.get("entries") or []
+    try:
+        i = int(payload.get("index"))
+        old = entries[i]
+    except (TypeError, ValueError, IndexError):
+        raise B.BuildError("That entry no longer exists — reload the page.")
+    quote = (payload.get("quote") or "").strip()
+    if not quote:
+        raise B.BuildError("The quote is empty.")
+    mood = payload.get("mood") or ""
+    if mood == book.get("mood"):
+        mood = ""
+    verse = payload.get("verse")
+    if verse is not None:
+        default_verse = (mood or book.get("mood")) == "poetry"
+        verse = None if bool(verse) == default_verse else bool(verse)
+    new = {"quote": quote, "where": (payload.get("where") or "").strip(), "date": old.get("date"),
+           "mood": mood, "verse": verse,
+           "tags": [t.strip() for t in (payload.get("tags") or "").split(",") if t.strip()],
+           "commentary": payload.get("commentary") or ""}
+    entries[i] = _clean_entry(new)
+    book["entries"] = [_clean_entry(e) for e in entries]
+    before = path.read_text(encoding="utf-8")
+    B.write_book(path, book)
+    try:
+        B.load_books(B.load_yaml(ROOT / "moods.yaml")["moods"])
+    except B.BuildError:
+        path.write_text(before, encoding="utf-8")
+        raise
+    log = [f"updated entry {i + 1} in books/{path.name}"]
+    _rebuild_and_publish(path, payload, log, f"Impressions: edit an entry in {book.get('title') or path.stem}")
+    return {"ok": True, "log": log, "slug": path.stem}
+
+
+def delete_entry(payload: dict) -> dict:
+    path = B.BOOKS_DIR / f"{payload.get('book', '')}.yaml"
+    if not path.exists():
+        raise B.BuildError("No such book.")
+    book = B.load_yaml(path) or {}
+    entries = book.get("entries") or []
+    try:
+        i = int(payload.get("index"))
+        entries.pop(i)
+    except (TypeError, ValueError, IndexError):
+        raise B.BuildError("That entry no longer exists — reload the page.")
+    book["entries"] = [_clean_entry(e) for e in entries]
+    B.write_book(path, book)
+    log = [f"removed entry {i + 1} from books/{path.name}"]
+    _rebuild_and_publish(path, payload, log, f"Impressions: remove an entry from {book.get('title') or path.stem}")
+    return {"ok": True, "log": log, "slug": path.stem}
+
+
 def delete_book(payload: dict) -> dict:
     slug = payload.get("book") or ""
     path = B.BOOKS_DIR / f"{slug}.yaml"
@@ -190,6 +287,13 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, (ROOT / "site" / "app.html").read_bytes())
         if path == "/api/state":
             return self._json(state())
+        if path == "/api/entries":
+            from urllib.parse import parse_qs
+            slug = (parse_qs(urlparse(self.path).query).get("book") or [""])[0]
+            try:
+                return self._json(list_entries(slug))
+            except B.BuildError as ex:
+                return self._json({"ok": False, "error": str(ex)}, 400)
         # assets straight from the generated site, so the preview uses the real fonts/CSS
         site = (ROOT / B.load_yaml(ROOT / "config.yaml").get("site_dir", "../impressions")).resolve()
         if path.startswith("/site/"):
@@ -214,6 +318,15 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"ok": False, "error": str(ex)}, 400)
                 except Exception:
                     return self._json({"ok": False, "error": traceback.format_exc()}, 500)
+        for route, fn in (("/api/update", update_entry), ("/api/delete_entry", delete_entry)):
+            if path == route:
+                with LOCK:
+                    try:
+                        return self._json(fn(payload))
+                    except B.BuildError as ex:
+                        return self._json({"ok": False, "error": str(ex)}, 400)
+                    except Exception:
+                        return self._json({"ok": False, "error": traceback.format_exc()}, 500)
         if path == "/api/delete_book":
             with LOCK:
                 try:

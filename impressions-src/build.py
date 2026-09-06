@@ -586,6 +586,36 @@ def append_entry(path: Path, quote, where="", mood="", commentary="", tags=(), v
     path.write_text(text + "\n" + out, encoding="utf-8")
 
 
+def write_book(path: Path, book: dict):
+    """Serialise a whole book back to YAML in the project's house format.
+    Used when an entry is edited or removed; comments in the file are not kept."""
+    out = f"title: {_q(str(book.get('title', '')))}\nauthor: {_q(str(book.get('author', '')))}\n"
+    for k in ("translator", "year", "read"):
+        v = book.get(k)
+        if v not in (None, ""):
+            out += f"{k}: {_q(str(v))}\n"
+    out += f"mood: {book.get('mood') or 'reflection'}\n"
+    if str(book.get("notes", "") or "").strip():
+        out += _block("notes", str(book["notes"]).strip("\n"), "")
+    out += "\nentries:\n"
+    for e in book.get("entries") or []:
+        out += "\n  - quote: |\n" + "".join(f"      {l}\n" for l in str(e.get("quote", "")).strip("\n").splitlines())
+        if e.get("where"):
+            out += f"    where: {_q(str(e['where']))}\n"
+        if e.get("date"):
+            out += f"    date: {iso_date(e['date'])}\n"
+        if e.get("mood"):
+            out += f"    mood: {e['mood']}\n"
+        if e.get("verse") is not None:
+            out += f"    verse: {'true' if e['verse'] else 'false'}\n"
+        tags = [str(t).strip() for t in (e.get("tags") or []) if str(t).strip()]
+        if tags:
+            out += "    tags: [" + ", ".join(tags) + "]\n"
+        if str(e.get("commentary", "") or "").strip():
+            out += _block("commentary", str(e["commentary"]).strip("\n"), "    ")
+    path.write_text(out, encoding="utf-8")
+
+
 def new_entry(moodcfg):
     """Terminal prompts for a new entry; create the book file first if needed."""
     def ask(label, multi=False):

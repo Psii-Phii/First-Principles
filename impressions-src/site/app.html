@@ -88,6 +88,21 @@
   .fmt button i { font-style: italic; } .fmt button b { font-weight: 600; }
   .fmt .sp { width: 0.6rem; }
 
+  /* existing entries */
+  details.entries-m { margin: 0.2rem 0 1.4rem; }
+  details.entries-m summary { cursor: pointer; list-style: none; }
+  details.entries-m summary::-webkit-details-marker { display: none; }
+  details.entries-m summary:hover { color: var(--accent); }
+  .elist { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+  .elist li { display: flex; align-items: baseline; gap: 0.7rem; padding: 0.4rem 0; border-top: 1px solid var(--rule); font-size: 0.95rem; }
+  .elist li.is-editing { color: var(--accent); }
+  .elist .q { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; }
+  .elist button { font: inherit; font-size: 0.85rem; color: var(--mid); background: none; border: 0; border-bottom: 1px solid transparent; cursor: pointer; padding: 0; }
+  .elist button:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .editing-banner { display: none; font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; letter-spacing: 0.1em; font-size: 0.85rem; color: var(--accent); margin: 0 0 0.8rem; }
+  .editing-banner button { font: inherit; color: var(--mid); background: none; border: 0; border-bottom: 1px solid var(--rule); cursor: pointer; padding: 0; margin-left: 0.6rem; }
+  body.editing .editing-banner { display: block; }
+
   /* manage books */
   details.manage { margin-top: 2.6rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
   details.manage summary { cursor: pointer; list-style: none; }
@@ -142,6 +157,13 @@
         <span class="lbl">Book’s default mood</span>
         <div class="chips" id="nb-moods"></div>
       </div>
+
+      <details class="entries-m" id="entries-m">
+        <summary class="lbl">Existing entries <span id="ecount"></span></summary>
+        <ul class="elist" id="elist"></ul>
+      </details>
+
+      <p class="editing-banner">Editing entry <span id="edit-which"></span><button type="button" id="edit-cancel">cancel, add a new one instead</button></p>
 
       <label class="field"><span>Quote</span>
         <div class="fmt" data-for="quote"></div>
@@ -204,7 +226,7 @@
 <script>
 (function () {
   const $ = id => document.getElementById(id);
-  let S = null, mood = null, bookMood = null, isNew = false;
+  let S = null, mood = null, bookMood = null, isNew = false, editing = null;  /* editing = {index, ...} */
   const NEW = '__new__';
 
   function esc(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -276,7 +298,59 @@
     chips($('nb-moods'), k, pickNewMood);
     setMood(k);
   }
+  async function loadEntries() {
+    const ul = $('elist'); ul.textContent = ''; $('ecount').textContent = '';
+    if (isNew) { $('entries-m').hidden = true; return; }
+    $('entries-m').hidden = false;
+    const j = await (await fetch('/api/entries?book=' + encodeURIComponent($('book').value))).json();
+    if (!j.ok) return;
+    $('ecount').textContent = '· ' + j.entries.length;
+    j.entries.forEach(e => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="q"></span><button type="button" class="ed">edit</button><button type="button" class="dl">delete</button>';
+      li.querySelector('.q').textContent = e.quote.split('\n')[0];
+      li.querySelector('.ed').addEventListener('click', () => beginEdit(e, li));
+      li.querySelector('.dl').addEventListener('click', () => deleteEntry(e, li));
+      ul.appendChild(li);
+    });
+  }
+  function beginEdit(e, li) {
+    editing = e;
+    document.querySelectorAll('.elist li').forEach(x => x.classList.remove('is-editing'));
+    li.classList.add('is-editing');
+    document.body.classList.add('editing');
+    $('edit-which').textContent = (e.index + 1);
+    $('quote').value = e.quote; $('where').value = e.where; $('tags').value = e.tags; $('commentary').value = e.commentary;
+    if (e.verse !== null && e.verse !== undefined) { $('verse').checked = !!e.verse; $('verse').dataset.touched = '1'; }
+    else delete $('verse').dataset.touched;
+    setMood(e.mood || bookMood);
+    $('save').textContent = 'Update';
+    $('quote').focus();
+  }
+  function cancelEdit(clear) {
+    editing = null;
+    document.body.classList.remove('editing');
+    document.querySelectorAll('.elist li').forEach(x => x.classList.remove('is-editing'));
+    $('save').textContent = 'Save';
+    if (clear) { ['quote','where','tags','commentary'].forEach(id => $(id).value = ''); delete $('verse').dataset.touched; setMood(bookMood); }
+  }
+  async function deleteEntry(e, li) {
+    if (!confirm('Delete this entry?\n\n' + e.quote.split('\n')[0])) return;
+    const log = $('log'); log.hidden = false; log.className = ''; log.textContent = 'deleting…';
+    try {
+      const r = await fetch('/api/delete_entry', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book: $('book').value, index: e.index, pdf: $('opt-pdf').checked, publish: $('opt-publish').checked }) });
+      const j = await r.json();
+      if (!j.ok) { log.className = 'err'; log.textContent = j.error; return; }
+      log.textContent = '✓ ' + j.log.join('\n✓ ');
+      if (editing && editing.index === e.index) cancelEdit(true);
+      await load($('book').value);
+    } catch (err) { log.className = 'err'; log.textContent = String(err); }
+  }
+  $('edit-cancel').addEventListener('click', () => cancelEdit(true));
+
   function onBook() {
+    cancelEdit(false);
     isNew = $('book').value === NEW;
     $('newbook').hidden = !isNew;
     if (isNew) {
@@ -287,6 +361,7 @@
       bookMood = currentBook().mood;
     }
     setMood(bookMood);
+    loadEntries();
   }
 
   async function load(selectSlug) {
@@ -312,8 +387,10 @@
     if (isNew) payload.new_book = { title: $('nb-title').value, author: $('nb-author').value,
       translator: $('nb-translator').value, year: $('nb-year').value, mood: bookMood };
     else payload.book = $('book').value;
+    let endpoint = '/api/save';
+    if (editing) { payload.index = editing.index; endpoint = '/api/update'; }
     try {
-      const r = await fetch('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const j = await r.json();
       if (!j.ok) { log.className = 'err'; log.textContent = j.error; }
       else {
@@ -321,6 +398,7 @@
         log.innerHTML += '\n<a href="/site/books/' + j.slug + '.html" target="_blank">open the book page ↗</a>';
         ['quote','where','tags','commentary'].forEach(id => $(id).value = '');
         delete $('verse').dataset.touched;
+        cancelEdit(false);
         if (isNew) { ['nb-title','nb-author','nb-translator','nb-year'].forEach(id => $(id).value = ''); }
         await load(j.slug);
         $('quote').focus();
