@@ -16,8 +16,8 @@
 @font-face{font-family:'Fraunces';src:url(fonts/Fraunces-Italic-VF.ttf) format('truetype');font-weight:300 900;font-style:italic;font-display:swap}
 @font-face{font-family:'Alegreya';src:url(fonts/Alegreya-VF.ttf) format('truetype');font-weight:300 900;font-style:normal;font-display:swap}
 @font-face{font-family:'Alegreya';src:url(fonts/Alegreya-Italic-VF.ttf) format('truetype');font-weight:300 900;font-style:italic;font-display:swap}
-@font-face{font-family:'Bodoni Moda';src:url(fonts/BodoniModa-VF.ttf) format('truetype');font-weight:300 900;font-style:normal;font-display:swap}
-@font-face{font-family:'Bodoni Moda';src:url(fonts/BodoniModa-Italic-VF.ttf) format('truetype');font-weight:300 900;font-style:italic;font-display:swap}
+@font-face{font-family:'Crimson Pro';src:url(fonts/CrimsonPro-VF.ttf) format('truetype');font-weight:300 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Crimson Pro';src:url(fonts/CrimsonPro-Italic-VF.ttf) format('truetype');font-weight:300 900;font-style:italic;font-display:swap}
 @font-face{font-family:'Libre Baskerville';src:url(fonts/LibreBaskerville-VF.ttf) format('truetype');font-weight:300 900;font-style:normal;font-display:swap}
 @font-face{font-family:'Libre Baskerville';src:url(fonts/LibreBaskerville-Italic-VF.ttf) format('truetype');font-weight:300 900;font-style:italic;font-display:swap}
 @font-face{font-family:'Spectral';src:url(fonts/Spectral-Regular.ttf) format('truetype');font-weight:400;font-style:normal;font-display:swap}
@@ -37,28 +37,29 @@
   --quote-style: normal;
   --quote-scale: 1.5;
   --quote-variation: normal;
+  --quote-weight: 400;
   --tone: var(--accent);
 }
 
-.mood-philosophy{--accent:#3b4a6b;--accent-dark:#9fb0d6;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:italic;--quote-scale:1.55;--quote-variation:normal}
-.mood-reflection{--accent:#4a4a4a;--accent-dark:#bdbdbd;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.5;--quote-variation:normal}
-.mood-essay{--accent:#4b4f3a;--accent-dark:#b9bd9d;--quote-font:'Libre Baskerville',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.18;--quote-variation:normal}
-.mood-science{--accent:#1f5f6e;--accent-dark:#7cc3d2;--quote-font:'Spectral',Georgia,serif;--body-font:'Spectral',Georgia,serif;--quote-style:normal;--quote-scale:1.25;--quote-variation:normal}
-.mood-scripture{--accent:#5b3a1e;--accent-dark:#d0a06c;--quote-font:'Cardo',Georgia,serif;--body-font:'Cardo',Georgia,serif;--quote-style:normal;--quote-scale:1.35;--quote-variation:normal}
-.mood-poetry{--accent:#7a2e3f;--accent-dark:#d98a9b;--quote-font:'Playfair Display',Georgia,serif;--body-font:'Lora',Georgia,serif;--quote-style:italic;--quote-scale:1.3;--quote-variation:normal}
-.mood-tragic{--accent:#2f2a3d;--accent-dark:#aaa2c4;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.55;--quote-variation:normal}
-.mood-tender{--accent:#8a4a5a;--accent-dark:#e0a0b0;--quote-font:'Lora',Georgia,serif;--body-font:'Lora',Georgia,serif;--quote-style:italic;--quote-scale:1.3;--quote-variation:normal}
-.mood-wonder{--accent:#1e4d5c;--accent-dark:#8ccad9;--quote-font:'Bodoni Moda',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:italic;--quote-scale:1.45;--quote-variation:'opsz' 48}
-.mood-unease{--accent:#4a3232;--accent-dark:#c49a9a;--quote-font:'Spectral',Georgia,serif;--body-font:'Spectral',Georgia,serif;--quote-style:italic;--quote-scale:1.28;--quote-variation:normal}
-.mood-literary{--accent:#2f5d46;--accent-dark:#8fc7a8;--quote-font:'EB Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.4;--quote-variation:normal}
-.mood-speculative{--accent:#2b4a5e;--accent-dark:#93bfd6;--quote-font:'Bodoni Moda',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.3;--quote-variation:'opsz' 36}
-.mood-myth{--accent:#7a4a1e;--accent-dark:#d8a76a;--quote-font:'Alegreya',Georgia,serif;--body-font:'Alegreya',Georgia,serif;--quote-style:italic;--quote-scale:1.4;--quote-variation:normal}
-.mood-memoir{--accent:#8a5a1e;--accent-dark:#e0b070;--quote-font:'Lora',Georgia,serif;--body-font:'Lora',Georgia,serif;--quote-style:italic;--quote-scale:1.3;--quote-variation:normal}
-.mood-history{--accent:#6b4f2a;--accent-dark:#cfae7a;--quote-font:'Alegreya',Georgia,serif;--body-font:'Alegreya',Georgia,serif;--quote-style:normal;--quote-scale:1.35;--quote-variation:normal}
-.mood-humour{--accent:#b8472a;--accent-dark:#f29a7c;--quote-font:'Fraunces',Georgia,serif;--body-font:'Fraunces',Georgia,serif;--quote-style:normal;--quote-scale:1.3;--quote-variation:'SOFT' 100, 'WONK' 1, 'opsz' 72}
-.mood-satire{--accent:#8a2a2a;--accent-dark:#e08a8a;--quote-font:'Fraunces',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:italic;--quote-scale:1.28;--quote-variation:'SOFT' 0, 'WONK' 1, 'opsz' 72}
-.mood-political{--accent:#732b2b;--accent-dark:#d98a8a;--quote-font:'Libre Baskerville',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.18;--quote-variation:normal}
-.mood-craft{--accent:#5a5a3a;--accent-dark:#c4c49a;--quote-font:'Spectral',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.22;--quote-variation:normal}
+.mood-philosophy{--accent:#3b4a6b;--accent-dark:#9fb0d6;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:italic;--quote-scale:1.55;--quote-variation:normal;--quote-weight:500}
+.mood-reflection{--accent:#4a4a4a;--accent-dark:#bdbdbd;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.5;--quote-variation:normal;--quote-weight:500}
+.mood-essay{--accent:#4b4f3a;--accent-dark:#b9bd9d;--quote-font:'Libre Baskerville',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.18;--quote-variation:normal;--quote-weight:400}
+.mood-science{--accent:#1f5f6e;--accent-dark:#7cc3d2;--quote-font:'Spectral',Georgia,serif;--body-font:'Spectral',Georgia,serif;--quote-style:normal;--quote-scale:1.25;--quote-variation:normal;--quote-weight:400}
+.mood-scripture{--accent:#5b3a1e;--accent-dark:#d0a06c;--quote-font:'Cardo',Georgia,serif;--body-font:'Cardo',Georgia,serif;--quote-style:normal;--quote-scale:1.35;--quote-variation:normal;--quote-weight:400}
+.mood-poetry{--accent:#7a2e3f;--accent-dark:#d98a9b;--quote-font:'Playfair Display',Georgia,serif;--body-font:'Lora',Georgia,serif;--quote-style:italic;--quote-scale:1.3;--quote-variation:normal;--quote-weight:400}
+.mood-tragic{--accent:#2f2a3d;--accent-dark:#aaa2c4;--quote-font:'Cormorant Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.55;--quote-variation:normal;--quote-weight:500}
+.mood-tender{--accent:#8a4a5a;--accent-dark:#e0a0b0;--quote-font:'Lora',Georgia,serif;--body-font:'Lora',Georgia,serif;--quote-style:italic;--quote-scale:1.3;--quote-variation:normal;--quote-weight:400}
+.mood-wonder{--accent:#1e4d5c;--accent-dark:#8ccad9;--quote-font:'Playfair Display',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.32;--quote-variation:normal;--quote-weight:400}
+.mood-unease{--accent:#4a3232;--accent-dark:#c49a9a;--quote-font:'Spectral',Georgia,serif;--body-font:'Spectral',Georgia,serif;--quote-style:italic;--quote-scale:1.28;--quote-variation:normal;--quote-weight:400}
+.mood-literary{--accent:#2f5d46;--accent-dark:#8fc7a8;--quote-font:'EB Garamond',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.4;--quote-variation:normal;--quote-weight:400}
+.mood-speculative{--accent:#2b4a5e;--accent-dark:#93bfd6;--quote-font:'Crimson Pro',Georgia,serif;--body-font:'Crimson Pro',Georgia,serif;--quote-style:normal;--quote-scale:1.42;--quote-variation:normal;--quote-weight:400}
+.mood-myth{--accent:#7a4a1e;--accent-dark:#d8a76a;--quote-font:'Alegreya',Georgia,serif;--body-font:'Alegreya',Georgia,serif;--quote-style:italic;--quote-scale:1.4;--quote-variation:normal;--quote-weight:400}
+.mood-memoir{--accent:#8a5a1e;--accent-dark:#e0b070;--quote-font:'Lora',Georgia,serif;--body-font:'Lora',Georgia,serif;--quote-style:italic;--quote-scale:1.3;--quote-variation:normal;--quote-weight:400}
+.mood-history{--accent:#6b4f2a;--accent-dark:#cfae7a;--quote-font:'Alegreya',Georgia,serif;--body-font:'Alegreya',Georgia,serif;--quote-style:normal;--quote-scale:1.35;--quote-variation:normal;--quote-weight:400}
+.mood-humour{--accent:#b8472a;--accent-dark:#f29a7c;--quote-font:'Fraunces',Georgia,serif;--body-font:'Fraunces',Georgia,serif;--quote-style:normal;--quote-scale:1.3;--quote-variation:'SOFT' 100, 'WONK' 1, 'opsz' 72;--quote-weight:400}
+.mood-satire{--accent:#8a2a2a;--accent-dark:#e08a8a;--quote-font:'Fraunces',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:italic;--quote-scale:1.28;--quote-variation:'SOFT' 0, 'WONK' 1, 'opsz' 72;--quote-weight:400}
+.mood-political{--accent:#732b2b;--accent-dark:#d98a8a;--quote-font:'Libre Baskerville',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.18;--quote-variation:normal;--quote-weight:400}
+.mood-craft{--accent:#5a5a3a;--accent-dark:#c4c49a;--quote-font:'Spectral',Georgia,serif;--body-font:'EB Garamond',Georgia,serif;--quote-style:normal;--quote-scale:1.22;--quote-variation:normal;--quote-weight:400}
 
 /* ---------------- headings: everything on these pages is centred ---------------- */
 .cp { text-align: center; }
@@ -121,7 +122,7 @@
   text-align: center;
   font-family: var(--quote-font);
   font-style: var(--quote-style);
-  font-weight: 400;
+  font-weight: var(--quote-weight);
   font-size: calc(1.12rem * var(--quote-scale));
   line-height: 1.32;
   text-wrap: balance;

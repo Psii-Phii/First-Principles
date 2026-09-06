@@ -15,6 +15,7 @@
   --quote-style: normal;
   --quote-scale: 1.5;
   --quote-variation: normal;
+  --quote-weight: 400;
   --tone: var(--accent);
 }
 
@@ -81,7 +82,7 @@
   text-align: center;
   font-family: var(--quote-font);
   font-style: var(--quote-style);
-  font-weight: 400;
+  font-weight: var(--quote-weight);
   font-size: calc(1.12rem * var(--quote-scale));
   line-height: 1.32;
   text-wrap: balance;

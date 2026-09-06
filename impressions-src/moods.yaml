@@ -7,14 +7,16 @@
 #   body_font   : family for the commentary
 #   quote_style : upright | italic
 #   quote_scale : size multiplier for the quote relative to body text
+#   quote_weight: (optional) web font weight for the quote, default 400 —
+#                 light faces like Cormorant read better at 500
 #   accent      : hex colour for attributions, rules and the fleuron
 #   accent_dark : same, for a dark theme (unused on the light-only site, kept for later)
 #   quote_variation : (optional) CSS font-variation-settings for variable fonts with
-#                 extra axes (Fraunces' SOFT/WONK, Bodoni Moda's opsz)
+#                 extra axes (Fraunces' SOFT/WONK)
 #
 # Fonts bundled (all SIL Open Font License, in fonts/):
 #   CormorantGaramond, EBGaramond, PlayfairDisplay, Lora, Spectral, Fraunces,
-#   Alegreya, BodoniModa, Cardo, LibreBaskerville
+#   Alegreya, CrimsonPro, Cardo, LibreBaskerville
 # To add one, drop static TTFs into fonts/static/ (Regular, Italic, SemiBold,
 # SemiBoldItalic) and the web TTFs into fonts/web/, then list it under fonts:.
 
@@ -25,7 +27,7 @@ fonts:
   Lora:              { css: "Lora",               web_upright: Lora-VF.ttf,              web_italic: Lora-Italic-VF.ttf,              variable: true }
   Fraunces:          { css: "Fraunces",           web_upright: Fraunces-VF.ttf,          web_italic: Fraunces-Italic-VF.ttf,          variable: true }
   Alegreya:          { css: "Alegreya",           web_upright: Alegreya-VF.ttf,          web_italic: Alegreya-Italic-VF.ttf,          variable: true }
-  BodoniModa:        { css: "Bodoni Moda",        web_upright: BodoniModa-VF.ttf,        web_italic: BodoniModa-Italic-VF.ttf,        variable: true }
+  CrimsonPro:        { css: "Crimson Pro",        web_upright: CrimsonPro-VF.ttf,        web_italic: CrimsonPro-Italic-VF.ttf,        variable: true }
   LibreBaskerville:  { css: "Libre Baskerville",  web_upright: LibreBaskerville-VF.ttf,  web_italic: LibreBaskerville-Italic-VF.ttf,  variable: true }
   Spectral:          { css: "Spectral",           web_upright: Spectral-Regular.ttf,     web_italic: Spectral-Italic.ttf,             variable: false,
                        web_bold: Spectral-SemiBold.ttf, web_bold_italic: Spectral-SemiBoldItalic.ttf }
@@ -46,6 +48,7 @@ moods:
     body_font: EBGaramond
     quote_style: italic
     quote_scale: 1.55
+    quote_weight: 500
     accent: "#3b4a6b"
     accent_dark: "#9fb0d6"
 
@@ -56,6 +59,7 @@ moods:
     body_font: EBGaramond
     quote_style: upright
     quote_scale: 1.50
+    quote_weight: 500
     accent: "#4a4a4a"
     accent_dark: "#bdbdbd"
 
@@ -107,6 +111,7 @@ moods:
     body_font: EBGaramond
     quote_style: upright
     quote_scale: 1.55
+    quote_weight: 500
     accent: "#2f2a3d"
     accent_dark: "#aaa2c4"
 
@@ -123,11 +128,10 @@ moods:
   wonder:
     label: Wonder
     hint: awe, the sublime, the very large or very small
-    quote_font: BodoniModa
+    quote_font: PlayfairDisplay
     body_font: EBGaramond
-    quote_style: italic
-    quote_scale: 1.45
-    quote_variation: "'opsz' 48"
+    quote_style: upright
+    quote_scale: 1.32
     accent: "#1e4d5c"
     accent_dark: "#8ccad9"
 
@@ -155,11 +159,10 @@ moods:
   speculative:
     label: Speculative
     hint: other worlds, other ways of being — SF and the strange
-    quote_font: BodoniModa
-    body_font: EBGaramond
+    quote_font: CrimsonPro
+    body_font: CrimsonPro
     quote_style: upright
-    quote_scale: 1.30
-    quote_variation: "'opsz' 36"
+    quote_scale: 1.42
     accent: "#2b4a5e"
     accent_dark: "#93bfd6"
 

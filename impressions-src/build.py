@@ -368,7 +368,8 @@ def mood_css(moodcfg) -> str:
             f".mood-{mood}{{--accent:{m['accent']};--accent-dark:{m['accent_dark']};"
             f"--quote-font:'{qf}',Georgia,serif;--body-font:'{bf}',Georgia,serif;"
             f"--quote-style:{style};--quote-scale:{m['quote_scale']};"
-            f"--quote-variation:{m.get('quote_variation') or 'normal'}}}")
+            f"--quote-variation:{m.get('quote_variation') or 'normal'};"
+            f"--quote-weight:{m.get('quote_weight', 400)}}}")
     return "\n".join(rules)
 
 

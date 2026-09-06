@@ -68,7 +68,7 @@ tragic, tender, wonder, unease), telling (literary, speculative, myth, memoir,
 history), laughing (humour, satire) and the world (political, craft). Each pairs a
 quote face with a body face and an accent colour; the editor shows a one-line hint
 for each. Ten families are bundled: Cormorant Garamond, EB Garamond, Playfair
-Display, Lora, Spectral, Fraunces, Alegreya, Bodoni Moda, Cardo, Libre Baskerville.
+Display, Lora, Spectral, Fraunces, Alegreya, Crimson Pro, Cardo, Libre Baskerville.
 
 Edit `moods.yaml` to change pairings, scales or accent colours, or to add a mood.
 Line breaks inside `quote:` are kept for `poetry` (or when you set `verse: true`);
