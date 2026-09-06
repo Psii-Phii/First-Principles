@@ -283,9 +283,21 @@ def write_latex(cfg, books, moodcfg) -> list[Path]:
     return mains
 
 
-def compile_pdf(main: Path, engine: str = "lualatex"):
+def pick_engine(engine: str = "auto") -> str:
+    """'auto' = LuaLaTeX when it has its font loader, else XeLaTeX."""
+    if engine != "auto":
+        return engine
+    if shutil.which("lualatex") and shutil.which("kpsewhich"):
+        r = subprocess.run(["kpsewhich", "luaotfload.sty"], capture_output=True, text=True)
+        if r.returncode == 0 and r.stdout.strip():
+            return "lualatex"
+    return "xelatex" if shutil.which("xelatex") else "lualatex"
+
+
+def compile_pdf(main: Path, engine: str = "auto"):
+    engine = pick_engine(engine)
     if engine not in ("lualatex", "xelatex"):
-        raise BuildError("engine must be lualatex or xelatex")
+        raise BuildError("engine must be lualatex, xelatex or auto")
     if not shutil.which(engine):
         raise BuildError(f"{engine} not found. Compile build/*.tex yourself with LuaLaTeX/XeLaTeX.")
     use_latexmk = shutil.which("latexmk") is not None
@@ -615,7 +627,7 @@ def build(*, pdf=False, engine=None, only_slug=None, all_pdfs=False) -> list[str
     mains = write_latex(cfg, books, moodcfg)
     log.append(f"latex: {len(mains)} documents")
     if pdf:
-        eng = engine or cfg.get("engine", "lualatex")
+        eng = engine or cfg.get("engine", "auto")
         for b, main in zip(books, mains):
             if only_slug and b["slug"] != only_slug and not all_pdfs:
                 continue
@@ -633,7 +645,7 @@ def main():
     ap.add_argument("--all", action="store_true", help="with --pdf: recompile every book, not just changed ones")
     ap.add_argument("--check", action="store_true", help="validate books/*.yaml and exit")
     ap.add_argument("--new", action="store_true", help="interactively add an entry (or a new book)")
-    ap.add_argument("--engine", default=None, help="lualatex (default) or xelatex; overrides config.yaml")
+    ap.add_argument("--engine", default=None, help="lualatex, xelatex or auto (default); overrides config.yaml")
     ap.add_argument("--no-site", action="store_true")
     ap.add_argument("--no-latex", action="store_true")
     args = ap.parse_args()
@@ -654,7 +666,7 @@ def main():
         mains = write_latex(cfg, books, moodcfg)
         print(f"✓ latex: {len(mains)} documents in {cfg.get('build_dir', 'build')}/")
         if args.pdf:
-            engine = args.engine or cfg.get("engine", "lualatex")
+            engine = args.engine or cfg.get("engine", "auto")
             for b, main in zip(books, mains):
                 pdf = main.with_suffix(".pdf")
                 stale = (args.all or not pdf.exists() or pdf.stat().st_mtime < b["_mtime"]

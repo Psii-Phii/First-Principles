@@ -9,5 +9,6 @@ tagline: "Kept since 2026."
 site_dir: ../commonplace
 # LaTeX output directory (git-ignored).
 build_dir: build
-# TeX engine for `build.py --pdf`: lualatex or xelatex (both work with fontspec).
-engine: lualatex
+# TeX engine for `build.py --pdf`: auto (LuaLaTeX if its font loader is installed,
+# otherwise XeLaTeX), or force lualatex / xelatex. Both work with fontspec.
+engine: auto

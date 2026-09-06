@@ -53,7 +53,7 @@ def state() -> dict:
                  "scale": m["quote_scale"], "accent": m["accent"],
                  "variation": m.get("quote_variation") or "normal"}
              for k, m in moodcfg["moods"].items()}
-    tex = B.shutil.which(cfg.get("engine", "lualatex")) or B.shutil.which("xelatex")
+    tex = B.shutil.which(B.pick_engine(cfg.get("engine", "auto")))
     git_ok = (REPO / ".git").exists()
     return {"books": books, "moods": moods, "default_mood": moodcfg.get("default_mood"),
             "tex": bool(tex), "git": git_ok, "repo": str(REPO), "title": cfg.get("title", "Commonplace")}
