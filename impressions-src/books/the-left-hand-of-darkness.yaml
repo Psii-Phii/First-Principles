@@ -112,3 +112,14 @@ entries:
       Fire and fear, good servants,  bad lords.
     where: "Estraven"
     date: 2026-09-06
+
+  - quote: |
+      *Light is the left hand of darkness*
+      *and darkness is right hand of light.*
+      *Two are one, life and death, lying *
+      *together like lovers in kemmer,*
+      *like hands joined together,*
+      *like the end and the way.*
+    where: "Tormer's Lay"
+    date: 2026-09-06
+    verse: true
