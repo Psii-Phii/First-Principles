@@ -76,13 +76,12 @@
   \end{center}
 }
 
-\newcommand{\attribution}[2]{% where, date  (the book is the document, so no author here)
-  \ifboolexpr{test{\ifblank{#1}} and test{\ifblank{#2}}}{}{%
+\newcommand{\attribution}[2]{% where, date — the date is accepted but not printed
+  \ifblank{#1}{}{%
     \par\vspace{0.9em}
     \begin{center}
       \entrybodyfont\color{\entrymood}\small
-      \ifblank{#1}{}{\textemdash\ #1}%
-      \ifblank{#2}{}{\ifblank{#1}{}{\\[0.2em]}{\color{soft}\scriptsize\scshape\addfontfeatures{LetterSpace=8}#2}}%
+      \textemdash\ #1%
     \end{center}}%
 }
 

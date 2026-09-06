@@ -121,7 +121,7 @@
 .commentary {
   position: relative;
   max-width: 32rem;
-  margin: 2rem auto 0;
+  margin: 2rem auto 0.4rem;
   padding: 0.15rem 0 0.15rem 1.25rem;
   border-left: 1.5px solid var(--tone);
   text-align: left;

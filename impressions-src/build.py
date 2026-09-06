@@ -418,11 +418,6 @@ def render_entry(e, moodcfg, *, prefix="", show_book=False) -> str:
   <blockquote class="quote{' verse' if is_verse(e) else ''}">{quote_to_html(e['quote'], is_verse(e))}</blockquote>
   {attr_html}
   {commentary}
-  <footer class="entry-meta">
-    <span class="mood-label">{html.escape(m['label'])}</span>{tags}
-    {date_html}
-    <a class="anchor" href="{anchor_href}" title="Link to this entry">§</a>
-  </footer>
   <div class="rule" aria-hidden="true"></div>
 </article>"""
 
@@ -473,7 +468,6 @@ def write_site(cfg, books, moodcfg):
         when = html.escape(f"read {fmt_read(b['read'])}") if b.get("read") else (fmt_date(latest_date(b)) if latest_date(b) else "")
         items += f"""
 <li class="mood-{b['mood']}">
-  <p class="when">{when} &nbsp;&mdash;&nbsp; <b>{html.escape(moodcfg['moods'][b['mood']]['label'].lower())}</b></p>
   <h2><a href="books/{b['slug']}.html">{html.escape(smarten(b['title']))}</a></h2>
   <p>{book_line(b)} <span class="sep">&middot;</span> {n} {'entry' if n == 1 else 'entries'}</p>
 </li>"""
@@ -495,7 +489,7 @@ def write_site(cfg, books, moodcfg):
     body = f"""
 <p class="eyebrow"><a href="./">{html.escape(cfg['title'])}</a></p>
 <h1 class="pagetitle">All entries</h1>
-<p class="meta">{total} {'entry' if total == 1 else 'entries'}, newest first</p>
+<p class="meta">{total} {'entry' if total == 1 else 'entries'}</p>
 {ORNAMENT}
 <div class="topics"><span class="lbl">moods</span>
   <button type="button" data-filter="all" aria-pressed="true">all</button>{chips}
@@ -520,7 +514,7 @@ def write_site(cfg, books, moodcfg):
 <div class="mood-{b['mood']}">
 <p class="eyebrow"><a href="../">{html.escape(cfg['title'])}</a></p>
 <h1 class="pagetitle booktitle">{html.escape(smarten(b['title']))}</h1>
-<p class="meta">{book_line(b)}{read}<span class="sep">&middot;</span>{n} {'entry' if n == 1 else 'entries'}{pdf_link}</p>
+<p class="meta">{book_line(b)}<span class="sep">&middot;</span>{n} {'entry' if n == 1 else 'entries'}{pdf_link}</p>
 {ORNAMENT}
 {notes}
 <div class="entries">{"".join(render_entry(e, moodcfg, prefix="../") for e in entries)}</div>
