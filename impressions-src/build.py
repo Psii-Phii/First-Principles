@@ -397,7 +397,7 @@ def render_entry(e, moodcfg, *, prefix="", show_book=False) -> str:
     m = moodcfg["moods"][e["mood"]]
     b = e["_book"]
     where = smarten(str(e.get("where", "") or ""))
-    tags = "".join(f'<span class="tag">{html.escape(t)}</span>' for t in (e.get("tags") or []))
+    tags = "".join(f'<span class="tag">{html.escape(str(t))}</span>' for t in (e.get("tags") or []))
     commentary = ""
     if str(e.get("commentary", "") or "").strip():
         commentary = f'<div class="commentary">{prose_to_html(e["commentary"])}</div>'

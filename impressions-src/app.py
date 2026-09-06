@@ -146,7 +146,7 @@ def list_entries(slug: str) -> dict:
     out = []
     for i, e in enumerate(book.get("entries") or []):
         out.append({"index": i, "quote": str(e.get("quote", "")).strip("\n"), "where": e.get("where") or "",
-                    "mood": e.get("mood") or "", "verse": e.get("verse"), "tags": ", ".join(e.get("tags") or []),
+                    "mood": e.get("mood") or "", "verse": e.get("verse"), "tags": ", ".join(str(t) for t in (e.get("tags") or [])),
                     "commentary": str(e.get("commentary", "") or "").strip("\n"),
                     "date": B.iso_date(e.get("date")) if e.get("date") else ""})
     return {"ok": True, "book": {"title": book.get("title"), "mood": book.get("mood")}, "entries": out}
