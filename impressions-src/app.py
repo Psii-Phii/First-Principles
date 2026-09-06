@@ -45,10 +45,12 @@ def state() -> dict:
         except Exception:
             b = {}
         books.append({"slug": path.stem, "title": b.get("title", path.stem), "author": b.get("author", ""),
-                      "mood": b.get("mood", moodcfg.get("default_mood")),
+                      "mood": B.MOOD_ALIASES.get(b.get("mood"), b.get("mood")) or moodcfg.get("default_mood"),
+                      "translator": b.get("translator") or "", "year": str(b.get("year") or ""),
+                      "read": str(b.get("read") or ""), "notes": str(b.get("notes") or "").strip("\n"),
                       "count": len(b.get("entries") or [])})
     books.sort(key=lambda b: b["title"].lower())
-    moods = {k: {"label": m["label"], "quote_font": moodcfg["fonts"][m["quote_font"]]["css"],
+    moods = {k: {"label": m["label"], "hint": m.get("hint", ""), "quote_font": moodcfg["fonts"][m["quote_font"]]["css"],
                  "body_font": moodcfg["fonts"][m["body_font"]]["css"], "style": m["quote_style"],
                  "scale": m["quote_scale"], "accent": m["accent"],
                  "variation": m.get("quote_variation") or "normal"}
@@ -229,6 +231,32 @@ def delete_entry(payload: dict) -> dict:
     return {"ok": True, "log": log, "slug": path.stem}
 
 
+def update_book(payload: dict) -> dict:
+    """Edit a book's own fields (title, author, translator, year, read, mood, notes)."""
+    path = B.BOOKS_DIR / f"{payload.get('book', '')}.yaml"
+    if not path.exists():
+        raise B.BuildError("No such book.")
+    book = B.load_yaml(path) or {}
+    for k in ("title", "author", "translator", "year", "read", "mood", "notes"):
+        if k in payload:
+            v = (payload.get(k) or "").strip()
+            if k in ("title", "author") and not v:
+                raise B.BuildError(f"A book needs a {k}.")
+            book[k] = v
+    book["mood"] = book.get("mood") or state()["default_mood"]
+    book["entries"] = [_clean_entry(e) for e in (book.get("entries") or [])]
+    before = path.read_text(encoding="utf-8")
+    B.write_book(path, book)
+    try:
+        B.load_books(B.load_yaml(ROOT / "moods.yaml")["moods"])
+    except B.BuildError:
+        path.write_text(before, encoding="utf-8")
+        raise
+    log = [f"updated books/{path.name}"]
+    _rebuild_and_publish(path, payload, log, f"Impressions: update {book.get('title') or path.stem}")
+    return {"ok": True, "log": log, "slug": path.stem}
+
+
 def delete_book(payload: dict) -> dict:
     slug = payload.get("book") or ""
     path = B.BOOKS_DIR / f"{slug}.yaml"
@@ -318,7 +346,8 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json({"ok": False, "error": str(ex)}, 400)
                 except Exception:
                     return self._json({"ok": False, "error": traceback.format_exc()}, 500)
-        for route, fn in (("/api/update", update_entry), ("/api/delete_entry", delete_entry)):
+        for route, fn in (("/api/update", update_entry), ("/api/delete_entry", delete_entry),
+                          ("/api/update_book", update_book)):
             if path == route:
                 with LOCK:
                     try:

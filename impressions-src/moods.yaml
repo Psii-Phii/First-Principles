@@ -1,20 +1,22 @@
-# Mood → typography map. Every entry in quotes.yaml carries a `mood`; this file
-# decides how that entry is set, both in the PDF and on the website.
+# Mood → typography map. Every book carries a default `mood`, and any entry can
+# override it. The mood decides how the quote is set, in the PDF and on the site.
 #
-#   quote_font  : family used for the quote itself   (must exist in fonts/)
-#   body_font   : family used for the commentary
-#   quote_style : upright | italic   — how the quote is set
-#   quote_scale : size multiplier applied to the quote relative to body text
-#   accent      : hex colour for attribution, rules and filter chips (light theme)
-#   accent_dark : same, on the dark theme of the website
-#   label       : human-readable name shown on the site
-#   quote_variation : (optional) CSS font-variation-settings for the quote on the
-#                 website, for variable fonts with extra axes (e.g. Fraunces).
+#   label       : shown in the editor and on the site
+#   hint        : one line in the editor explaining when to reach for it
+#   quote_font  : family for the quote itself (must be listed under fonts:)
+#   body_font   : family for the commentary
+#   quote_style : upright | italic
+#   quote_scale : size multiplier for the quote relative to body text
+#   accent      : hex colour for attributions, rules and the fleuron
+#   accent_dark : same, for a dark theme (unused on the light-only site, kept for later)
+#   quote_variation : (optional) CSS font-variation-settings for variable fonts with
+#                 extra axes (Fraunces' SOFT/WONK, Bodoni Moda's opsz)
 #
-# Fonts available out of the box (all SIL Open Font License, bundled in fonts/):
-#   CormorantGaramond, EBGaramond, PlayfairDisplay, Lora, Spectral, Fraunces, Alegreya
-# To add a font, drop static TTFs into fonts/static/ (Regular, Italic, SemiBold,
-# SemiBoldItalic) and the variable TTFs into fonts/web/, then list it in `fonts:`.
+# Fonts bundled (all SIL Open Font License, in fonts/):
+#   CormorantGaramond, EBGaramond, PlayfairDisplay, Lora, Spectral, Fraunces,
+#   Alegreya, BodoniModa, Cardo, LibreBaskerville
+# To add one, drop static TTFs into fonts/static/ (Regular, Italic, SemiBold,
+# SemiBoldItalic) and the web TTFs into fonts/web/, then list it under fonts:.
 
 fonts:
   CormorantGaramond: { css: "Cormorant Garamond", web_upright: CormorantGaramond-VF.ttf, web_italic: CormorantGaramond-Italic-VF.ttf, variable: true }
@@ -23,14 +25,23 @@ fonts:
   Lora:              { css: "Lora",               web_upright: Lora-VF.ttf,              web_italic: Lora-Italic-VF.ttf,              variable: true }
   Fraunces:          { css: "Fraunces",           web_upright: Fraunces-VF.ttf,          web_italic: Fraunces-Italic-VF.ttf,          variable: true }
   Alegreya:          { css: "Alegreya",           web_upright: Alegreya-VF.ttf,          web_italic: Alegreya-Italic-VF.ttf,          variable: true }
+  BodoniModa:        { css: "Bodoni Moda",        web_upright: BodoniModa-VF.ttf,        web_italic: BodoniModa-Italic-VF.ttf,        variable: true }
+  LibreBaskerville:  { css: "Libre Baskerville",  web_upright: LibreBaskerville-VF.ttf,  web_italic: LibreBaskerville-Italic-VF.ttf,  variable: true }
   Spectral:          { css: "Spectral",           web_upright: Spectral-Regular.ttf,     web_italic: Spectral-Italic.ttf,             variable: false,
                        web_bold: Spectral-SemiBold.ttf, web_bold_italic: Spectral-SemiBoldItalic.ttf }
+  Cardo:             { css: "Cardo",              web_upright: Cardo-Regular.ttf,        web_italic: Cardo-Italic.ttf,                variable: false,
+                       web_bold: Cardo-Bold.ttf }
 
 default_mood: reflection
 
+# ── the moods ────────────────────────────────────────────────────────────────
+# Roughly grouped: thinking · feeling · telling · laughing · the world.
 moods:
+
+  # thinking
   philosophy:
     label: Philosophy
+    hint: arguments, aphorisms, the examined life
     quote_font: CormorantGaramond
     body_font: EBGaramond
     quote_style: italic
@@ -38,26 +49,29 @@ moods:
     accent: "#3b4a6b"
     accent_dark: "#9fb0d6"
 
-  poetry:
-    label: Poetry
-    quote_font: PlayfairDisplay
-    body_font: Lora
-    quote_style: italic
-    quote_scale: 1.30
-    accent: "#7a2e3f"
-    accent_dark: "#d98a9b"
-
-  fiction:
-    label: Fiction
-    quote_font: EBGaramond
+  reflection:
+    label: Reflection
+    hint: a quiet observation, something to sit with
+    quote_font: CormorantGaramond
     body_font: EBGaramond
     quote_style: upright
-    quote_scale: 1.40
-    accent: "#2f5d46"
-    accent_dark: "#8fc7a8"
+    quote_scale: 1.50
+    accent: "#4a4a4a"
+    accent_dark: "#bdbdbd"
+
+  essay:
+    label: Essay
+    hint: a clear, reasoned voice making a case
+    quote_font: LibreBaskerville
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.18
+    accent: "#4b4f3a"
+    accent_dark: "#b9bd9d"
 
   science:
     label: Science
+    hint: how things work, plainly and exactly
     quote_font: Spectral
     body_font: Spectral
     quote_style: upright
@@ -65,8 +79,103 @@ moods:
     accent: "#1f5f6e"
     accent_dark: "#7cc3d2"
 
+  scripture:
+    label: Scripture
+    hint: sacred, liturgical, or spoken as if from a pulpit
+    quote_font: Cardo
+    body_font: Cardo
+    quote_style: upright
+    quote_scale: 1.35
+    accent: "#5b3a1e"
+    accent_dark: "#d0a06c"
+
+  # feeling
+  poetry:
+    label: Poetry
+    hint: verse — line breaks are kept
+    quote_font: PlayfairDisplay
+    body_font: Lora
+    quote_style: italic
+    quote_scale: 1.30
+    accent: "#7a2e3f"
+    accent_dark: "#d98a9b"
+
+  tragic:
+    label: Tragic
+    hint: loss, endurance, the weight of things
+    quote_font: CormorantGaramond
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.55
+    accent: "#2f2a3d"
+    accent_dark: "#aaa2c4"
+
+  tender:
+    label: Tender
+    hint: love, kindness, something said gently
+    quote_font: Lora
+    body_font: Lora
+    quote_style: italic
+    quote_scale: 1.30
+    accent: "#8a4a5a"
+    accent_dark: "#e0a0b0"
+
+  wonder:
+    label: Wonder
+    hint: awe, the sublime, the very large or very small
+    quote_font: BodoniModa
+    body_font: EBGaramond
+    quote_style: italic
+    quote_scale: 1.45
+    quote_variation: "'opsz' 48"
+    accent: "#1e4d5c"
+    accent_dark: "#8ccad9"
+
+  unease:
+    label: Unease
+    hint: dread, menace, the uncanny
+    quote_font: Spectral
+    body_font: Spectral
+    quote_style: italic
+    quote_scale: 1.28
+    accent: "#4a3232"
+    accent_dark: "#c49a9a"
+
+  # telling
+  literary:
+    label: Literary
+    hint: fiction that is about people — the default novel voice
+    quote_font: EBGaramond
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.40
+    accent: "#2f5d46"
+    accent_dark: "#8fc7a8"
+
+  speculative:
+    label: Speculative
+    hint: other worlds, other ways of being — SF and the strange
+    quote_font: BodoniModa
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.30
+    quote_variation: "'opsz' 36"
+    accent: "#2b4a5e"
+    accent_dark: "#93bfd6"
+
+  myth:
+    label: Myth
+    hint: fable, legend, the old stories retold
+    quote_font: Alegreya
+    body_font: Alegreya
+    quote_style: italic
+    quote_scale: 1.40
+    accent: "#7a4a1e"
+    accent_dark: "#d8a76a"
+
   memoir:
     label: Memoir
+    hint: someone telling their own life
     quote_font: Lora
     body_font: Lora
     quote_style: italic
@@ -74,8 +183,20 @@ moods:
     accent: "#8a5a1e"
     accent_dark: "#e0b070"
 
+  history:
+    label: History
+    hint: what happened, and who wrote it down
+    quote_font: Alegreya
+    body_font: Alegreya
+    quote_style: upright
+    quote_scale: 1.35
+    accent: "#6b4f2a"
+    accent_dark: "#cfae7a"
+
+  # laughing
   humour:
     label: Humour
+    hint: funny on purpose
     quote_font: Fraunces
     body_font: Fraunces
     quote_style: upright
@@ -84,20 +205,34 @@ moods:
     accent: "#b8472a"
     accent_dark: "#f29a7c"
 
-  history:
-    label: History
-    quote_font: Alegreya
-    body_font: Alegreya
-    quote_style: upright
-    quote_scale: 1.35
-    accent: "#6b4f2a"
-    accent_dark: "#cfae7a"
+  satire:
+    label: Satire
+    hint: funny with a blade in it
+    quote_font: Fraunces
+    body_font: EBGaramond
+    quote_style: italic
+    quote_scale: 1.28
+    quote_variation: "'SOFT' 0, 'WONK' 1, 'opsz' 72"
+    accent: "#8a2a2a"
+    accent_dark: "#e08a8a"
 
-  reflection:
-    label: Reflection
-    quote_font: CormorantGaramond
+  # the world
+  political:
+    label: Political
+    hint: power, justice, society and its arrangements
+    quote_font: LibreBaskerville
     body_font: EBGaramond
     quote_style: upright
-    quote_scale: 1.50
-    accent: "#4a4a4a"
-    accent_dark: "#bdbdbd"
+    quote_scale: 1.18
+    accent: "#732b2b"
+    accent_dark: "#d98a8a"
+
+  craft:
+    label: Craft
+    hint: on making things — writing, work, technique
+    quote_font: Spectral
+    body_font: EBGaramond
+    quote_style: upright
+    quote_scale: 1.22
+    accent: "#5a5a3a"
+    accent_dark: "#c4c49a"

@@ -45,6 +45,10 @@ def load_yaml(path: Path):
         return yaml.safe_load(fh)
 
 
+# Older names for moods, so existing files keep working after a rename.
+MOOD_ALIASES = {"fiction": "literary"}
+
+
 def load_books(moods) -> list[dict]:
     """Read every books/*.yaml, resolve per-entry moods, attach slugs. Exits on errors."""
     books, errors = [], []
@@ -62,6 +66,7 @@ def load_books(moods) -> list[dict]:
             if not str(b.get(f, "")).strip():
                 errors.append(f"{loc}: missing '{f}'")
         b.setdefault("mood", None)
+        b["mood"] = MOOD_ALIASES.get(b["mood"], b["mood"])
         if not b["mood"]:
             errors.append(f"{loc}: missing book-level 'mood'")
         elif b["mood"] not in moods:
@@ -72,7 +77,7 @@ def load_books(moods) -> list[dict]:
         for n, e in enumerate(entries, 1):
             if not isinstance(e, dict) or not str(e.get("quote", "")).strip():
                 errors.append(f"{loc} entry {n}: missing 'quote'"); continue
-            e["mood"] = e.get("mood") or b["mood"]
+            e["mood"] = MOOD_ALIASES.get(e.get("mood"), e.get("mood")) or b["mood"]
             if e["mood"] not in moods:
                 errors.append(f"{loc} entry {n}: unknown mood '{e['mood']}'")
             if e.get("date") is not None and not isinstance(e["date"], (dt.date, dt.datetime)):
@@ -475,7 +480,7 @@ def write_site(cfg, books, moodcfg):
         items += f"""
 <li class="mood-{b['mood']}">
   <h2><a href="books/{b['slug']}.html">{html.escape(smarten(b['title']))}</a></h2>
-  <p>{book_line(b)} <span class="sep">&middot;</span> {n} {'entry' if n == 1 else 'entries'}</p>
+  <p>{book_line(b)}{(' <span class="sep">&middot;</span> read ' + html.escape(fmt_read(b['read']))) if b.get('read') else ''} <span class="sep">&middot;</span> {n} {'entry' if n == 1 else 'entries'}</p>
 </li>"""
     body = f"""
 <p class="eyebrow">{html.escape(cfg.get('subtitle', 'What the books left behind'))}</p>
@@ -520,7 +525,7 @@ def write_site(cfg, books, moodcfg):
 <div class="mood-{b['mood']}">
 <p class="eyebrow"><a href="../">{html.escape(cfg['title'])}</a></p>
 <h1 class="pagetitle booktitle">{html.escape(smarten(b['title']))}</h1>
-<p class="meta">{book_line(b)}<span class="sep">&middot;</span>{n} {'entry' if n == 1 else 'entries'}{pdf_link}</p>
+<p class="meta">{book_line(b)}{read}<span class="sep">&middot;</span>{n} {'entry' if n == 1 else 'entries'}{pdf_link}</p>
 {ORNAMENT}
 {notes}
 <div class="entries">{"".join(render_entry(e, moodcfg, prefix="../") for e in entries)}</div>

@@ -62,18 +62,13 @@ entries:
     mood: reflection           # optional per-entry override
 ```
 
-`mood` picks the typography. Out of the box:
-
-| mood         | quote face                    | body face    |
-|--------------|-------------------------------|--------------|
-| philosophy   | Cormorant Garamond, italic    | EB Garamond  |
-| poetry       | Playfair Display, italic      | Lora         |
-| fiction      | EB Garamond                   | EB Garamond  |
-| science      | Spectral                      | Spectral     |
-| memoir       | Lora, italic                  | Lora         |
-| humour       | Fraunces (soft, wonky)        | Fraunces     |
-| history      | Alegreya                      | Alegreya     |
-| reflection   | Cormorant Garamond            | EB Garamond  |
+`mood` picks the typography. Nineteen are defined in `moods.yaml`, grouped roughly
+as thinking (philosophy, reflection, essay, science, scripture), feeling (poetry,
+tragic, tender, wonder, unease), telling (literary, speculative, myth, memoir,
+history), laughing (humour, satire) and the world (political, craft). Each pairs a
+quote face with a body face and an accent colour; the editor shows a one-line hint
+for each. Ten families are bundled: Cormorant Garamond, EB Garamond, Playfair
+Display, Lora, Spectral, Fraunces, Alegreya, Bodoni Moda, Cardo, Libre Baskerville.
 
 Edit `moods.yaml` to change pairings, scales or accent colours, or to add a mood.
 Line breaks inside `quote:` are kept for `poetry` (or when you set `verse: true`);

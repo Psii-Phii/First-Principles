@@ -88,6 +88,18 @@
   .fmt button i { font-style: italic; } .fmt button b { font-weight: 600; }
   .fmt .sp { width: 0.6rem; }
 
+  /* book details */
+  details.bookd { margin: -0.4rem 0 1.2rem; }
+  details.bookd summary { cursor: pointer; list-style: none; }
+  details.bookd summary::-webkit-details-marker { display: none; }
+  details.bookd summary:hover { color: var(--accent); }
+  details.bookd .inner { border-left: 3px solid var(--rule); padding-left: 1rem; margin-top: 0.6rem; }
+  details.bookd .row4 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.9rem; }
+  .bookd-actions { display: flex; align-items: center; gap: 1rem; margin: 0.2rem 0 0.6rem; }
+  .bookd-actions button { font: inherit; font-size: 0.9rem; color: var(--ink); background: none; border: 1px solid var(--rule); border-radius: 4px; padding: 0.35rem 0.9rem; cursor: pointer; }
+  .bookd-actions button:hover { border-color: var(--accent); color: var(--accent); }
+  .mood-hint { display: block; font-size: 0.92rem; font-style: italic; color: var(--mid); margin: -0.6rem 0 1.1rem; min-height: 1.2em; }
+
   /* existing entries */
   details.entries-m { margin: 0.2rem 0 1.4rem; }
   details.entries-m summary { cursor: pointer; list-style: none; }
@@ -158,6 +170,30 @@
         <div class="chips" id="nb-moods"></div>
       </div>
 
+      <details class="bookd" id="bookd">
+        <summary class="lbl">Book details</summary>
+        <div class="inner">
+          <div class="row">
+            <label class="field"><span>Title</span><input type="text" id="bd-title" /></label>
+            <label class="field"><span>Author</span><input type="text" id="bd-author" /></label>
+          </div>
+          <div class="row4">
+            <label class="field"><span>Translator</span><input type="text" id="bd-translator" /></label>
+            <label class="field"><span>Year <em>(published)</em></span><input type="text" id="bd-year" /></label>
+            <label class="field"><span>Read <em>(when you read it)</em></span><input type="text" id="bd-read" placeholder="2026-08 · summer 2025" /></label>
+          </div>
+          <span class="lbl">Book’s default mood</span>
+          <div class="chips" id="bd-moods"></div>
+          <label class="field"><span>Notes <em>(a paragraph about the book as a whole, optional)</em></span>
+            <textarea id="bd-notes" style="min-height:4.5rem"></textarea>
+          </label>
+          <div class="bookd-actions">
+            <button type="button" id="bd-save">Save book details</button>
+            <span class="kbd" id="bd-log"></span>
+          </div>
+        </div>
+      </details>
+
       <details class="entries-m" id="entries-m">
         <summary class="lbl">Existing entries <span id="ecount"></span></summary>
         <ul class="elist" id="elist"></ul>
@@ -180,6 +216,7 @@
 
       <span class="lbl">Mood <span class="hint" id="mood-hint"></span></span>
       <div class="chips" id="moods"></div>
+      <span class="mood-hint" id="mood-hintline"></span>
 
       <label class="field"><span>Commentary <em>(optional)</em></span>
         <div class="fmt" data-for="commentary"></div>
@@ -247,7 +284,7 @@
     el.textContent = '';
     Object.entries(S.moods).forEach(([k, m]) => {
       const b = document.createElement('button');
-      b.type = 'button'; b.textContent = m.label.toLowerCase(); b.dataset.mood = k;
+      b.type = 'button'; b.textContent = m.label.toLowerCase(); b.dataset.mood = k; b.title = m.hint || '';
       b.style.setProperty('--chip', m.accent);
       b.setAttribute('aria-pressed', k === active ? 'true' : 'false');
       b.addEventListener('click', () => onpick(k));
@@ -258,6 +295,7 @@
     mood = k;
     chips($('moods'), mood, setMood);
     $('mood-hint').textContent = bookMood && mood !== bookMood ? '(overrides the book’s ' + bookMood + ')' : '';
+    $('mood-hintline').textContent = (S.moods[mood] && S.moods[mood].hint) || '';
     if (!$('verse').dataset.touched) $('verse').checked = (mood === 'poetry');
     render();
   }
@@ -349,6 +387,32 @@
   }
   $('edit-cancel').addEventListener('click', () => cancelEdit(true));
 
+  let bdMood = null;
+  function pickBdMood(k) { bdMood = k; chips($('bd-moods'), k, pickBdMood); }
+  function fillBookDetails() {
+    const b = currentBook();
+    $('bookd').hidden = isNew;
+    if (isNew) return;
+    $('bd-title').value = b.title || ''; $('bd-author').value = b.author || '';
+    $('bd-translator').value = b.translator || ''; $('bd-year').value = b.year || '';
+    $('bd-read').value = b.read || ''; $('bd-notes').value = b.notes || '';
+    $('bd-log').textContent = '';
+    pickBdMood(b.mood || S.default_mood);
+  }
+  $('bd-save').addEventListener('click', async () => {
+    const btn = $('bd-save'); btn.disabled = true; $('bd-log').textContent = 'saving…';
+    try {
+      const r = await fetch('/api/update_book', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book: $('book').value, title: $('bd-title').value, author: $('bd-author').value,
+          translator: $('bd-translator').value, year: $('bd-year').value, read: $('bd-read').value,
+          mood: bdMood, notes: $('bd-notes').value, pdf: $('opt-pdf').checked, publish: $('opt-publish').checked }) });
+      const j = await r.json();
+      $('bd-log').textContent = j.ok ? '✓ ' + j.log.join(' · ') : j.error;
+      if (j.ok) await load($('book').value);
+    } catch (err) { $('bd-log').textContent = String(err); }
+    btn.disabled = false;
+  });
+
   function onBook() {
     cancelEdit(false);
     isNew = $('book').value === NEW;
@@ -361,6 +425,7 @@
       bookMood = currentBook().mood;
     }
     setMood(bookMood);
+    fillBookDetails();
     loadEntries();
   }
 

@@ -14,3 +14,6 @@ generated from them with fontTools for use with fontspec.
 | Spectral           | Production Type                                     |
 | Fraunces           | Undercase Type (Phaedra Charles, Flavia Zimbardi)   |
 | Alegreya           | Huerta Tipográfica                                  |
+| Bodoni Moda        | Indestructible Type (Owen Earl)                      |
+| Cardo              | David J. Perry                                       |
+| Libre Baskerville  | Impallari Type                                       |
