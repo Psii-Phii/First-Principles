@@ -127,24 +127,26 @@
 
 .commentary {
   position: relative;
-  max-width: 32rem;
-  margin: 2rem auto 0.4rem;
-  padding: 0.15rem 0 0.15rem 1.25rem;
-  border-left: 1.5px solid var(--tone);
-  text-align: left;
-  font-size: 1.02rem;
+  max-width: 30rem;
+  margin: 1.9rem auto 0.4rem;
+  padding: 1.1rem 0 0;
+  text-align: center;
+  font-size: 1rem;
   line-height: 1.58;
   color: var(--ink);
-  opacity: 0.88;
+  opacity: 0.78;
 }
+/* a small hand-drawn tilde marks the switch from the author's words to yours */
 .commentary::before {
-  content: "my note";
+  content: "";
   display: block;
-  font-family: "EB Garamond", Georgia, serif;
-  font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
-  font-size: 0.8rem; letter-spacing: 0.1em;
+  width: 1.6rem; height: 0.55rem;
+  margin: 0 auto 0.7rem;
+  background: currentColor;
   color: var(--tone);
-  margin-bottom: 0.25rem;
+  opacity: 0.8;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 11'%3E%3Cpath d='M2 7 C 7 1, 11 1, 16 6 S 25 11, 30 4' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 11'%3E%3Cpath d='M2 7 C 7 1, 11 1, 16 6 S 25 11, 30 4' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .commentary p { margin: 0 0 0.6em; }
 .commentary p:last-child { margin-bottom: 0; }
