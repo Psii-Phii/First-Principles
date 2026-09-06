@@ -22,6 +22,9 @@
 @font-face{font-family:'Spectral';src:url(fonts/Spectral-SemiBoldItalic.ttf) format('truetype');font-weight:600;font-style:italic;font-display:swap}
 
 .cp {
+  /* the section is a single centred column; the site header stays full width */
+  max-width: 44rem;
+  margin: 0 auto;
   --quote-font: 'Cormorant Garamond', Georgia, serif;
   --body-font: 'EB Garamond', Georgia, serif;
   --quote-style: normal;
@@ -82,13 +85,14 @@
 .book-notes p:last-child { margin-bottom: 0; }
 
 /* ---------------- entries ---------------- */
-.entries { max-width: var(--maxw); margin: 0; }
-.entry { font-family: var(--body-font); }
+.entries { max-width: 44rem; margin: 0 auto; }
+.entry { font-family: var(--body-font); padding: 0.4rem 0; }
+.entry + .entry { margin-top: 0; }
 .entry[hidden] { display: none; }
 
 .quote {
   margin: 0 auto;
-  max-width: 34rem;
+  max-width: 36rem;
   text-align: center;
   font-family: var(--quote-font);
   font-style: var(--quote-style);
@@ -115,22 +119,35 @@
 .attribution .book a:hover, .attribution .book a:focus-visible { color: var(--tone); border-bottom-color: var(--tone); }
 
 .commentary {
-  max-width: 34rem;
-  margin: 1.6rem auto 0;
-  font-size: 1.05rem;
-  line-height: 1.6;
+  position: relative;
+  max-width: 32rem;
+  margin: 2rem auto 0;
+  padding: 0.15rem 0 0.15rem 1.25rem;
+  border-left: 1.5px solid var(--tone);
+  text-align: left;
+  font-size: 1.02rem;
+  line-height: 1.58;
   color: var(--ink);
-  opacity: 0.9;
+  opacity: 0.88;
 }
-.commentary p { margin: 0; text-indent: 1.4em; }
-.commentary p:first-child { text-indent: 0; }
+.commentary::before {
+  content: "my note";
+  display: block;
+  font-family: "EB Garamond", Georgia, serif;
+  font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.8rem; letter-spacing: 0.1em;
+  color: var(--tone);
+  margin-bottom: 0.25rem;
+}
+.commentary p { margin: 0 0 0.6em; }
+.commentary p:last-child { margin-bottom: 0; }
 .commentary a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
 .commentary a:hover { border-bottom-color: var(--accent); }
 .commentary code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.82em; }
 
 .entry-meta {
   display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0.35rem 0.9rem;
-  margin-top: 1.3rem;
+  margin-top: 1.5rem;
   font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
   font-size: 0.805rem;
   letter-spacing: 0.084em;
@@ -199,15 +216,21 @@
 
 .quote { text-shadow: 0 0 0.45px rgba(26, 26, 24, 0.38); }
 .entry .rule {
-  width: 2.8rem; height: 1.4px;
+  position: relative;
+  width: 9rem; height: 1.5px;
+  margin: 3.4rem auto 3rem;
   background: var(--tone);
-  opacity: 0.75;
-  border-radius: 1px;
-  filter: url(#rough2);
-  transform: rotate(-1.5deg) translateX(-4px);
+  opacity: 0.55;
+  filter: url(#rough);
+  transform: rotate(-0.8deg) translateX(-6px);
 }
-.entry:nth-child(3n) .rule { transform: rotate(1.2deg) translateX(5px); width: 2.4rem; }
-.entry:nth-child(3n+1) .rule { transform: rotate(-0.4deg) translateX(-2px); width: 3.1rem; }
+.entry .rule::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%; background: var(--tone);
+}
+.entry:nth-child(3n) .rule { transform: rotate(0.7deg) translateX(8px); width: 8rem; }
+.entry:nth-child(3n+1) .rule { transform: rotate(-0.3deg) translateX(-3px); width: 10rem; }
 
 .booklist li { border: 0; padding-top: 0; }
 .booklist li::before, .booklist li:last-child::after {
