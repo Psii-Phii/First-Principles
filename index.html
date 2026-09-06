@@ -10,7 +10,7 @@
 <link rel="alternate" type="application/rss+xml" title="First Principles" href="feed.xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
 <style>
   :root {
     --paper:   #ece9e1;   /* warm paper, a touch grayer than the usual cream */
@@ -71,10 +71,10 @@
 
   nav a,
   .meta {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+    font-size: 0.878rem;
+    letter-spacing: 0.084em;
+    text-transform: lowercase;
     color: var(--mid);
   }
 
@@ -93,10 +93,10 @@
   }
 
   .eyebrow {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.74rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+    font-size: 0.903rem;
+    letter-spacing: 0.132em;
+    text-transform: lowercase;
     color: var(--accent);
     margin: 0 0 1.4rem;
   }
@@ -122,10 +122,10 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.82rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+    font-size: 1.0rem;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
     color: var(--ink);
     text-decoration: none;
     padding: 0.7rem 0.2rem;
@@ -156,10 +156,10 @@
   /* kolams / plots mode toggle (right side of the footer) */
   .modeswitch { display: flex; align-items: baseline; gap: 0.7rem; }
   .modeswitch button {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+    font-size: 0.878rem;
+    letter-spacing: 0.084em;
+    text-transform: lowercase;
     color: var(--mid);
     background: none;
     border: none;
@@ -188,9 +188,9 @@
   }
 
   .figlabel {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.16em;
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+    font-size: 0.854rem;
+    letter-spacing: 0.096em;
     text-transform: lowercase;
     color: var(--mid);
     opacity: 0;
@@ -209,9 +209,9 @@
     gap: 0.5rem;
   }
   .figswitch button {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+    font-size: 0.878rem;
+    letter-spacing: 0.06em;
     text-transform: lowercase;
     color: var(--mid);
     background: none;
@@ -229,8 +229,8 @@
   @media (max-width: 620px) {
     nav { gap: 1.1rem; }
     .lede { margin-bottom: 2rem; }
-    .figlabel { font-size: 0.62rem; }
-    .figswitch button { font-size: 0.66rem; }
+    .figlabel { font-size: 0.78rem; }
+    .figswitch button { font-size: 0.82rem; }
   }
 </style>
 </head>
@@ -245,7 +245,7 @@
     <header>
       <nav>
         <a href="articles.html">Articles</a>
-        <a href="commonplace/">Commonplace</a>
+        <a href="impressions/">Impressions</a>
         <a href="about.html">About</a>
       </nav>
     </header>

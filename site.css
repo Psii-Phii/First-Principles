@@ -74,13 +74,13 @@ body::after {
 }
 
 .mark, .top nav a, .meta, .eyebrow, .when, .kicker, .grouplbl {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  letter-spacing: 0.084em;
+  text-transform: lowercase;
 }
 
 .mark, .top nav a {
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   color: var(--mid);
   text-decoration: none;
   transition: color 0.18s ease;
@@ -94,7 +94,7 @@ body::after {
 
 /* ---------------- page headings ---------------- */
 .eyebrow {
-  font-size: 0.74rem;
+  font-size: 0.92rem;
   letter-spacing: 0.22em;
   color: var(--accent);
   margin: 0 0 1.2rem;
@@ -108,7 +108,7 @@ body::after {
   margin: 0 0 0.6rem;
 }
 
-.meta { font-size: 0.72rem; color: var(--mid); margin: 0 0 1rem; }
+.meta { font-size: 0.9rem; color: var(--mid); margin: 0 0 1rem; }
 
 .ornament { color: var(--mid); opacity: 0.75; margin: 0.6rem 0 1.6rem; }
 
@@ -116,9 +116,9 @@ body::after {
 .searchrow { margin: 0 0 1.4rem; max-width: var(--maxw); }
 #search {
   width: min(100%, 36ch);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.952rem;
+  letter-spacing: 0.048em;
   color: var(--ink);
   background: none;
   border: none;
@@ -140,17 +140,17 @@ body::after {
   margin: 0 0 2.2rem;
 }
 .topics .lbl {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.83rem;
+  letter-spacing: 0.096em;
   text-transform: lowercase;
   color: var(--mid);
   margin-right: 0.3rem;
 }
 .topics button {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.903rem;
+  letter-spacing: 0.06em;
   text-transform: lowercase;
   color: var(--mid);
   background: none;
@@ -171,15 +171,15 @@ body::after {
 }
 .articlelist li:last-child { border-bottom: 1px solid var(--rule); }
 .articlelist .when {
-  font-size: 0.7rem;
+  font-size: 0.88rem;
   color: var(--mid);
   margin: 0 0 0.35rem;
 }
 .articlelist .when b { color: var(--accent); font-weight: 500; }
 .articlelist .pubtoggle {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.805rem;
+  letter-spacing: 0.06em;
   text-transform: lowercase;
   color: var(--mid);
   background: none;
@@ -205,7 +205,7 @@ body::after {
 
 .empty { color: var(--mid); }
 .empty code {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
   font-size: 0.85em;
 }
 
@@ -221,19 +221,19 @@ body::after {
 }
 
 .sidebar summary {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.854rem;
+  letter-spacing: 0.096em;
+  text-transform: lowercase;
   color: var(--mid);
   cursor: pointer;
   margin-bottom: 0.8rem;
 }
 .sidebar .allback {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.805rem;
+  letter-spacing: 0.084em;
+  text-transform: lowercase;
   margin: 0 0 1rem;
 }
 .sidebar .allback a { color: var(--mid); }
@@ -256,7 +256,7 @@ body::after {
 .sidebar li { margin: 0.25rem 0; }
 .sidebar .toc a[aria-current="location"] { color: var(--accent); opacity: 1; }
 .sidebar .tocnum {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
   font-size: 0.68em;
   color: var(--accent);
   margin-right: 0.55em;
@@ -275,7 +275,7 @@ body::after {
 .essay { position: relative; max-width: var(--maxw); min-width: 0; margin: 0 auto; }
 
 .kicker {
-  font-size: 0.7rem;
+  font-size: 0.88rem;
   color: var(--mid);
   margin: 0 0 1rem;
 }
@@ -309,7 +309,7 @@ body::after {
   margin: 1.8em 0 0.6em;
 }
 #body .secnum {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
   font-size: 0.72em;
   font-style: normal;
   color: var(--accent);
@@ -321,7 +321,7 @@ body::after {
 .prose a:hover, .prose a:focus-visible { border-bottom-color: var(--accent); }
 
 #body code, .prose code {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
   font-size: 0.85em;
 }
 
@@ -386,10 +386,10 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
   border-left: 3px solid var(--rule);
 }
 #body .derivation summary {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.878rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
   color: var(--mid);
   cursor: pointer;
   padding: 0.6em 0;
@@ -403,16 +403,16 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 #body .figure { margin: 1.4em 0; text-align: center; }
 #body .figimg, #body img, #body svg { max-width: 100%; height: auto; }
 #body .caption {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.878rem;
+  letter-spacing: 0.048em;
   color: var(--mid);
   margin-top: 0.5em;
 }
 
 /* footnotes */
 #body .fnref a {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
   font-size: 0.7em;
   color: var(--accent);
   text-decoration: none;
@@ -442,7 +442,7 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
   color: var(--mid);
 }
 .sidenote b {
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
   font-size: 0.85em;
   color: var(--accent);
   font-weight: 500;
@@ -453,10 +453,10 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
 .backlink {
   display: inline-block;
   margin-top: 3rem;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.903rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
   color: var(--mid);
   text-decoration: none;
   transition: color 0.18s ease;

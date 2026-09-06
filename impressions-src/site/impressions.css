@@ -1,0 +1,204 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   impressions.css — source stylesheet for the impressions section. It sits on
+   top of the site's shared site.css (paper, ink, oxblood, small-caps labels).
+   build.py fills in the two placeholders below and writes ../impressions/impressions.css.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/*{{font-faces}}*/
+
+.cp {
+  --quote-font: 'Cormorant Garamond', Georgia, serif;
+  --body-font: 'EB Garamond', Georgia, serif;
+  --quote-style: normal;
+  --quote-scale: 1.5;
+  --quote-variation: normal;
+  --tone: var(--accent);
+}
+
+/*{{mood-rules}}*/
+
+/* ---------------- headings (mirror site.css) ---------------- */
+.cp .pagetitle.booktitle {
+  font-family: var(--quote-font);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings: var(--quote-variation);
+}
+.cp .meta a { color: inherit; text-decoration: none; }
+.cp .meta a:hover, .cp .meta a:focus-visible { color: var(--accent); }
+.cp .meta .sep { opacity: 0.5; margin: 0 0.4em; }
+
+/* ---------------- library list ---------------- */
+.booklist { list-style: none; margin: 0; padding: 0; max-width: var(--maxw); }
+.booklist li { padding: 1.4rem 0; border-top: 1px solid var(--rule); }
+.booklist li:last-child { border-bottom: 1px solid var(--rule); }
+.booklist .when {
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.854rem;
+  letter-spacing: 0.084em;
+  text-transform: lowercase;
+  color: var(--mid);
+  margin: 0 0 0.35rem;
+}
+.booklist .when b { color: var(--tone); font-weight: 500; }
+.booklist h2 {
+  margin: 0 0 0.3rem;
+  font-family: var(--quote-font);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.7rem;
+  line-height: 1.15;
+  font-variation-settings: var(--quote-variation);
+}
+.booklist h2 a { color: var(--ink); text-decoration: none; transition: color 0.18s ease; }
+.booklist h2 a:hover, .booklist h2 a:focus-visible { color: var(--tone); }
+.booklist p { margin: 0; color: var(--ink); opacity: 0.8; line-height: 1.5; }
+
+/* ---------------- book notes ---------------- */
+.book-notes { max-width: 58ch; margin: 0 0 2.6rem; font-size: 1.08rem; line-height: 1.6; color: var(--ink); opacity: 0.85; }
+.book-notes p { margin: 0 0 1em; }
+.book-notes p:last-child { margin-bottom: 0; }
+
+/* ---------------- entries ---------------- */
+.entries { max-width: var(--maxw); margin: 0; }
+.entry { font-family: var(--body-font); }
+.entry[hidden] { display: none; }
+
+.quote {
+  margin: 0 auto;
+  max-width: 34rem;
+  text-align: center;
+  font-family: var(--quote-font);
+  font-style: var(--quote-style);
+  font-weight: 400;
+  font-size: calc(1.12rem * var(--quote-scale));
+  line-height: 1.32;
+  text-wrap: balance;
+  font-variation-settings: var(--quote-variation);
+  color: var(--ink);
+}
+.quote p { margin: 0; }
+.quote.verse { text-wrap: initial; }
+.quote p + p { margin-top: 0.8em; }
+
+.attribution {
+  text-align: center;
+  color: var(--tone);
+  font-size: 0.95rem;
+  margin: 1.1rem 0 0;
+}
+.attribution .dash { opacity: 0.7; }
+.attribution .book { display: block; margin-top: 0.15rem; font-style: italic; color: var(--mid); }
+.attribution .book a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+.attribution .book a:hover, .attribution .book a:focus-visible { color: var(--tone); border-bottom-color: var(--tone); }
+
+.commentary {
+  max-width: 34rem;
+  margin: 1.6rem auto 0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink);
+  opacity: 0.9;
+}
+.commentary p { margin: 0; text-indent: 1.4em; }
+.commentary p:first-child { text-indent: 0; }
+.commentary a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+.commentary a:hover { border-bottom-color: var(--accent); }
+.commentary code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.82em; }
+
+.entry-meta {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0.35rem 0.9rem;
+  margin-top: 1.3rem;
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.805rem;
+  letter-spacing: 0.084em;
+  text-transform: lowercase;
+  color: var(--mid);
+}
+.entry-meta .mood-label { color: var(--tone); }
+.entry-meta .tag::before { content: "#"; opacity: 0.6; }
+.entry-meta .anchor { color: var(--mid); text-decoration: none; opacity: 0; transition: opacity 0.15s; }
+.entry:hover .anchor, .entry:target .anchor { opacity: 0.8; }
+.entry-meta .anchor:hover { color: var(--accent); }
+
+.entry .rule { width: 2.2rem; height: 1px; background: var(--tone); margin: 2.6rem auto; opacity: 0.7; }
+.entry:last-child .rule { display: none; }
+.entry:target .quote { animation: settle 1.2s ease-out; }
+@keyframes settle { from { opacity: 0.3; } to { opacity: 1; } }
+
+.empty { color: var(--mid); }
+
+/* the mood filter row reuses .topics from site.css; tint each button by mood */
+.topics button[data-filter]:not([data-filter="all"])[aria-pressed="true"] { color: var(--tone); border-color: var(--tone); }
+.topics button[data-filter]:not([data-filter="all"]):hover { color: var(--tone); }
+
+.cp .pdflink {
+  font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum";
+  font-size: 0.854rem;
+  letter-spacing: 0.084em;
+  text-transform: lowercase;
+  color: var(--mid);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.cp .pdflink:hover, .cp .pdflink:focus-visible { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 620px) {
+  .quote { font-size: calc(1.02rem * var(--quote-scale)); }
+}
+
+.cp .eyebrow a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+.cp .eyebrow a:hover, .cp .eyebrow a:focus-visible { border-bottom-color: currentColor; }
+
+
+/* ---------------- hand-drawn feel (this section only) ----------------
+   hairlines and ornaments are run through an SVG displacement filter so
+   nothing is perfectly straight; the quote text gets a hint of ink bleed. */
+.cp { position: relative; }
+.cp::before {
+  content: "";
+  position: absolute; inset: -1rem;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+.cp > * { position: relative; z-index: 1; }
+
+.cp .ornament.fleuron {
+  color: var(--mid);
+  opacity: 0.85;
+  margin: 0.4rem 0 1.6rem -0.2rem;
+  filter: url(#rough);
+  transform: rotate(-1.2deg);
+}
+.mood-poetry .ornament.fleuron, .mood-memoir .ornament.fleuron { transform: rotate(0.8deg) scaleX(-1); }
+
+.quote { text-shadow: 0 0 0.45px rgba(26, 26, 24, 0.38); }
+.entry .rule {
+  width: 2.8rem; height: 1.4px;
+  background: var(--tone);
+  opacity: 0.75;
+  border-radius: 1px;
+  filter: url(#rough2);
+  transform: rotate(-1.5deg) translateX(-4px);
+}
+.entry:nth-child(3n) .rule { transform: rotate(1.2deg) translateX(5px); width: 2.4rem; }
+.entry:nth-child(3n+1) .rule { transform: rotate(-0.4deg) translateX(-2px); width: 3.1rem; }
+
+.booklist li { border: 0; padding-top: 0; }
+.booklist li::before, .booklist li:last-child::after {
+  content: ""; display: block; height: 1px;
+  background: var(--rule);
+  filter: url(#rough);
+  transform: rotate(-0.25deg);
+  margin: 0 0 1.4rem;
+}
+.booklist li:nth-child(even)::before { transform: rotate(0.3deg) translateX(3px); }
+.booklist li:last-child::after { margin: 1.4rem 0 0; }
+.booklist li:last-child { padding-bottom: 0; }
+.booklist h2 a { text-shadow: 0 0 0.35px rgba(26, 26, 24, 0.3); }
+
+/* entries in the stream carry the book name in a gentle hand-set line */
+.attribution .book { letter-spacing: 0.01em; }

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Add a quote — Impressions</title>
+<meta name="theme-color" content="#ece9e1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/site/impressions.css" />
+<style>
+  :root {
+    --paper: #ece9e1; --ink: #1a1a18; --mid: #8a857b; --accent: #732b2b; --rule: #d6d2c6; --maxw: 72ch;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--paper); color: var(--ink);
+    font-family: "EB Garamond", Georgia, serif; -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; letter-spacing: 0.084em; text-transform: lowercase; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: clamp(1.4rem, 4vw, 2.6rem) clamp(1.4rem, 5vw, 3.4rem) 4rem; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.4rem; }
+  .top .mark { font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; letter-spacing: 0.084em; text-transform: lowercase; font-size: 0.878rem; color: var(--mid); text-decoration: none; }
+  .top .mark b { color: var(--accent); font-weight: 500; }
+  .top .status { font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.805rem; letter-spacing: 0.072em; text-transform: lowercase; color: var(--mid); }
+  .top .status .ok { color: #3d6b3f; } .top .status .no { color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3rem; }
+  @media (min-width: 960px) { .grid { grid-template-columns: minmax(0, 30rem) minmax(0, 1fr); align-items: start; } }
+
+  h1 { font-weight: 500; font-size: 2.2rem; line-height: 1.05; letter-spacing: -0.01em; margin: 0 0 1.4rem; }
+
+  label.field { display: block; margin: 0 0 1.1rem; }
+  label.field > span, .lbl { display: block; font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.781rem;
+    letter-spacing: 0.096em; text-transform: lowercase; color: var(--mid); margin-bottom: 0.35rem; }
+  label.field > span em { font-style: normal; text-transform: none; letter-spacing: 0.04em; opacity: 0.8; }
+  input[type=text], textarea, select {
+    width: 100%; font: inherit; font-size: 1.05rem; color: var(--ink); background: rgba(255,255,255,0.35);
+    border: 1px solid var(--rule); border-radius: 4px; padding: 0.5rem 0.65rem; transition: border-color 0.18s ease;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; line-height: 1.5; }
+  #quote { min-height: 9rem; font-size: 1.2rem; }
+  #commentary { min-height: 6rem; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  .row3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.9rem; }
+
+  #newbook { border-left: 3px solid var(--rule); padding-left: 1rem; margin: 0.2rem 0 1.4rem; }
+  #newbook[hidden] { display: none; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.35rem 0.7rem; align-items: baseline; margin: 0.1rem 0 1.1rem; }
+  .chips button {
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.854rem; letter-spacing: 0.06em; text-transform: lowercase;
+    color: var(--mid); background: none; border: none; border-bottom: 1px solid transparent; padding: 0.15rem 0.05rem; cursor: pointer;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .chips button:hover { color: var(--chip, var(--accent)); }
+  .chips button[aria-pressed="true"] { color: var(--chip, var(--accent)); border-color: var(--chip, var(--accent)); }
+  .chips .hint { font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.756rem; letter-spacing: 0.06em; color: var(--mid); opacity: 0.7; }
+
+  .opts { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; margin: 0.4rem 0 1.4rem; }
+  .opts label { font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.805rem; letter-spacing: 0.072em; text-transform: lowercase; color: var(--mid); display: inline-flex; gap: 0.45rem; align-items: center; cursor: pointer; }
+  .opts input { accent-color: var(--accent); }
+
+  .actions { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
+  button.save {
+    font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.976rem; letter-spacing: 0.072em; text-transform: lowercase;
+    color: var(--paper); background: var(--ink); border: 1px solid var(--ink); border-radius: 4px; padding: 0.7rem 1.4rem; cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease;
+  }
+  button.save:hover { background: var(--accent); border-color: var(--accent); }
+  button.save[disabled] { opacity: 0.5; cursor: wait; }
+  .kbd { font-family: "EB Garamond", Georgia, serif; font-variant-caps: small-caps; font-feature-settings: "smcp", "onum"; font-size: 0.756rem; letter-spacing: 0.06em; color: var(--mid); }
+
+  #log { margin-top: 1.4rem; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.72rem; line-height: 1.6; color: var(--mid); white-space: pre-wrap; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+  #log[hidden] { display: none; }
+  #log.err { color: var(--accent); }
+  #log a { color: var(--accent); }
+
+  /* formatting toolbar */
+  .fmt { display: flex; flex-wrap: wrap; gap: 0.15rem; margin: -0.15rem 0 0.35rem; }
+  .fmt button {
+    font-family: "EB Garamond", Georgia, serif; font-size: 0.95rem; line-height: 1;
+    color: var(--mid); background: none; border: 1px solid transparent; border-radius: 3px;
+    min-width: 1.9rem; padding: 0.3rem 0.45rem; cursor: pointer; transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .fmt button:hover { color: var(--accent); border-color: var(--rule); }
+  .fmt button i { font-style: italic; } .fmt button b { font-weight: 600; }
+  .fmt .sp { width: 0.6rem; }
+
+  /* manage books */
+  details.manage { margin-top: 2.6rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+  details.manage summary { cursor: pointer; list-style: none; }
+  details.manage summary::-webkit-details-marker { display: none; }
+  details.manage summary:hover { color: var(--accent); }
+  .booklist-m { list-style: none; margin: 0.8rem 0 0; padding: 0; }
+  .booklist-m li { display: flex; align-items: baseline; gap: 0.8rem; padding: 0.45rem 0; border-top: 1px solid var(--rule); }
+  .booklist-m .t { flex: 1; font-style: italic; }
+  .booklist-m .c { color: var(--mid); font-size: 0.9rem; }
+  .booklist-m button { font: inherit; font-size: 0.85rem; color: var(--mid); background: none; border: 0; border-bottom: 1px solid transparent; cursor: pointer; padding: 0; }
+  .booklist-m button:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .confirm { display: flex; gap: 0.6rem; align-items: center; margin: 0.6rem 0 0.2rem; flex-wrap: wrap; }
+  .confirm input { flex: 1; min-width: 12rem; }
+  .confirm .danger { font: inherit; font-size: 0.9rem; color: var(--paper); background: var(--accent); border: 0; border-radius: 4px; padding: 0.45rem 0.9rem; cursor: pointer; }
+  .confirm .danger[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  /* preview */
+  .preview { position: sticky; top: 2rem; }
+  .preview .lbl { margin-bottom: 1.4rem; }
+  .preview .cp { padding: 2.4rem 1.6rem 1.6rem; border: 1px solid var(--rule); border-radius: 6px; background: rgba(255,255,255,0.22); min-height: 18rem; }
+  .preview .booktitle { font-family: var(--quote-font); font-style: italic; font-weight: 400; font-size: 1.15rem; text-align: center; color: var(--mid); margin: 0 0 1.8rem; font-variation-settings: var(--quote-variation); }
+  .preview .quote:empty::before { content: "The quote will be set here as you type."; color: var(--mid); font-style: italic; opacity: 0.6; }
+  .preview .entry-meta { margin-top: 1.4rem; }
+  .preview .quote p { white-space: normal; }
+  .preview .quote.verse p { white-space: pre-line; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="mark" href="/">First Principles <span style="opacity:.5">/</span> <b>Impressions</b></a>
+    <span class="status" id="status"></span>
+  </header>
+
+  <div class="grid">
+    <form id="form" autocomplete="off">
+      <h1>Add a quote</h1>
+
+      <label class="field"><span>Book</span>
+        <select id="book"></select>
+      </label>
+
+      <div id="newbook" hidden>
+        <div class="row">
+          <label class="field"><span>Title</span><input type="text" id="nb-title" /></label>
+          <label class="field"><span>Author</span><input type="text" id="nb-author" /></label>
+        </div>
+        <div class="row">
+          <label class="field"><span>Translator <em>(optional)</em></span><input type="text" id="nb-translator" /></label>
+          <label class="field"><span>Year <em>(optional)</em></span><input type="text" id="nb-year" placeholder="1859 · c. 180" /></label>
+        </div>
+        <span class="lbl">Book’s default mood</span>
+        <div class="chips" id="nb-moods"></div>
+      </div>
+
+      <label class="field"><span>Quote</span>
+        <div class="fmt" data-for="quote"></div>
+        <textarea id="quote" placeholder="Paste or type the passage. A blank line starts a new paragraph."></textarea>
+      </label>
+
+      <div class="row3">
+        <label class="field"><span>Where <em>(page, chapter)</em></span><input type="text" id="where" placeholder="p. 42 · Book IV, 3" /></label>
+        <label class="field"><span>Tags <em>(comma-sep.)</em></span><input type="text" id="tags" /></label>
+        <label class="field"><span>&nbsp;</span>
+          <span class="opts" style="margin:0.5rem 0 0"><label><input type="checkbox" id="verse" /> verse</label></span>
+        </label>
+      </div>
+
+      <span class="lbl">Mood <span class="hint" id="mood-hint"></span></span>
+      <div class="chips" id="moods"></div>
+
+      <label class="field"><span>Commentary <em>(optional)</em></span>
+        <div class="fmt" data-for="commentary"></div>
+        <textarea id="commentary"></textarea>
+      </label>
+
+      <div class="opts">
+        <label><input type="checkbox" id="opt-pdf" checked /> rebuild this book’s PDF</label>
+        <label><input type="checkbox" id="opt-publish" checked /> commit &amp; push</label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="save" id="save">Save</button>
+        <span class="kbd">⌘⏎ save · ⌘I italic · ⌘B bold · ⌘K link</span>
+      </div>
+      <div id="log" hidden></div>
+
+      <details class="manage" id="manage">
+        <summary class="lbl">Manage books</summary>
+        <ul class="booklist-m" id="mlist"></ul>
+        <div class="confirm" id="mconfirm" hidden>
+          <span class="lbl" style="margin:0" id="mconfirm-lbl"></span>
+          <input type="text" id="mconfirm-input" placeholder="type the title to confirm" />
+          <button type="button" class="danger" id="mconfirm-btn" disabled>Delete</button>
+          <button type="button" id="mconfirm-cancel" style="font:inherit;background:none;border:0;color:var(--mid);cursor:pointer">cancel</button>
+        </div>
+        <div id="mlog" class="kbd" style="margin-top:.6rem"></div>
+      </details>
+    </form>
+
+    <aside class="preview">
+      <span class="lbl">Preview</span>
+      <div class="cp" id="pv">
+        <p class="booktitle" id="pv-book"></p>
+        <blockquote class="quote" id="pv-quote"></blockquote>
+        <p class="attribution" id="pv-where" hidden></p>
+        <div class="commentary" id="pv-comm" hidden></div>
+        <footer class="entry-meta"><span class="mood-label" id="pv-mood"></span><span id="pv-tags"></span></footer>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  let S = null, mood = null, bookMood = null, isNew = false;
+  const NEW = '__new__';
+
+  function esc(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function inline(s) {
+    return esc(s)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code>$1</code>')
+      .replace(/\[(.+?)\]\((\S+?)\)/g, '<a href="$2">$1</a>')
+      .replace(/---/g, '—').replace(/--/g, '–').replace(/\.\.\./g, '…');
+  }
+  function paras(text, verse) {
+    return text.trim().split(/\n\s*\n/).filter(Boolean)
+      .map(p => '<p>' + (verse ? p.split('\n').map(inline).join('<br>') : inline(p.replace(/\s*\n\s*/g, ' '))) + '</p>').join('');
+  }
+
+  function chips(el, active, onpick) {
+    el.textContent = '';
+    Object.entries(S.moods).forEach(([k, m]) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = m.label.toLowerCase(); b.dataset.mood = k;
+      b.style.setProperty('--chip', m.accent);
+      b.setAttribute('aria-pressed', k === active ? 'true' : 'false');
+      b.addEventListener('click', () => onpick(k));
+      el.appendChild(b);
+    });
+  }
+  function setMood(k) {
+    mood = k;
+    chips($('moods'), mood, setMood);
+    $('mood-hint').textContent = bookMood && mood !== bookMood ? '(overrides the book’s ' + bookMood + ')' : '';
+    if (!$('verse').dataset.touched) $('verse').checked = (mood === 'poetry');
+    render();
+  }
+  function currentBook() {
+    if (isNew) return { title: $('nb-title').value || 'New book', author: $('nb-author').value };
+    return S.books.find(b => b.slug === $('book').value) || {};
+  }
+  function render() {
+    const pv = $('pv');
+    pv.className = 'cp mood-' + (mood || S.default_mood);
+    const b = currentBook();
+    $('pv-book').textContent = b.title ? (b.title + (b.author ? ' — ' + b.author : '')) : '';
+    const verse = $('verse').checked;
+    $('pv-quote').className = 'quote' + (verse ? ' verse' : '');
+    $('pv-quote').innerHTML = paras($('quote').value, verse);
+    const w = $('where').value.trim();
+    $('pv-where').hidden = !w; $('pv-where').innerHTML = '<span class="dash">—</span> ' + esc(w);
+    const c = $('commentary').value.trim();
+    $('pv-comm').hidden = !c; $('pv-comm').innerHTML = paras(c, false);
+    $('pv-mood').textContent = S.moods[mood] ? S.moods[mood].label : '';
+    $('pv-tags').innerHTML = $('tags').value.split(',').map(t => t.trim()).filter(Boolean)
+      .map(t => ' <span class="tag">' + esc(t) + '</span>').join('');
+  }
+
+  function fillBooks(selectSlug) {
+    const sel = $('book'); sel.textContent = '';
+    S.books.forEach(b => {
+      const o = document.createElement('option');
+      o.value = b.slug; o.textContent = b.title + ' — ' + b.author + '  (' + b.count + ')';
+      sel.appendChild(o);
+    });
+    const o = document.createElement('option'); o.value = NEW; o.textContent = '+ New book…'; sel.appendChild(o);
+    sel.value = selectSlug && S.books.some(b => b.slug === selectSlug) ? selectSlug : (S.books[0] ? S.books[0].slug : NEW);
+    onBook();
+  }
+  function pickNewMood(k) {
+    $('nb-moods').dataset.mood = k; bookMood = k;
+    chips($('nb-moods'), k, pickNewMood);
+    setMood(k);
+  }
+  function onBook() {
+    isNew = $('book').value === NEW;
+    $('newbook').hidden = !isNew;
+    if (isNew) {
+      bookMood = $('nb-moods').dataset.mood || S.default_mood;
+      chips($('nb-moods'), bookMood, pickNewMood);
+      if (!$('nb-title').value) $('nb-title').focus();
+    } else {
+      bookMood = currentBook().mood;
+    }
+    setMood(bookMood);
+  }
+
+  async function load(selectSlug) {
+    S = await (await fetch('/api/state')).json();
+    $('status').innerHTML =
+      (S.tex ? '<span class="ok">tex ✓</span>' : '<span class="no">no tex — pdf skipped</span>') + ' &nbsp; ' +
+      (S.git ? '<span class="ok">git ✓</span>' : '<span class="no">not a git repo</span>');
+    $('opt-pdf').disabled = !S.tex; if (!S.tex) $('opt-pdf').checked = false;
+    $('opt-publish').disabled = !S.git; if (!S.git) $('opt-publish').checked = false;
+    fillBooks(selectSlug);
+    fillManage();
+  }
+
+  async function save(e) {
+    e.preventDefault();
+    const btn = $('save'), log = $('log');
+    btn.disabled = true; log.hidden = false; log.className = ''; log.textContent = 'saving…';
+    const payload = {
+      quote: $('quote').value, where: $('where').value, tags: $('tags').value,
+      commentary: $('commentary').value, mood: mood, verse: $('verse').dataset.touched ? $('verse').checked : null,
+      pdf: $('opt-pdf').checked, publish: $('opt-publish').checked
+    };
+    if (isNew) payload.new_book = { title: $('nb-title').value, author: $('nb-author').value,
+      translator: $('nb-translator').value, year: $('nb-year').value, mood: bookMood };
+    else payload.book = $('book').value;
+    try {
+      const r = await fetch('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const j = await r.json();
+      if (!j.ok) { log.className = 'err'; log.textContent = j.error; }
+      else {
+        log.textContent = '✓ ' + j.log.join('\n✓ ');
+        log.innerHTML += '\n<a href="/site/books/' + j.slug + '.html" target="_blank">open the book page ↗</a>';
+        ['quote','where','tags','commentary'].forEach(id => $(id).value = '');
+        delete $('verse').dataset.touched;
+        if (isNew) { ['nb-title','nb-author','nb-translator','nb-year'].forEach(id => $(id).value = ''); }
+        await load(j.slug);
+        $('quote').focus();
+      }
+    } catch (err) { log.className = 'err'; log.textContent = String(err); }
+    btn.disabled = false;
+  }
+
+  /* ---- formatting toolbar: wraps the selection in the light-markdown the build understands ---- */
+  const TOOLS = [
+    ['<i>I</i>', 'italic', (t) => wrap(t, '*', '*')],
+    ['<b>B</b>', 'bold', (t) => wrap(t, '**', '**')],
+    ['“ ”', 'quotation marks', (t) => wrap(t, '“', '”')],
+    ['‘ ’', 'single quotes', (t) => wrap(t, '‘', '’')],
+    ['—', 'em dash', (t) => insert(t, ' — ')],
+    ['…', 'ellipsis', (t) => insert(t, '…')],
+    ['¶', 'new paragraph', (t) => insert(t, '\n\n')],
+    ['↵', 'line break (kept only in verse)', (t) => insert(t, '\n')],
+    ['link', 'link', (t) => { const sel = t.value.slice(t.selectionStart, t.selectionEnd); wrap(t, '[', '](' + (sel.startsWith('http') ? '' : 'https://') + ')'); }],
+  ];
+  function wrap(t, a, b) {
+    const s = t.selectionStart, e = t.selectionEnd, v = t.value, sel = v.slice(s, e);
+    if (sel && v.slice(s - a.length, s) === a && v.slice(e, e + b.length) === b) {  /* toggle off */
+      t.value = v.slice(0, s - a.length) + sel + v.slice(e + b.length);
+      t.setSelectionRange(s - a.length, e - a.length);
+    } else {
+      t.value = v.slice(0, s) + a + sel + b + v.slice(e);
+      if (sel) t.setSelectionRange(s + a.length, e + a.length); else t.setSelectionRange(s + a.length, s + a.length);
+    }
+    t.focus(); t.dispatchEvent(new Event('input'));
+  }
+  function insert(t, text) {
+    const s = t.selectionStart, e = t.selectionEnd, v = t.value;
+    t.value = v.slice(0, s) + text + v.slice(e);
+    t.setSelectionRange(s + text.length, s + text.length);
+    t.focus(); t.dispatchEvent(new Event('input'));
+  }
+  document.querySelectorAll('.fmt').forEach(bar => {
+    const t = $(bar.dataset.for);
+    TOOLS.forEach(([label, title, fn], i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.innerHTML = label; b.title = title;
+      b.addEventListener('mousedown', e => e.preventDefault());   /* keep the textarea's selection */
+      b.addEventListener('click', () => fn(t));
+      bar.appendChild(b);
+      if (i === 1 || i === 3 || i === 5) { const sp = document.createElement('span'); sp.className = 'sp'; bar.appendChild(sp); }
+    });
+    t.addEventListener('keydown', e => {
+      if (!(e.metaKey || e.ctrlKey)) return;
+      if (e.key === 'i') { e.preventDefault(); wrap(t, '*', '*'); }
+      else if (e.key === 'b') { e.preventDefault(); wrap(t, '**', '**'); }
+      else if (e.key === 'k') { e.preventDefault(); TOOLS[8][2](t); }
+    });
+  });
+
+  /* ---- manage books ---- */
+  let pendingDelete = null;
+  function fillManage() {
+    const ul = $('mlist'); ul.textContent = '';
+    S.books.forEach(b => {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="t"></span><span class="c"></span><button type="button">delete…</button>';
+      li.querySelector('.t').textContent = b.title + ' — ' + b.author;
+      li.querySelector('.c').textContent = b.count + (b.count === 1 ? ' entry' : ' entries');
+      li.querySelector('button').addEventListener('click', () => askDelete(b));
+      ul.appendChild(li);
+    });
+    if (!S.books.length) ul.innerHTML = '<li><span class="c">no books yet</span></li>';
+  }
+  function askDelete(b) {
+    pendingDelete = b;
+    $('mconfirm').hidden = false;
+    $('mconfirm-lbl').textContent = 'Delete “' + b.title + '” and its ' + b.count + (b.count === 1 ? ' entry' : ' entries') + '?';
+    $('mconfirm-input').value = ''; $('mconfirm-btn').disabled = true; $('mconfirm-input').focus();
+    $('mlog').textContent = '';
+  }
+  $('mconfirm-input').addEventListener('input', () => {
+    $('mconfirm-btn').disabled = !pendingDelete || $('mconfirm-input').value.trim().toLowerCase() !== pendingDelete.title.trim().toLowerCase();
+  });
+  $('mconfirm-cancel').addEventListener('click', () => { pendingDelete = null; $('mconfirm').hidden = true; });
+  $('mconfirm-btn').addEventListener('click', async () => {
+    if (!pendingDelete) return;
+    const btn = $('mconfirm-btn'); btn.disabled = true; $('mlog').textContent = 'deleting…';
+    try {
+      const r = await fetch('/api/delete_book', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book: pendingDelete.slug, confirm: $('mconfirm-input').value, publish: $('opt-publish').checked }) });
+      const j = await r.json();
+      $('mlog').textContent = j.ok ? '✓ ' + j.log.join(' · ') : j.error;
+      if (j.ok) { pendingDelete = null; $('mconfirm').hidden = true; await load(); }
+    } catch (err) { $('mlog').textContent = String(err); }
+  });
+
+  $('book').addEventListener('change', onBook);
+  ['quote','where','tags','commentary','nb-title','nb-author'].forEach(id => $(id).addEventListener('input', render));
+  $('verse').addEventListener('change', () => { $('verse').dataset.touched = '1'; render(); });
+  $('form').addEventListener('submit', save);
+  document.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') save(e); });
+  load();
+})();
+</script>
+</body>
+</html>
