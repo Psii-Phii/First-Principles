@@ -39,7 +39,7 @@
 .cp .meta .sep { opacity: 0.5; margin: 0 0.4em; }
 
 /* ---------------- library list ---------------- */
-.booklist { list-style: none; margin: 0; padding: 0; max-width: var(--maxw); }
+.booklist { list-style: none; margin: 0 auto; padding: 0; max-width: none; }
 .booklist li { padding: 1.4rem 0; border-top: 1px solid var(--rule); }
 .booklist li:last-child { border-bottom: 1px solid var(--rule); }
 .booklist .when {
@@ -65,7 +65,7 @@
 .booklist p { margin: 0; color: var(--ink); opacity: 0.8; line-height: 1.5; }
 
 /* ---------------- book notes ---------------- */
-.book-notes { max-width: 58ch; margin: 0 0 2.6rem; font-size: 1.08rem; line-height: 1.6; color: var(--ink); opacity: 0.85; }
+.book-notes { max-width: 34rem; margin: 0 auto 2.6rem; font-size: 1.08rem; line-height: 1.6; color: var(--ink); opacity: 0.85; }
 .book-notes p { margin: 0 0 1em; }
 .book-notes p:last-child { margin-bottom: 0; }
 
