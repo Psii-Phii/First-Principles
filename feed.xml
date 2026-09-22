@@ -5,6 +5,13 @@
     <link>https://psii-phii.github.io/First-Principles/articles.html</link>
     <description>Essays and lecture notes on physics and mathematics.</description>
     <item>
+      <title>Two-Level Atomic Systems</title>
+      <link>https://psii-phii.github.io/First-Principles/article.html?p=two-level-atomic-systems</link>
+      <guid>https://psii-phii.github.io/First-Principles/article.html?p=two-level-atomic-systems</guid>
+      <pubDate>Tue, 15 Sep 2026 00:00:00 GMT</pubDate>
+      <description>Running notes from Quantum Optics, Lecture 2. The Stern–Gerlach experiment forces two-valuedness on us; sequential measurements alone are enough to reconstruct the spin operators; and every two-level Hamiltonian turns out to rotate a vector on a sphere.</description>
+    </item>
+    <item>
       <title>Geometric Formulation of Classical Mechanics</title>
       <link>https://psii-phii.github.io/First-Principles/article.html?p=geometric-mechanics</link>
       <guid>https://psii-phii.github.io/First-Principles/article.html?p=geometric-mechanics</guid>

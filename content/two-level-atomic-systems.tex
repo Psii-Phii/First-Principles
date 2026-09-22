@@ -1,0 +1,516 @@
+%% site-title:   Two-Level Atomic Systems
+%% site-slug:    two-level-atomic-systems
+%% site-date:    2026-09-15
+%% site-topic:   quantum
+%% site-excerpt: Running notes from Quantum Optics, Lecture 2. The Stern--Gerlach
+%%               experiment forces two-valuedness on us; sequential measurements
+%%               alone are enough to reconstruct the spin operators; and every
+%%               two-level Hamiltonian turns out to rotate a vector on a sphere.
+%% site-published: true
+
+% =====================================================================
+%  Two-Level Atomic Systems — Quantum Optics, Lecture 2
+%  Notes of 15 September 2026, lightly edited.
+% =====================================================================
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    total={170mm,257mm},
+    left=15mm,top=25mm,
+    headheight=15pt
+}
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+% dhortcmds / dhortthms with portable fallbacks (the real packages win when present)
+\IfFileExists{dhortcmds.sty}{\usepackage{dhortcmds}}{}
+\IfFileExists{dhortthms.sty}{\usepackage{dhortthms}}{}
+\providecommand{\br}[1]{\left(#1\right)}
+\providecommand{\sbr}[1]{\left[#1\right]}
+\providecommand{\cbr}[1]{\left\{#1\right\}}
+\providecommand{\mc}[1]{\mathcal{#1}}
+\providecommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\providecommand{\smallmat}[1]{\bigl[\begin{smallmatrix}#1\end{smallmatrix}\bigr]}
+\providecommand{\kb}[2]{\left|#1\middle\rangle\middle\langle#2\right|}
+\providecommand{\bk}[2]{\left\langle#1\middle|#2\right\rangle}
+\providecommand{\com}[2]{\left[#1,#2\right]}
+\providecommand{\lbr}[1]{\left\langle #1\right\rangle}
+\providecommand{\C}{\mathbb{C}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\re}{\operatorname{Re}}
+\providecommand{\im}{\operatorname{Im}}
+\usepackage{physics}
+\usepackage[document]{ragged2e}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{graphicx}
+% Blackboard-bold 1: prefer dsfont, else a poor man's version
+\IfFileExists{dsfont.sty}{%
+  \usepackage{dsfont}%
+  \newcommand{\mathbbm}{\mathds}%
+}{}
+\providecommand{\mathbbm}[1]{{\mathchoice{\mathrm{1}\mskip-4mu \mathrm{l}}{\mathrm{1}\mskip-4mu \mathrm{l}}{\mathrm{1}\mskip-4.5mu \mathrm{l}}{\mathrm{1}\mskip-5mu \mathrm{l}}}}
+\usepackage{empheq}
+\usepackage{tcolorbox}
+\tcbuselibrary{most}
+\newtcbox{\mathbox}{nobeforeafter, colback=white, colframe=black, boxrule=0.5pt, arc=3pt}
+
+\newtcolorbox{mybox}{
+    colback=white,
+    colframe=black,
+    boxrule=0.5pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt
+}
+
+% derivation environment: collapsible on the web; a titled block in print
+\newenvironment{derivation}[1][Derivation]{\par\noindent\textbf{#1.}\par\small}{\par}
+% \websvg: inlined on the web; plain include in print
+\providecommand{\websvg}[1]{\includegraphics[width=0.75\textwidth]{#1}}
+
+% Theorem fallbacks when dhortthms is absent
+\providecommand{\dhthmsloaded}{}
+\makeatletter
+\@ifundefined{proposition}{%
+  \newtheorem{proposition}{Proposition}
+  \newtheorem{corollary}{Corollary}
+  \theoremstyle{remark}
+  \newtheorem*{remark}{Remark}
+  \newtheorem*{note}{Note}
+}{}
+\makeatother
+
+% --- Readability tweaks ---
+\AtBeginDocument{\fontsize{13.5}{17}\selectfont}
+\setstretch{1.28}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\emergencystretch=3em
+\allowdisplaybreaks
+
+\title{Two-Level Atomic Systems}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\emph{Quantum Optics, Lecture 2 --- notes of 15 September 2026. Running notes taken in class, lightly edited: a few connecting sentences and skipped steps have been added, but the order and content are the lecture's.}
+
+\section{Two level atomic systems}\label{sec:atomic}
+
+\subsection{Stern--Gerlach and spin $\tfrac{1}{2}$}
+
+The experiment that forces two-level systems on us. Silver atoms leave a furnace, are collimated, and pass through an inhomogeneous magnetic field before striking a screen. The atom carries a magnetic moment proportional to its angular momentum,
+\begin{flalign}
+    \langle\vec{\mu}\,\rangle = -g\,\mu_B \frac{\langle\vec{J}\,\rangle}{\hbar}.
+\end{flalign}
+
+\begin{figure}[h]
+\centering
+\websvg{figures/sg-apparatus.svg}
+\caption{The Stern--Gerlach apparatus: furnace, collimator, magnet with field gradient along $\hat{z}$, and the two observed spots $N_1$, $N_2$ on the screen at $P$. The deflecting force is $\vec{F} = \grad\br{\mu_z B_z}$.}
+\end{figure}
+
+The interaction energy of the magnetic moment with the magnetic field is just $-\vec{\mu}\cdot\vec{B}$, so the force along the field gradient is
+\begin{flalign}
+    F_z = \pdv{z}\br{\vec{\mu}\cdot\vec{B}} \simeq \mu_z \pdv{B_z}{z}.
+\end{flalign}
+
+\begin{itemize}
+    \item If $\mu_z > 0$ (i.e. $S_z < 0$, since $\vec{\mu}$ is anti-parallel to $\vec{S}$ for the electron) the atom experiences an upward force.
+    \item If $\mu_z < 0$ ($S_z > 0$) the atom experiences a downward force.
+    \item The atoms in the furnace are randomly oriented, so classically we would expect $\mu_z$ to take values anywhere between $\abs{\mu}$ and $-\abs{\mu}$; this would lead to a continuous spread in deflections --- unlike the only \emph{two} spots actually observed.
+\end{itemize}
+
+$\Rightarrow$ Later this two-valuedness was realized to be \emph{spin}.
+
+$\Rightarrow$ We also see the weird measurement effects with multiple Stern--Gerlach apparatuses in sequence. There is a familiar optical analogue. Take $x$-polarized light propagating in the $z$-direction,
+\begin{flalign}
+    \vec{E} = E_0\, \hat{x} \cos(kz - \omega t),
+\end{flalign}
+and likewise $y$-polarized light, also propagating in the $z$-direction,
+\begin{flalign}
+    \vec{E} = E_0\, \hat{y} \cos(kz - \omega t).
+\end{flalign}
+Then, chaining polarizers exactly the way we chain SG apparatuses:
+
+\begin{figure}[h]
+\centering
+\websvg{figures/sg-sequential.svg}
+\caption{Crossed polarizers ($x$ then $y$) pass nothing; but insert a $45^\circ$ polarizer between them and something comes out. Replacing polarizers by Stern--Gerlach apparatuses along $\hat{z}$, $\hat{x}$, $\hat{z}$ gives the same surprise: the intermediate measurement destroys the information selected by the first.}
+\end{figure}
+
+The $45^\circ$ polarizer state is a superposition of $x$- and $y$-polarizations --- and it is exactly this superposition structure that we now use to \emph{construct} the spin operators.
+
+\subsection{Constructing spin operators from sequential SG experiments}\label{sec:construct}
+
+Write $\ket{\pm}$ for the states selected by SG$\hat{z}$, with $S_z\ket{\pm} = \pm\frac{\hbar}{2}\ket{\pm}$. We know we can write
+\begin{flalign}
+    S_z = \frac{\hbar}{2}\sbr{\,\kb{+}{+} - \kb{-}{-}\,}.
+\end{flalign}
+
+Where does the $\hbar/2$ come from? Classically a current loop has the magnetic moment\footnote{Gaussian units --- hence the factors of $c$. Here $T = 2\pi r/v$ is the orbital period and $A = \pi r^2$ the loop area.}
+\begin{flalign}
+    \mu = \frac{IA}{c} = \frac{qA}{Tc} = \frac{qvA}{2\pi r\, c} = \frac{qv\,\pi r^2}{2\pi r\, c}
+        = \frac{qv}{2c}\,r = \frac{q}{2mc}\,mvr = \frac{q}{2mc}\,L,
+\end{flalign}
+so
+\begin{flalign}
+    \mu = \frac{q}{2mc}\,L.
+\end{flalign}
+For spin, $\mu = g\,\dfrac{q}{2mc}\,S$; taking $g = 1$ would give the classical orbital value. Dirac says $g = 2$:
+\begin{flalign}
+    \mu = \frac{q}{mc}\,S, \qquad
+    \abs{S_z} = \frac{m_e c}{e}\,\abs{\mu_z}, \qquad
+    \mu_z = \frac{e\hbar}{2m_e c}\;\text{(exp.)}
+    \quad\Rightarrow\quad \abs{S_z} = \frac{\hbar}{2}.
+\end{flalign}
+The measured moment is one Bohr magneton, and with $g=2$ that pins the spin projection to $S_z = \pm\hbar/2$. So indeed
+\begin{empheq}[box=\mathbox]{align}
+    S_z = \frac{\hbar}{2}\sbr{\,\kb{+}{+} - \kb{-}{-}\,}.
+\end{empheq}
+
+What about $S_x$ and $S_y$? Remarkably, the splitting statistics of sequential experiments determine them completely.
+
+\emph{Observation.} The $S_x+$ beam splits $50/50$ in SG$\hat{z}$, so we require that
+\begin{flalign}
+    \abs{\bk{+}{S_x;+}}^2 = \abs{\bk{-}{S_x;+}}^2 = \frac{1}{2},
+\end{flalign}
+but it also must be the case that
+\begin{flalign}
+    \ket{S_x;+} = c_1\ket{+} + c_2\ket{-}.
+\end{flalign}
+Thus, combining the two and discarding an unphysical overall phase (chosen so the coefficient of $\ket{+}$ is real and positive), we have
+\begin{flalign}
+    \ket{S_x;+} = \frac{1}{\sqrt{2}}\ket{+} + \frac{e^{i\delta_1}}{\sqrt{2}}\ket{-}.
+\end{flalign}
+Then, since $\ket{S_x;-}$ is necessarily orthogonal to $\ket{S_x;+}$ (again up to phase),
+\begin{flalign}
+    \ket{S_x;-} = \frac{1}{\sqrt{2}}\ket{+} - \frac{e^{i\delta_1}}{\sqrt{2}}\ket{-}.
+\end{flalign}
+The same argument for the $y$-direction gives $\ket{S_y;\pm} = \frac{1}{\sqrt{2}}\br{\ket{+} \pm e^{i\delta_2}\ket{-}}$ with its own phase $\delta_2$.
+
+\emph{Observation.} $S_y+$ \emph{also} splits $50/50$ in SG$\hat{x}$, so
+\begin{flalign}
+    \bk{S_y;+}{S_x;+} = \frac{1}{2}\br{1 + e^{i(\delta_1 - \delta_2)}},
+\end{flalign}
+\begin{flalign}
+    \abs{\bk{S_y;+}{S_x;+}}^2
+    = \frac{1}{4}\abs{1 + e^{i(\delta_1-\delta_2)}}^2
+    = \frac{1}{2}\br{1 + \cos(\delta_1 - \delta_2)} = \frac{1}{2}
+\end{flalign}
+\begin{flalign}
+    \iff \cos(\delta_1 - \delta_2) = 0 \iff \delta_2 - \delta_1 = \pm\frac{\pi}{2}.
+\end{flalign}
+
+\begin{derivation}[Where the overlap comes from]
+Expanding both states in the $\ket{\pm}$ basis,
+\begin{flalign*}
+    \bk{S_y;+}{S_x;+}
+    = \frac{1}{\sqrt 2}\br{\bra{+} + e^{-i\delta_2}\bra{-}}\cdot
+      \frac{1}{\sqrt 2}\br{\ket{+} + e^{i\delta_1}\ket{-}}
+    = \frac{1}{2}\br{1 + e^{i(\delta_1-\delta_2)}},
+\end{flalign*}
+using $\bk{+}{+} = \bk{-}{-} = 1$ and $\bk{+}{-} = 0$. For the modulus,
+$\abs{1+e^{i\alpha}}^2 = (1+\cos\alpha)^2 + \sin^2\alpha = 2 + 2\cos\alpha$ with $\alpha = \delta_1 - \delta_2$.
+\end{derivation}
+
+The freedom that remains is a convention: choose $\delta_1 = 0$, and hence $\delta_2 = \pi/2$. So
+\begin{flalign}
+    \ket{S_x;\pm} = \frac{1}{\sqrt{2}}\br{\ket{+} \pm \ket{-}}
+    \qquad\text{and}\qquad
+    \ket{S_y;\pm} = \frac{1}{\sqrt{2}}\br{\ket{+} \pm i\ket{-}}.
+\end{flalign}
+So, building each operator out of its own eigenstates the same way we built $S_z$,
+\begin{flalign}
+    S_x &= \frac{\hbar}{2}\br{\kb{S_x;+}{S_x;+} - \kb{S_x;-}{S_x;-}}
+         = \frac{\hbar}{2}\br{\kb{+}{-} + \kb{-}{+}}, \\
+    S_y &= \frac{\hbar}{2}\br{-i\,\kb{+}{-} + i\,\kb{-}{+}}.
+\end{flalign}
+
+\begin{derivation}[The outer products, expanded]
+For $S_x$:
+\begin{flalign*}
+    \kb{S_x;\pm}{S_x;\pm}
+    = \frac{1}{2}\br{\ket{+} \pm \ket{-}}\br{\bra{+} \pm \bra{-}}
+    = \frac{1}{2}\br{\kb{+}{+} + \kb{-}{-} \pm \kb{+}{-} \pm \kb{-}{+}}.
+\end{flalign*}
+Subtracting, the diagonal pieces cancel and the cross terms add:
+\begin{flalign*}
+    S_x = \frac{\hbar}{2}\br{\kb{+}{-} + \kb{-}{+}}.
+\end{flalign*}
+For $S_y$, note $\ket{S_y;\pm}\!\bra{S_y;\pm} = \frac{1}{2}\br{\kb{+}{+} + \kb{-}{-} \pm i\,\kb{-}{+} \mp i\,\kb{+}{-}}$ (the $i$ conjugates on the bra side), so
+\begin{flalign*}
+    S_y = \frac{\hbar}{2}\br{-i\,\kb{+}{-} + i\,\kb{-}{+}}.
+\end{flalign*}
+In the $\cbr{\ket{+},\ket{-}}$ basis these are $\frac{\hbar}{2}\sigma_x$ and $\frac{\hbar}{2}\sigma_y$ --- the Pauli matrices of the next section, derived here from splitting statistics alone.
+\end{derivation}
+
+\section{General two level systems}\label{sec:general}
+
+A quantum system whose Hilbert space is exactly $\C^2$. It has two basis states, denoted
+\begin{flalign}
+    \ket{\uparrow} = \ket{0} = \mat{1\\0}
+    \qquad\text{and}\qquad
+    \ket{\downarrow} = \ket{1} = \mat{0\\1}.
+\end{flalign}
+The general state is
+\begin{flalign}
+    \ket{\psi} = c_0\ket{0} + c_1\ket{1}, \qquad \abs{c_0}^2 + \abs{c_1}^2 = 1, \qquad c_0, c_1 \in \C
+\end{flalign}
+$\Rightarrow$ $4$ real numbers, $-1$ for normalization, $-1$ for the global phase $\Rightarrow$ $2$ independent real parameters. (Keep this count in mind: it is why a sphere shows up in \S\ref{sec:state}.)
+
+\subsection{Pauli matrices}
+
+\begin{flalign}
+    \sigma_x = \mat{0 & 1\\ 1 & 0}, \qquad
+    \sigma_y = \mat{0 & -i\\ i & 0}, \qquad
+    \sigma_z = \mat{1 & 0\\ 0 & -1}
+\end{flalign}
+\begin{flalign}
+    \sigma_i^2 = \mathbbm{1}, \qquad
+    \sigma_i\sigma_j = \delta_{ij}\mathbbm{1} + i\epsilon_{ijk}\sigma_k, \qquad
+    \com{\sigma_i}{\sigma_j} = 2i\epsilon_{ijk}\sigma_k, \qquad
+    \cbr{\sigma_i, \sigma_j} = 2\delta_{ij}\mathbbm{1}
+\end{flalign}
+
+For the atomic transitions to come, name the excited and ground states $\ket{e} = \ket{0}$ (upper component) and $\ket{g} = \ket{1}$. Observe
+\begin{flalign}
+    \hat{\sigma} &= \kb{g}{e} = \tfrac{1}{2}(\sigma_x - i\sigma_y), \\
+    \hat{\sigma}^\dagger &= \kb{e}{g} = \tfrac{1}{2}(\sigma_x + i\sigma_y)
+\end{flalign}
+$\Rightarrow$ $\hat{\sigma} + \hat{\sigma}^\dagger = \sigma_x$, and
+\begin{flalign}
+    \kb{e}{e} = \tfrac{1}{2}\br{\mathbbm{1} + \sigma_z}.
+\end{flalign}
+
+\begin{note}
+The lecture had the two identifications the other way around ($\hat\sigma = \frac12(\sigma_x + i\sigma_y)$), which is inconsistent with $\kb{e}{e} = \frac{1}{2}(\mathbbm{1}+\sigma_z)$ two lines later: with $\ket{e}$ as the \emph{upper} component, $\kb{g}{e} = \smallmat{0&0\\1&0} = \frac12(\sigma_x - i\sigma_y)$ is the lowering operator. The version above is the consistent one, and it is the convention we will use for the rest of the course.
+\end{note}
+
+\begin{proposition}
+$\cbr{\mathbbm{1}, \sigma_x, \sigma_y, \sigma_z}$ is a basis for all $2\times 2$ matrices.
+\end{proposition}
+
+\begin{proof}
+Any Hermitian matrix $H$ can be written as
+\begin{flalign}
+    H = \mat{a & c - id\\ c + id & b}
+      = \frac{a+b}{2}\,\mathbbm{1} + c\,\sigma_x + d\,\sigma_y + \frac{a-b}{2}\,\sigma_z,
+\end{flalign}
+with $a, b, c, d \in \R$ --- so the four matrices span the Hermitian matrices over the \emph{reals}. An arbitrary $2\times2$ matrix $M$ splits as $M = \frac{1}{2}(M + M^\dagger) + \frac{1}{2}(M - M^\dagger)$, a Hermitian part plus $i$ times another Hermitian part ($-i(M-M^\dagger)/2$ is Hermitian); allowing \emph{complex} coefficients therefore reaches every $2\times2$ matrix. Linear independence follows from the trace inner product below: the four matrices are mutually orthogonal and nonzero.
+\end{proof}
+
+We can therefore write every 2-level Hamiltonian as
+\begin{empheq}[box=\mathbox]{align}
+    \hat{H} = E_0\,\mathbbm{1} + \frac{\hbar}{2}\,\vec{\Omega}\cdot\vec{\sigma}
+\end{empheq}
+for some $E_0 \in \R$.
+
+\begin{note}
+Suppose $H = a\mathbbm{1} + b\sigma_x + c\sigma_y + d\sigma_z$; then
+\begin{flalign}
+    H = \mat{H_{00} & H_{01}\\ H_{01}^* & H_{11}}
+    \;\Rightarrow\;
+    a = \frac{H_{00}+H_{11}}{2}, \quad
+    b = \re H_{01}, \quad
+    c = -\im H_{01}, \quad
+    d = \frac{H_{00}-H_{11}}{2},
+\end{flalign}
+or, using the inner product $\lbr{A, B} = \frac{1}{2}\Tr(AB)$,
+\begin{flalign}
+    a = \tfrac{1}{2}\Tr(H), \qquad b = \tfrac{1}{2}\Tr(H\sigma_x), \qquad \text{etc.}
+\end{flalign}
+So, from this,
+\begin{flalign}
+    \vec{\Omega} = \frac{2}{\hbar}\,(b, c, d), \qquad E_0 = a,
+\end{flalign}
+\begin{itemize}
+    \item $\hbar\Omega_z = H_{00} - H_{11}$ \quad (energy splitting),
+    \item $\hbar\Omega_x = 2\re H_{01}$,
+    \item $\hbar\Omega_y = -2\im H_{01}$ \quad (coupling, magnitude and phase).
+\end{itemize}
+\end{note}
+
+\subsection{Eigenvalues of a general 2-level Hamiltonian $\hat{H}$}
+
+We can make use of the Pauli identities to find the energy levels of any 2-level $\hat{H}$. Start with
+\begin{flalign}
+    \vec{\Omega}\cdot\vec{\sigma} = \Omega_x\sigma_x + \Omega_y\sigma_y + \Omega_z\sigma_z = \Omega_i\sigma_i.
+\end{flalign}
+Then
+\begin{flalign}
+    \br{\vec{\Omega}\cdot\vec{\sigma}}^2 = \Omega_i\sigma_i\,\Omega_j\sigma_j = \Omega_i\Omega_j\,\sigma_i\sigma_j
+\end{flalign}
+since the $\Omega_i$ are scalars and commute through. Using $\sigma_i\sigma_j = \delta_{ij}\mathbbm{1} + i\epsilon_{ijk}\sigma_k$,
+\begin{flalign}
+    \br{\vec{\Omega}\cdot\vec{\sigma}}^2
+    = \Omega_i\Omega_j\,\delta_{ij}\,\mathbbm{1} + \underbrace{i\,\Omega_i\Omega_j\,\epsilon_{ijk}\sigma_k}_{=\,0}
+    = \Omega_i\Omega_i\,\mathbbm{1} = \abs{\Omega}^2\,\mathbbm{1},
+\end{flalign}
+where the second term vanishes because a symmetric object is contracted with an antisymmetric one:
+\begin{flalign}
+    i\,\Omega_i\Omega_j\,\epsilon_{ijk}\sigma_k
+    = i\,\Omega_j\Omega_i\,\epsilon_{jik}\sigma_k
+    = i\,\Omega_i\Omega_j\,(-\epsilon_{ijk})\sigma_k
+    = 0
+\end{flalign}
+(relabel the summed indices $i \leftrightarrow j$, then use $\epsilon_{jik} = -\epsilon_{ijk}$; a quantity equal to its own negative is zero). Thus
+\begin{empheq}[box=\mathbox]{align}
+    \br{\vec{\Omega}\cdot\vec{\sigma}}^2 = \abs{\Omega}^2\,\mathbbm{1}.
+\end{empheq}
+
+Let $M = \vec{\Omega}\cdot\vec{\sigma}$, and let $\ket{v}$ be an eigenvector with eigenvalue $\lambda$. Then
+\begin{flalign}
+    M\ket{v} = \lambda\ket{v} \;\Rightarrow\; M^2\ket{v} = \lambda M\ket{v} = \lambda^2\ket{v},
+\end{flalign}
+but $M^2 = \abs{\Omega}^2\mathbbm{1}$, so $M^2\ket{v} = \abs{\Omega}^2\ket{v}$, and comparing:
+\begin{flalign}
+    \abs{\Omega}^2 = \lambda^2 \iff \lambda = \pm\abs{\Omega}.
+\end{flalign}
+Furthermore $\lambda^2 \ge 0$ and $\lambda \in \R$, as befits a Hermitian $M$. And both signs really occur:
+\begin{flalign}
+    \Tr\br{\vec{\Omega}\cdot\vec{\sigma}} = \Omega_i \Tr(\sigma_i) = 0 = \lambda_1 + \lambda_2
+    \iff \lambda_1 = -\lambda_2,
+\end{flalign}
+consistent with our $\lambda$ values. Then, for the two possible energy levels,
+\begin{flalign}
+    \hat{H}\ket{\pm} = \br{E_0 \pm \frac{\hbar}{2}\abs{\vec{\Omega}}}\ket{\pm}
+    \iff E_\pm = E_0 \pm \frac{\hbar}{2}\abs{\vec{\Omega}},
+\end{flalign}
+\begin{empheq}[box=\mathbox]{align}
+    E_+ - E_- = \hbar\,\abs{\vec{\Omega}}.
+\end{empheq}
+The identity component shifts both levels; all of the physics of the splitting sits in $\vec{\Omega}$.
+
+\begin{corollary}
+For a unit vector $\hat{n}$ we have
+\begin{flalign}
+    e^{-i\frac{\theta}{2}\hat{n}\cdot\vec{\sigma}}
+    = \cos\br{\frac{\theta}{2}}\mathbbm{1} - i\sin\br{\frac{\theta}{2}}\br{\hat{n}\cdot\vec{\sigma}}.
+\end{flalign}
+\end{corollary}
+
+\begin{proof}
+We have that
+\begin{flalign}
+    e^{A} = \sum_{n=0}^{\infty}\frac{A^n}{n!},
+    \qquad\text{then let}\qquad
+    A = -i\,\frac{\theta}{2}\,\underbrace{\hat{n}\cdot\vec{\sigma}}_{M} = -i\,\frac{\theta}{2}\,M.
+\end{flalign}
+Since $\hat n$ is a unit vector, the boxed identity above gives $M^2 = \mathbbm{1}$. Observe $M^0 = \mathbbm{1}$, $M^1 = M$, $M^2 = \mathbbm{1}$, $M^3 = M^2 M = M$, $M^4 = \mathbbm{1}$, $M^5 = M$, \dots; from this
+\begin{flalign}
+    n \text{ odd} \Rightarrow M^n = M, \qquad n \text{ even} \Rightarrow M^n = \mathbbm{1}.
+\end{flalign}
+Then
+\begin{flalign}
+    e^{\br{-\frac{i\theta}{2}}M}
+    &= \sum_{n=0}^{\infty}\br{-\frac{i\theta}{2}}^n \frac{1}{n!}\,M^n \\
+    &= \sum_{n\text{ even}}\br{-\frac{i\theta}{2}}^n \frac{1}{n!}\,\underbrace{M^n}_{\mathbbm{1}}
+     + \sum_{n\text{ odd}}\br{-\frac{i\theta}{2}}^n \frac{1}{n!}\,\underbrace{M^n}_{M} \\
+    &= \sum_{k=0}^{\infty}\br{-\frac{i\theta}{2}}^{2k}\frac{1}{(2k)!}
+     + \sum_{k=0}^{\infty}\br{-\frac{i\theta}{2}}^{2k+1}\frac{M}{(2k+1)!} \\
+    &= \sum_{k=0}^{\infty}(-1)^k\br{\frac{\theta}{2}}^{2k}\frac{1}{(2k)!}\,\mathbbm{1}
+     \;-\; i\sum_{k=0}^{\infty}(-1)^k\br{\frac{\theta}{2}}^{2k+1}\frac{1}{(2k+1)!}\,M \\
+    &= \cos\br{\frac{\theta}{2}}\mathbbm{1} - i\sin\br{\frac{\theta}{2}}M,
+\end{flalign}
+recognizing the Taylor series of cosine and sine (for the odd sum, $(-i)^{2k+1} = -i\,(-1)^k$).
+\end{proof}
+
+Thus we have that
+\begin{flalign}
+    e^{-i\frac{\theta}{2}\hat{n}\cdot\vec{\sigma}}
+    = \cos\br{\frac{\theta}{2}}\mathbbm{1} - i\sin\br{\frac{\theta}{2}}\,\hat{n}\cdot\vec{\sigma}.
+\end{flalign}
+Why care? Because this is exactly the form of the time-evolution operator. For
+\begin{flalign}
+    \hat{U}(t) = e^{-i\hat{H}t/\hbar} = e^{-iE_0 t/\hbar}\, e^{-i\frac{\abs{\vec{\Omega}}}{2}t\,\hat{n}\cdot\vec{\sigma}},
+    \qquad\text{where}\quad
+    \hat{H} = E_0\mathbbm{1} + \frac{\hbar}{2}\vec{\Omega}\cdot\vec{\sigma}, \quad
+    \vec{\Omega} = \abs{\vec{\Omega}}\,\hat{n},
+\end{flalign}
+(the two factors commute, since $\mathbbm{1}$ commutes with everything), the first factor is a global phase, and
+\begin{flalign}
+    e^{-i\frac{\abs{\vec{\Omega}}}{2}t\,\hat{n}\cdot\vec{\sigma}}
+    \;\hookrightarrow\; \text{rotation of the Bloch vector by } \theta = \abs{\vec{\Omega}}\,t \text{ about } \hat{n}.
+\end{flalign}
+(The Bloch vector is defined in \S\ref{sec:expectation}; comparing with the corollary, the rotation angle grows linearly in time at rate $\abs{\vec{\Omega}}$.)
+\begin{itemize}
+    \item $e^{-i\frac{\pi}{2}\sigma_x} = -i\sigma_x$, and $-i\sigma_x\ket{g} = -i\ket{e}$ \quad ($\pi$-pulse about $x$: a rotation by $\theta = \pi$ takes the ground state to the excited state, up to phase).
+\end{itemize}
+
+\subsection{The general form of a state}\label{sec:state}
+
+\begin{flalign}
+    \ket{\psi} = c_0\ket{0} + c_1\ket{1}, \qquad c_0, c_1 \in \C, \qquad \abs{c_0}^2 + \abs{c_1}^2 = 1.
+\end{flalign}
+Let $c_0 = r_0 e^{i\alpha_0}$, $c_1 = r_1 e^{i\alpha_1}$; then
+\begin{flalign}
+    \abs{c_0}^2 + \abs{c_1}^2 = r_0^2 + r_1^2 = 1, \qquad r_0, r_1 \ge 0
+    \quad\Rightarrow\quad
+    r_0 = \cos\br{\frac{\theta}{2}}, \quad r_1 = \sin\br{\frac{\theta}{2}}, \quad \theta \in [0, \pi].
+\end{flalign}
+The pair $(r_0, r_1)$ lies on the unit quarter-circle, so a single angle parametrizes it; the half-angle is chosen so that $\theta$ itself sweeps $[0,\pi]$ --- the polar angle of a sphere.
+
+\begin{figure}[h]
+\centering
+\websvg{figures/bloch-angle.svg}
+\caption{$r_0^2 + r_1^2 = 1$ with $r_0, r_1 \ge 0$: the moduli live on a quarter of the unit circle, at angle $\theta/2$ from the $r_0$ axis.}
+\end{figure}
+
+So, pulling out the global phase $e^{i\alpha_0}$ and writing $\varphi \equiv \alpha_1 - \alpha_0$,
+\begin{flalign}
+    \ket{\psi} = \cos\br{\frac{\theta}{2}}\ket{0}
+    + \underbrace{e^{i(\alpha_1 - \alpha_0)}}_{\text{relative phase } e^{i\varphi}}\,\sin\br{\frac{\theta}{2}}\ket{1},
+\end{flalign}
+the global phase not mattering. Two real parameters, $(\theta, \varphi)$, exactly as counted in \S\ref{sec:general}.
+
+\subsection{Expectation values of $\sigma_x$, $\sigma_y$, $\sigma_z$}\label{sec:expectation}
+
+For a general operator and state,
+\begin{flalign}
+    A = \mat{A_{00} & A_{01}\\ A_{10} & A_{11}}, \qquad \ket{\psi} = \mat{c_0\\ c_1},
+\end{flalign}
+\begin{flalign}
+    \ev{A}{\psi} = A_{00}\abs{c_0}^2 + A_{01}\,c_0^* c_1 + A_{10}\,c_0 c_1^* + A_{11}\abs{c_1}^2.
+\end{flalign}
+Applying this to each Pauli matrix, with $c_0 = \cos(\theta/2)$, $c_1 = e^{i\varphi}\sin(\theta/2)$:
+\begin{flalign}
+    \sigma_z = \mat{1 & 0\\ 0 & -1} \;\Rightarrow\;
+    \langle\sigma_z\rangle = \abs{c_0}^2 - \abs{c_1}^2
+    = \cos^2\br{\frac{\theta}{2}} - \sin^2\br{\frac{\theta}{2}} = \cos\theta,
+\end{flalign}
+\begin{flalign}
+    \sigma_x = \mat{0 & 1\\ 1 & 0} \;\Rightarrow\;
+    \langle\sigma_x\rangle = c_0^* c_1 + c_0 c_1^* = c_0^* c_1 + (c_0^* c_1)^* = 2\re(c_0^* c_1),
+\end{flalign}
+\begin{flalign}
+    c_0^* c_1 = \cos\br{\frac{\theta}{2}}\, e^{i\varphi} \sin\br{\frac{\theta}{2}} = \frac{e^{i\varphi}}{2}\sin\theta
+    \quad\Rightarrow\quad
+    \langle\sigma_x\rangle = \sin\theta\cos\varphi,
+\end{flalign}
+using the double-angle identity $2\sin(\theta/2)\cos(\theta/2) = \sin\theta$. Similarly $\langle\sigma_y\rangle = 2\im(c_0^* c_1) = \sin\theta\sin\varphi$.
+
+\begin{derivation}[The $\sigma_y$ case, spelled out]
+$\sigma_y$ has $A_{00} = A_{11} = 0$, $A_{01} = -i$, $A_{10} = i$, so
+\begin{flalign*}
+    \langle\sigma_y\rangle = -i\,c_0^* c_1 + i\,c_0 c_1^*
+    = -i\sbr{c_0^* c_1 - (c_0^* c_1)^*}
+    = -i\sbr{2i\im(c_0^* c_1)}
+    = 2\im(c_0^* c_1),
+\end{flalign*}
+and $\im\br{\frac{e^{i\varphi}}{2}\sin\theta} = \frac{1}{2}\sin\theta\sin\varphi$, giving $\langle\sigma_y\rangle = \sin\theta\sin\varphi$.
+\end{derivation}
+
+So
+\begin{empheq}[box=\mathbox]{align}
+    \vec{s} \equiv \br{\langle\sigma_x\rangle, \langle\sigma_y\rangle, \langle\sigma_z\rangle}
+    = \br{\sin\theta\cos\varphi,\; \sin\theta\sin\varphi,\; \cos\theta}.
+\end{empheq}
+This is a unit vector with polar angle $\theta$ and azimuth $\varphi$: every pure state of a two-level system is a point on a unit sphere --- the \emph{Bloch sphere} --- and, by \S\ref{sec:construct} and the corollary above, time evolution under any Hamiltonian rigidly rotates it about $\hat{n} = \vec{\Omega}/\abs{\vec{\Omega}}$ at rate $\abs{\vec{\Omega}}$. Where the lecture goes next.
+
+\end{document}
