@@ -1,0 +1,932 @@
+\documentclass[11pt,a4paper]{article}
+% [set in Format] \usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{bm}
+\usepackage{physics}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
+% Custom commands
+\newcommand{\D}{\mathrm{D}}
+\newcommand{\Dt}{\frac{\D}{\D t}}
+\newcommand{\pdt}[1]{\frac{\partial #1}{\partial t}}
+\newcommand{\pdx}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\xv}{\vec{x}}
+\newcommand{\uv}{\vec{u}}
+\newcommand{\nhat}{\hat{n}}
+\newcommand{\tv}{\vec{t}}
+\newcommand{\omv}{\vec{\omega}}
+\newcommand{\Fv}{\vec{F}}
+\newcommand{\gv}{\vec{g}}
+\newcommand{\ehat}[1]{\hat{e}_{#1}}
+\newcommand{\tens}[1]{\underset{\approx}{#1}}
+
+% [set in Format] \pagestyle{fancy}
+
+
+
+
+% ==== Panopticon · Format (change it in the Format panel, or edit here) ====
+% panopticon-format: {"paper": "a4", "margin_top": 25, "margin_bottom": 25, "margin_left": 20, "margin_right": 20, "size": "11pt", "font": "lm", "spacing": 1, "paragraphs": "indent", "head_l": "", "head_c": "", "head_r": "", "foot_l": "", "foot_c": "{page}", "foot_r": "", "head_rule": false}
+\usepackage[a4paper,top=25.0mm,bottom=25.0mm,left=20.0mm,right=20.0mm,headheight=15pt]{geometry}
+\usepackage{lmodern}
+\usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\cfoot{\thepage}\renewcommand{\headrulewidth}{0pt}}
+% ==== end Format ====
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+%=============================================================================
+\section{Lecture 10 --- Cauchy's Fundamental Theorem for Stress (\S4.1)}
+%=============================================================================
+
+\subsection{The Stress Vector and Stress Tensor}
+
+\begin{theorem}[Cauchy's Fundamental Theorem]
+The stress vector $\tv(\xv, t, \nhat)$ is a \emph{linear} function of the outward unit normal $\nhat$. That is, there exists a second-order tensor $T_{ij}(\xv,t)$ such that
+\[
+    t_j = T_{ij}\, n_i = n_i\,T_{ij}, \qquad \text{or} \qquad \tv = \nhat \cdot \tens{T}.
+\]
+$T_{ij}$ is called the \textbf{stress tensor}. In matrix form:
+\[
+    \tens{T} = \begin{pmatrix} T_{11} & T_{12} & T_{13} \\ T_{21} & T_{22} & T_{23} \\ T_{31} & T_{32} & T_{33} \end{pmatrix}.
+\]
+$T_{jk}$ is the $k$-th component of the force per unit area acting on a surface with unit outward normal $\hat{x}_j$.
+\end{theorem}
+
+\begin{proof}
+Consider a material volume in the shape of a tetrahedron with side length $\ell$. Three faces are aligned with the coordinate planes (with outward normals $-\hat{x}_1$, $-\hat{x}_2$, $-\hat{x}_3$), labeled $F_1, F_2, F_3$, and the fourth tilted face $F$ has outward normal $\nhat = (n_1, n_2, n_3)$ and area $A$.
+
+From geometry:
+\begin{itemize}[nosep]
+    \item The volume of the tetrahedron is $\dfrac{\ell^3}{6\sqrt{2}}$.
+    \item The surface area of the tilted face $F$ is $\dfrac{\sqrt{3}}{4}\ell^2$.
+    \item The areas of the coordinate faces are each $\dfrac{1}{2}\ell^2$.
+\end{itemize}
+
+The projected area of $A$ in the direction of $\hat{n}_p$ is $A_p = |\nhat \cdot \hat{n}_p|\,A$. Taking $\hat{n}_p = \hat{x}_j$, we get $A_j = |\nhat \cdot \hat{x}_j|\,A = n_j\,A$.
+
+Using the Reynolds transport theorem, we rewrite Newton's second law as
+\[
+    \iiint_{W(t)} \left[\rho \Dt\uv + \rho\nabla\Pi\right] \mathrm{d}V
+    = \oiint_{\partial W(t)} \tv(\xv, t, \nhat) \, \mathrm{d}S.
+\]
+
+Dividing by $\ell^2$ and taking the limit $\ell \to 0$: the LHS scales as $\ell^3/\ell^2 \to 0$ by the mean value theorem. Hence
+\[
+    \lim_{\ell \to 0} \frac{1}{\ell^2} \oiint_{\partial W(t)} \tv \, \mathrm{d}S = 0.
+\]
+
+We express the RHS in terms of the 4 faces. Each term in the sum can be written in component form (use $k$ for index). By the mean value theorem:
+\[
+    \frac{1}{\ell^2}\iint_{F_j} t_k(\xv, t, -\hat{x}_j)\,\mathrm{d}A
+    \xrightarrow{\text{MVT}} \frac{1}{\ell^2}\, t_k(\bar{x}_j, t, -\hat{x}_j)\, n_j \cdot \frac{\sqrt{3}}{4}\ell^2,
+\]
+where $\bar{x}_j \in A_j$. The tilted face integral similarly becomes
+\[
+    \frac{1}{\ell^2}\iint_F t_k(\xv, t, \nhat)\,\mathrm{d}A
+    \xrightarrow{\text{MVT}} \frac{1}{\ell^2}\, t_k(\bar{x}_k, t, \nhat)\, \frac{\sqrt{3}}{4}\ell^2.
+\]
+
+Substituting into our equation and taking $\ell \to 0$ (so all $\bar{x}_j \to \xv$):
+\[
+    \lim_{\ell \to 0}\left[\sum_{j=1}^{3} t_k(\bar{x}_j, t, -\hat{x}_j)\,n_j\,\frac{\sqrt{3}}{4} + t_k(\bar{x}_k, t, \nhat)\,\frac{\sqrt{3}}{4}\right] = 0.
+\]
+
+Since $t_k(\xv, t, -\hat{x}_j) = -t_k(\xv, t, \hat{x}_j)$:
+\[
+    \boxed{t_k(\xv, t, \nhat) = \sum_{j=1}^{3} t_k(\xv, t, \hat{x}_j)\, n_j.}
+\]
+
+This shows $\tv$ is a linear function of $\nhat$. Defining $T_{jk}(\xv,t) \equiv t_k(\xv, t, \hat{x}_j)$, we obtain $t_k = T_{jk}\, n_j$, or equivalently $\tv = \nhat \cdot \tens{T}$.
+\end{proof}
+
+\subsection{Conservation of Linear Momentum (\S4.1)}
+
+Newton's second law for a material volume states
+\[
+    \iiint_{W(t)} \left[\rho\Dt u_i + \rho\pdx{\Pi}{x_i}\right]\mathrm{d}V = \oiint_{\partial W(t)} n_j\,T_{ji}\,\mathrm{d}S.
+\]
+
+By Cauchy's theorem, the surface integral becomes (using Gauss' divergence theorem, which states $\iiint_W \frac{\partial U_j}{\partial x_j}\,\mathrm{d}V = \oiint_{\partial W} U_j\,n_j\,\mathrm{d}S$, applied for each $i$):
+\[
+    \oiint_{\partial W(t)} n_j T_{ji} \, \mathrm{d}S
+    = \iiint_{W(t)} \pdx{T_{ji}}{x_j} \, \mathrm{d}V.
+\]
+
+Since $W(t)$ is arbitrary, by the localization lemma:
+\[
+    \boxed{\rho \Dt\uv = -\rho\nabla\Pi + \nabla \cdot \tens{T}}
+    \qquad \text{or} \qquad
+    \boxed{\rho \Dt u_i = -\rho\pdx{\Pi}{x_i} + \pdx{T_{ji}}{x_j}.}
+\]
+
+Together with conservation of mass $\Dt\rho + \rho\,\nabla\cdot\uv = 0$, the unknowns are $\rho$, $u_1$, $u_2$, $u_3$, and the stress tensor $\tens{T}$ (9 components). The total is \textbf{13 unknowns} but only \textbf{4 equations}. This is not a closed system --- one must specify a constitutive relation for the stress tensor.
+
+%=============================================================================
+\section{Lecture 11 --- Symmetry of the Stress Tensor (\S4.2)}
+\textit{February 9, 2026}
+%=============================================================================
+
+Recall, using the principles of conservation of mass and linear momentum, we obtained 4 equations:
+\begin{align*}
+    &\Dt\rho + \rho\,\nabla\cdot\uv = 0, && \text{(conservation of mass)}\\
+    &\rho\,\Dt\uv = -\rho\nabla\Pi + \nabla\cdot\tens{T}. && \text{(conservation of momentum)}
+\end{align*}
+
+There are 4 equations and many more unknowns. Today, we reduce the number of unknowns by showing the stress tensor should be \emph{symmetric}.
+
+\subsection{Angular Momentum Conservation}
+
+If Newton's second law is $m\vec{a} = \Fv$, then $\frac{\mathrm{d}}{\mathrm{d}t}(\xv \times m\uv) = \xv \times \Fv$, where $\xv \times \Fv$ is the torque and $\frac{\mathrm{d}}{\mathrm{d}t}(\xv \times m\uv)$ is the rate of change of angular momentum.
+
+In continuum mechanics, the equation for angular momentum conservation is:
+\[
+    \frac{\mathrm{d}}{\mathrm{d}t}\iiint_{W(t)} \rho(\xv \times \uv)\,\mathrm{d}V
+    = \underbrace{-\iiint_{W(t)} \rho(\xv \times \nabla\Pi)\,\mathrm{d}V}_{\text{RHS1}}
+    + \underbrace{\oiint_{\partial W(t)} \xv \times \tv\,\mathrm{d}S}_{\text{RHS2}}.
+\]
+
+\begin{theorem}
+Conservation of angular momentum implies the stress tensor is symmetric:
+\[
+    T_{ij} = T_{ji}, \qquad \text{or} \qquad \tens{T} = \tens{T}^T.
+\]
+\end{theorem}
+
+\begin{proof}
+Apply the Reynolds transport theorem (strong form) to the LHS:
+\[
+    \frac{\mathrm{d}}{\mathrm{d}t}\iiint_{W(t)} \rho(\xv \times \uv)\,\mathrm{d}V
+    = \iiint_{W(t)} \rho\,\Dt (\xv \times \uv)\,\mathrm{d}V.
+\]
+
+Note: $\Dt\xv = \frac{\partial \xv}{\partial t} + (\uv\cdot\nabla)\xv = \uv$ (since $\frac{\partial \xv}{\partial t} = \vec{0}$ and $(\uv\cdot\nabla)\xv = \uv$). Using the product rule:
+\[
+    \rho\,\Dt(\xv \times \uv) = \rho\bigl[\underbrace{\Dt\xv}_{=\,\uv} \times \uv + \xv \times \Dt\uv\bigr]
+    = \rho\left[\xv \times \Dt\uv\right],
+\]
+since $\uv \times \uv = \vec{0}$. Hence the LHS equals $\iiint \rho\,\xv \times \Dt\uv\,\mathrm{d}V$.
+
+\textbf{RHS1:} $-\iiint_{W(t)} \rho\,\xv \times (\nabla\Pi)\,\mathrm{d}V$.
+
+\textbf{RHS2} (the surface torque term): In index notation using the Levi-Civita symbol,
+\[
+    \text{RHS2} = \oiint_{\partial W(t)} \epsilon_{ijk}\, x_j\, t_k \,\mathrm{d}S
+    = \oiint_{\partial W(t)} \epsilon_{ijk}\, x_j\, n_\ell\, T_{\ell k}\,\mathrm{d}S.
+\]
+
+Since $t_k = n_\ell T_{\ell k}$, this allows us to use Gauss' divergence theorem:
+\[
+    \text{RHS2} = \iiint_{W(t)} \pdx{}{x_\ell}\bigl(\epsilon_{ijk}\, x_j\, T_{\ell k}\bigr)\,\mathrm{d}V
+    = \iiint_{W(t)} \epsilon_{ijk}\left[\underbrace{\pdx{x_j}{x_\ell}}_{\delta_{j\ell}} T_{\ell k} + x_j \pdx{T_{\ell k}}{x_\ell}\right]\mathrm{d}V.
+\]
+
+This gives
+\[
+    \text{RHS2} = \iiint_{W(t)} \epsilon_{ijk}\, T_{jk}\,\mathrm{d}V + \iiint_{W(t)} \xv \times \underbrace{\left(\pdx{T_{\ell k}}{x_\ell}\right)}_{\nabla\cdot\tens{T}}\,\mathrm{d}V.
+\]
+
+But we showed that $\pdx{T_{\ell k}}{x_\ell} = \nabla\cdot\tens{T} = \rho\,\Dt\uv + \rho\nabla\Pi$. The equation at the bottom of the previous page for RHS2 is:
+\[
+    \text{RHS2} = \iiint_{W(t)} \epsilon_{ijk}\, T_{jk}\,\mathrm{d}V + \iiint_{W(t)} \xv \times \left(\rho\,\Dt\uv + \rho\nabla\Pi\right)\mathrm{d}V.
+\]
+
+Putting all the pieces together:
+\[
+    \iiint_{W(t)} \xv \times \rho\left[\Dt\uv + \nabla\Pi\right]\mathrm{d}V
+    = \underbrace{-\iiint \rho\,\xv\times\nabla\Pi\,\mathrm{d}V}_{\text{RHS1}} + \iiint \epsilon_{ijk}\,T_{jk}\,\mathrm{d}V + \iiint \xv \times \rho\left[\Dt\uv + \nabla\Pi\right]\mathrm{d}V.
+\]
+
+After cancellation:
+\[
+    \iiint_{W(t)} \epsilon_{ijk}\, T_{jk}\,\mathrm{d}V = 0.
+\]
+
+Since the material volume $W(t)$ is arbitrary, by the localization lemma:
+\[
+    \epsilon_{ijk}\, T_{jk} = 0.
+\]
+
+We have previously shown any tensor can be written as a sum of a symmetric and antisymmetric part:
+\[
+    \epsilon_{ijk}\left[\tfrac{1}{2}(T_{jk} + T_{kj}) + \tfrac{1}{2}(T_{jk} - T_{kj})\right] = 0.
+\]
+
+The contraction of $\epsilon_{ijk}$ (antisymmetric) with $\tfrac{1}{2}(T_{jk}+T_{kj})$ (symmetric) vanishes identically. Hence
+\[
+    \epsilon_{ijk}\left[\tfrac{1}{2}(T_{jk} - T_{kj})\right] = 0.
+\]
+
+Since this is true everywhere, we must have that the antisymmetric part is exactly zero. Hence $T_{ij} = T_{ji}$, i.e.\ $\tens{T}$ is symmetric. $\square$
+\end{proof}
+
+To show this we have used the conservation of linear momentum and conservation of mass.
+
+\subsection{Geometric Interpretation}
+
+Consider a small rectangular volume element centered at the origin with sides $\Delta x_1$, $\Delta x_2$, $\Delta x_3$, and consider rotation about the $x_1$-axis.
+
+The torque due to the surface forces in general can be written as $\oiint_{\partial W(t)} \xv \times \tv\,\mathrm{d}S$. Using linear algebra, $\xv \times \tv$ has components $(x_2 t_3 - x_3 t_2,\; x_3 t_1 - x_1 t_3,\; x_1 t_2 - x_2 t_1)$.
+
+Because we are studying rotation in the $x_1$ direction, we consider the first component only:
+\[
+    \oiint_{\partial W(t)} (x_2\, t_3 - x_3\, t_2)\,\mathrm{d}S.
+\]
+
+Consider a state of rest without gravity. We need that the contribution from the surface forces is zero. If the torques did not balance, we would have motion, which is a contradiction.
+
+The integral decomposes over the 4 faces (bottom: normal $-\hat{x}_3$, right: normal $\hat{x}_2$, top: normal $+\hat{x}_3$, left: normal $-\hat{x}_2$). We find the stress vector on each surface: $t_i = n_j\,T_{ji}$, so $t_2 = n_j\,T_{j2}$ and $t_3 = n_j\,T_{j3}$.
+
+We simplify, noting that on each face, many stress components vanish (e.g.\ on the bottom face with normal $-\hat{x}_3$: $t_2 = -T_{32}$, $t_3 = -T_{33}$). If our surfaces are small, then the components of $\tens{T}$ are nearly constant on each face.
+
+Approximating the integrals with $x_3 \approx -\tfrac{1}{2}\Delta x_3$ at bottom, $x_3 \approx +\tfrac{1}{2}\Delta x_3$ at top, $x_2 \approx +\tfrac{1}{2}\Delta x_2$ at right, $x_2 \approx -\tfrac{1}{2}\Delta x_2$ at left:
+\begin{align*}
+    &\approx -\tfrac{1}{2}T_{32}\,\Delta x_1\,\Delta x_2\,\Delta x_3
+    - \tfrac{1}{2}T_{32}\,\Delta x_1\,\Delta x_2\,\Delta x_3 \\
+    &\quad + \tfrac{1}{2}T_{23}\,\Delta x_1\,\Delta x_2\,\Delta x_3
+    + \tfrac{1}{2}T_{23}\,\Delta x_1\,\Delta x_2\,\Delta x_3 \\
+    &= (T_{23} - T_{32})\,\Delta x_1\,\Delta x_2\,\Delta x_3 = 0
+    \quad \Longrightarrow \quad T_{23} = T_{32}.
+\end{align*}
+A similar argument applies to the other off-diagonal entries.
+
+%=============================================================================
+\section{Lecture 12 --- Introduction to Elasticity Theory (Ch.\ 14)}
+%=============================================================================
+
+Conservation of linear momentum states $\rho\,\Dt\uv = -\rho\nabla\Pi + \nabla\cdot\tens{T}$.
+
+There are in general 3 types of solids:
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{Elastic}: deformations bounce back (reversible).
+    \item \textbf{Plastic}: deformations stay (irreversible).
+    \item \textbf{Viscoelastic}: can be elastic or viscous (e.g.\ cornstarch).
+\end{enumerate}
+
+We study \emph{elastic} solids. Before we can state a suitable form for the stress tensor, we need to study deformations described by the strain tensor.
+
+\subsection{Strain Tensors (\S14.1)}
+
+Consider a material volume before and after deformation. Let $\vec{a}$ denote the initial (Lagrangian) coordinates and $\xv$ the final (Eulerian) coordinates:
+\[
+    \xv = \xv(\vec{a}, t), \qquad \text{(initial $\to$ final)}.
+\]
+
+Initially, two nearby points $P$ and $Q$ at positions $\vec{a}$ and $\vec{a}+\mathrm{d}\vec{a}$ have separation $\mathrm{d}s_0$ with $\mathrm{d}s_0^2 = \mathrm{d}a_i\,\mathrm{d}a_i$. After deformation, $P'$ and $Q'$ have separation $\mathrm{d}s$ with $\mathrm{d}s^2 = \mathrm{d}x_i\,\mathrm{d}x_i$.
+
+We find the difference between the squares of the distances:
+\[
+    \mathrm{d}s^2 - \mathrm{d}s_0^2 = \mathrm{d}x_i\,\mathrm{d}x_i - \mathrm{d}a_i\,\mathrm{d}a_i.
+\]
+This involves both $\xv$ and $\vec{a}$, hence both Eulerian and Lagrangian variables. We find an expression that is purely Lagrangian, then purely Eulerian.
+
+\subsubsection{Lagrangian (Green--St.\ Venant) Strain Tensor}
+
+Since $\xv = \xv(\vec{a})$, if $|\mathrm{d}\vec{a}|$ is small, we can Taylor expand:
+\[
+    \mathrm{d}x_i = \pdx{x_i}{a_j}\,\mathrm{d}a_j.
+\]
+
+Substituting:
+\begin{align*}
+    \mathrm{d}s^2 - \mathrm{d}s_0^2
+    &= \pdx{x_i}{a_j}\pdx{x_i}{a_k}\,\mathrm{d}a_j\,\mathrm{d}a_k - \delta_{jk}\,\mathrm{d}a_j\,\mathrm{d}a_k \\
+    &= \left(\pdx{x_i}{a_j}\pdx{x_i}{a_k} - \delta_{jk}\right)\mathrm{d}a_j\,\mathrm{d}a_k.
+\end{align*}
+
+Therefore, if we define
+\[
+    \boxed{E_{jk} = \frac{1}{2}\left(\pdx{x_i}{a_j}\pdx{x_i}{a_k} - \delta_{jk}\right),}
+\]
+then $\mathrm{d}s^2 - \mathrm{d}s_0^2 = 2\,E_{jk}\,\mathrm{d}a_j\,\mathrm{d}a_k$. $E_{jk}$ is the \textbf{Green--St.\ Venant strain tensor} (Lagrangian).
+
+\subsubsection{Eulerian (Almansi--Hamel) Strain Tensor}
+
+Similarly, considering $\vec{a} = \vec{a}(\xv)$, we can find $\mathrm{d}a_i = \frac{\partial a_i}{\partial x_j}\,\mathrm{d}x_j$ and substitute:
+\[
+    \mathrm{d}s^2 - \mathrm{d}s_0^2
+    = \left(\delta_{jk} - \pdx{a_i}{x_j}\pdx{a_i}{x_k}\right)\mathrm{d}x_j\,\mathrm{d}x_k
+    = 2\,e_{jk}\,\mathrm{d}x_j\,\mathrm{d}x_k,
+\]
+where
+\[
+    \boxed{e_{jk} = \frac{1}{2}\left(\delta_{jk} - \pdx{a_i}{x_j}\pdx{a_i}{x_k}\right)}
+\]
+is the \textbf{Almansi--Hamel strain tensor} (Eulerian).
+
+\subsubsection{Expressions in Terms of Displacement}
+
+Define the displacement $\vec{q} = \xv - \vec{a}$, i.e.\ $x_i = a_i + q_i$. Then $\pdx{x_i}{a_j} = \delta_{ij} + \pdx{q_i}{a_j}$.
+
+Substituting into the Lagrangian strain tensor:
+\[
+    \pdx{x_i}{a_j}\pdx{x_i}{a_k} = \left(\delta_{ij} + \pdx{q_i}{a_j}\right)\left(\delta_{ik} + \pdx{q_i}{a_k}\right)
+    = \pdx{q_i}{a_j}\pdx{q_i}{a_k} + \pdx{q_k}{a_j} + \pdx{q_j}{a_k} + \delta_{jk}.
+\]
+
+Therefore:
+\[
+    \boxed{E_{jk} = \frac{1}{2}\left(\pdx{q_j}{a_k} + \pdx{q_k}{a_j} + \pdx{q_i}{a_j}\pdx{q_i}{a_k}\right)}
+    \qquad \text{(Lagrangian)}.
+\]
+
+Similarly for the Eulerian strain ($a_i = x_i - q_i$, so $\pdx{a_i}{x_j} = \delta_{ij} - \pdx{q_i}{x_j}$):
+\[
+    \boxed{e_{jk} = \frac{1}{2}\left(\pdx{q_j}{x_k} + \pdx{q_k}{x_j} - \pdx{q_i}{x_j}\pdx{q_i}{x_k}\right)}
+    \qquad \text{(Eulerian)}.
+\]
+
+Both $E_{jk}$ and $e_{jk}$ are nonlinear functions of the displacement.
+
+\subsection{Linear Elasticity Theory (\S14.2)}
+
+Next we simplify the expressions assuming small deformations/displacements. Consider
+\[
+    \pdx{q_j}{a_k} = \pdx{x_\ell}{a_k}\pdx{q_j}{x_\ell}
+    = \pdx{q_j}{x_\ell}\left(\delta_{\ell k} + \pdx{q_\ell}{a_k}\right)
+    = \pdx{q_j}{x_k} + \pdx{q_j}{x_\ell}\pdx{q_\ell}{a_k}.
+\]
+Similarly $\pdx{q_k}{a_j} = \pdx{q_k}{x_j} + \pdx{q_k}{x_\ell}\pdx{q_\ell}{a_j}$.
+
+The full expression for the Lagrangian strain tensor $E_{jk}$ in terms of these mixed derivatives has many terms. However, if we assume \textbf{small displacements}, $\left|\pdx{q_i}{x_j}\right| \ll 1$, then we ignore higher-order terms in $q$:
+\[
+    \boxed{E_{jk} \approx e_{jk} \approx \frac{1}{2}\left(\pdx{q_j}{x_k} + \pdx{q_k}{x_j}\right) \equiv \varepsilon_{jk}}
+    \qquad \text{(strain tensor, we coincide).}
+\]
+
+\begin{remark}
+If we compute the derivative with respect to time, we get
+\[
+    \frac{\mathrm{d}\varepsilon_{jk}}{\mathrm{d}t} = \frac{1}{2}\left(\pdx{u_j}{x_k} + \pdx{u_k}{x_j}\right) = e_{ij}^{(\text{fluid})},
+\]
+which is the strain rate tensor used in fluid mechanics. Useful later.
+\end{remark}
+
+%=============================================================================
+\section{Lecture 15 --- Derivation of the Governing Equations II: Energy (Ch.\ 5)}
+%=============================================================================
+
+Recall the conservation equations:
+\begin{align}
+    \text{Conservation of mass:} & \quad \Dt\rho + \rho\,\nabla\cdot\uv = 0, \label{eq:mass}\\
+    \text{Conservation of momentum:} & \quad \rho\,\Dt u_i = -\rho\pdx{\Pi}{x_i} + \pdx{T_{ki}}{x_k}. \label{eq:mom}
+\end{align}
+
+As is usual with Newton's second law, to get an equation for the evolution of energy, we multiply by the velocity. This yields
+\[
+    \rho\, u_i\, \Dt u_i = -\rho\, u_i\pdx{\Pi}{x_i} + u_i\pdx{T_{ki}}{x_k}.
+\]
+
+\subsection{Kinetic Energy Density}
+
+To simplify this equation, we focus on the LHS first. Observe:
+\[
+    \text{LHS} = \rho\, u_i\,\Dt u_i = \rho\, u_i\left(\pdt{u_i} + u_k\pdx{u_i}{x_k}\right)
+    = \rho\pdt{}\!\left(\tfrac{1}{2}u_i u_i\right) + \rho u_k\pdx{}{x_k}\!\left(\tfrac{1}{2}u_i u_i\right)
+    = \rho\,\Dt\!\left(\tfrac{1}{2}u_i u_i\right).
+\]
+
+The kinetic energy of a particle of mass $m$ and velocity $u_i$ is $\tfrac{1}{2}m\,u_i u_i$. Inspired by this, we define the \textbf{kinetic energy density}:
+\[
+    \boxed{\mathcal{K} = \tfrac{1}{2}\rho\, u_i u_i}
+    \qquad \text{or} \qquad
+    \boxed{\mathcal{K} = \tfrac{1}{2}\rho\,\uv\cdot\uv.}
+\]
+
+Using the product rule for the material derivative and conservation of mass:
+\[
+    \text{LHS} = \rho\,\Dt\!\left(\tfrac{1}{2}u_i u_i\right) = \Dt\!\left(\tfrac{1}{2}\rho\, u_i u_i\right) - \tfrac{1}{2}u_i u_i\,\Dt\rho
+    = \Dt\mathcal{K} + \mathcal{K}\,\nabla\cdot\uv.
+\]
+
+Our evolution equation for $\mathcal{K}$ is then:
+\[
+    \boxed{\Dt\mathcal{K} + \mathcal{K}\,\nabla\cdot\uv = -\rho\,\uv\cdot\nabla\Pi + \uv\cdot(\nabla\cdot\tens{T})}
+    \tag{$\star$}
+\]
+
+We can interpret this equation. $\Dt\mathcal{K}$ is how $\mathcal{K}$ changes following the flow. There are 3 mechanisms that can make this non-zero:
+\begin{enumerate}[label=(\roman*)]
+    \item $-\mathcal{K}\,\nabla\cdot\uv$: If $\nabla\cdot\uv > 0$ the fluid is expanding. Since $\mathcal{K} > 0$, then $-\mathcal{K}\,\nabla\cdot\uv < 0$. This means $\mathcal{K}$ decreases, so kinetic energy is lost.
+    \item $-\rho\,\uv\cdot\nabla\Pi = -\rho\,\Dt\Pi$: The rate at which work is done by the force of gravity. If $\Pi = gz$ then $\uv\cdot\nabla\Pi = gw$.
+    \item $\uv\cdot(\nabla\cdot\tens{T})$: The rate at which work is done by the surface forces.
+\end{enumerate}
+
+Alternatively, we can use the identity $\uv\cdot\nabla\mathcal{K} + \mathcal{K}\,\nabla\cdot\uv = \nabla\cdot(\mathcal{K}\uv)$ to rewrite ($\star$) as:
+\[
+    \boxed{\pdt{\mathcal{K}} + \nabla\cdot(\mathcal{K}\uv) = -\rho\,\Dt\Pi + \uv\cdot(\nabla\cdot\tens{T}).}
+    \tag{$\star\star$}
+\]
+
+We see that $\mathcal{K}$ changes w.r.t.\ time if: (1) $\nabla\cdot(\mathcal{K}\uv) \neq 0$, (2) $\rho\,\Dt\Pi \neq 0$, or (3) $\uv\cdot(\nabla\cdot\tens{T}) \neq 0$.
+
+Integrating over a fixed volume $V_0$:
+\[
+    \frac{\mathrm{d}}{\mathrm{d}t}\iiint_{V_0} \mathcal{K}\,\mathrm{d}V
+    = \iiint_{V_0}\left[-\nabla\cdot(\mathcal{K}\uv) - \rho\,\Dt\Pi + \uv\cdot(\nabla\cdot\tens{T})\right]\mathrm{d}V.
+\]
+The first term on the RHS vanishes if the area integral (by Gauss' theorem) has no net flux of $\mathcal{K}$ outside the volume.
+
+\subsection{Mechanical Energy Density}
+
+Next, to get an equation for the mechanical energy density, we first define the \textbf{potential energy density}:
+\[
+    \boxed{\mathcal{P} = \rho\Pi.}
+\]
+
+The \textbf{mechanical energy density} is
+\[
+    \boxed{\mathcal{E} = \mathcal{K} + \mathcal{P}.}
+\]
+
+Note: $-\rho\,\uv\cdot\nabla\Pi = -\rho\,\Dt\Pi$. By the product rule, $\Dt(\rho\Pi) = \rho\,\Dt\Pi + \Pi\,\Dt\rho$. Using conservation of mass $\Dt\rho = -\rho\,\nabla\cdot\uv$:
+\[
+    -\rho\,\Dt\Pi = -\Dt\mathcal{P} - \mathcal{P}\,\nabla\cdot\uv.
+\]
+
+Substituting into equation ($\star$):
+\[
+    \Dt\mathcal{K} + \mathcal{K}\,\nabla\cdot\uv = -\Dt\mathcal{P} - \mathcal{P}\,\nabla\cdot\uv + \uv\cdot(\nabla\cdot\tens{T}).
+\]
+
+This gives the \textbf{mechanical energy density equation}:
+\[
+    \boxed{\Dt\mathcal{E} + \mathcal{E}\,\nabla\cdot\uv = \uv\cdot(\nabla\cdot\tens{T}).}
+    \tag{$\star\star\star$}
+\]
+
+\subsection{Internal Energy (\S5.1)}
+
+The internal energy of a fluid is related to the heat/molecular motion. $e(\xv,t)$ is the internal energy per unit mass and $\rho e$ is the internal energy density. For example, in an ideal gas, $e = c_v T$.
+
+\subsection{Balance of Energy (\S5.2)}
+
+We claim that $\mathcal{E}_t \equiv \mathcal{E} + \rho e = \tfrac{1}{2}\rho\,u_i u_i + \rho\Pi + \rho e$ changes according to the following:
+\[
+    \frac{\mathrm{d}}{\mathrm{d}t}\iiint_{W(t)} (\mathcal{E} + \rho e)\,\mathrm{d}V
+    = \text{rate at which work is done by surface \& thermodynamic forces}.
+\]
+
+Specifically, with heat flux $\vec{q}$ (which sets the thermodynamic force):
+\[
+    = \iiint_{W(t)} \nabla\cdot(-\vec{q} + \tens{T}\cdot\uv)\,\mathrm{d}V.
+\]
+
+To connect this with equation ($\star\star\star$), consider:
+\[
+    \oiint_{\partial W(t)} \uv\cdot\tv\,\mathrm{d}S = \oiint u_i\,n_j\,T_{ji}\,\mathrm{d}S \xrightarrow{\text{Gauss}} \iiint \pdx{}{x_j}(u_i\,T_{ji})\,\mathrm{d}V = \iiint \nabla\cdot(\tens{T}\cdot\uv)\,\mathrm{d}V.
+\]
+
+The assumed equation can be rewritten using the Reynolds transport theorem:
+\[
+    \Dt(\mathcal{E} + \rho e) + (\mathcal{E} + \rho e)\,\nabla\cdot\uv = \nabla\cdot(-\vec{q} + \tens{T}\cdot\uv).
+\]
+
+Since $W(t)$ is arbitrary, we use the localization lemma. This equation is said to be in \textbf{conservation form}:
+\[
+    \boxed{\pdt{}(\mathcal{E} + \rho e) + \nabla\cdot\bigl[(\mathcal{E} + \rho e)\uv + \vec{q} - \tens{T}\cdot\uv\bigr] = 0.}
+\]
+
+If we integrate over the entire volume then we get global conservation.
+
+Subtracting the mechanical energy equation ($\star\star\star$) from this total energy equation:
+\[
+    \Dt(\rho e) + \rho e\,\nabla\cdot\uv = -\nabla\cdot\vec{q} + \nabla\cdot(\tens{T}\cdot\uv) - \uv\cdot(\nabla\cdot\tens{T}).
+\]
+
+To simplify the LHS: $\Dt(\rho e) + \rho e\,\nabla\cdot\uv = \rho\,\Dt e + e(\Dt\rho + \rho\,\nabla\cdot\uv) = \rho\,\Dt e$, using mass conservation.
+
+The last two terms on the RHS can be combined:
+\[
+    \pdx{}{x_j}(T_{ji}\,u_i) - u_i\pdx{T_{ji}}{x_j} = T_{ji}\pdx{u_i}{x_j}.
+\]
+
+Hence the \textbf{internal energy equation}:
+\[
+    \boxed{\rho\,\Dt e = -\nabla\cdot\vec{q} + T_{ji}\pdx{u_i}{x_j}.}
+\]
+
+%=============================================================================
+\section{Lecture 17 --- Strain Rate Tensor and Rotation Tensor (Ch.\ 7)}
+%=============================================================================
+
+\subsection{Relative Motion (\S7.1)}
+
+Velocities differ in different locations. The relative velocity between two nearby points $O$ (at $\xv$) and $P$ (at $\xv + \mathrm{d}\xv$) is
+\[
+    \mathrm{d}u_i = u_i(\xv + \mathrm{d}\xv, t) - u_i(\xv, t).
+\]
+
+If $O$ and $P$ are close ($|\mathrm{d}\xv| \ll 1$), then we can Taylor expand (linearize):
+\[
+    \mathrm{d}u_i \approx u_i(\xv) + \mathrm{d}x_j\pdx{u_i}{x_j}(\xv) - u_i(\xv) = \pdx{u_i}{x_j}\,\mathrm{d}x_j.
+\]
+
+Define the \textbf{velocity gradient tensor}:
+\[
+    \boxed{G_{ij} = \pdx{u_i}{x_j}.}
+\]
+
+We decompose the velocity gradient tensor into symmetric and antisymmetric parts:
+\[
+    \pdx{u_i}{x_j} = \underbrace{\frac{1}{2}\left(\pdx{u_i}{x_j} + \pdx{u_j}{x_i}\right)}_{e_{ij}\;\text{(strain rate tensor)}} + \underbrace{\frac{1}{2}\left(\pdx{u_i}{x_j} - \pdx{u_j}{x_i}\right)}_{r_{ij}\;\text{(rotation tensor)}}.
+\]
+
+\subsection{Relation to Vorticity}
+
+It can be shown that $\omega_k = -\tfrac{1}{2}\epsilon_{ijk}\,r_{ij}$, or equivalently $r_{ij} = -\epsilon_{ijk}\,\omega_k$.
+
+\begin{proof}[Proof (first formula)]
+Take the case $k = 3$:
+\[
+    \omega_3 = -\tfrac{1}{2}\epsilon_{ij3}\,r_{ij} = -\tfrac{1}{2}\epsilon_{123}\,r_{12} - \tfrac{1}{2}\epsilon_{213}\,r_{21}.
+\]
+Since $r_{12} = \pdx{u_1}{x_2} - \pdx{u_2}{x_1}$ and $r_{21} = -r_{12}$:
+\[
+    \omega_3 = -\tfrac{1}{2}\left(\pdx{u_1}{x_2} - \pdx{u_2}{x_1}\right) + \tfrac{1}{2}\left(\pdx{u_1}{x_2} - \pdx{u_2}{x_1}\right) = \pdx{u_2}{x_1} - \pdx{u_1}{x_2} = \omega_3. \qedhere
+\]
+\end{proof}
+
+Plugging the velocity gradient decomposition into the equation for $\mathrm{d}u_i$:
+\[
+    \mathrm{d}u_i = \pdx{u_i}{x_j}\,\mathrm{d}x_j = e_{ij}\,\mathrm{d}x_j + r_{ij}\,\mathrm{d}x_j.
+\]
+
+But $r_{ij}\,\mathrm{d}x_j = -\epsilon_{ijk}\,\omega_k\,\mathrm{d}x_j = \epsilon_{ijk}\,\omega_k\,\mathrm{d}x_j = (\omv \times \mathrm{d}\xv)_i$. Therefore:
+\[
+    \boxed{\mathrm{d}u_i = e_{ij}\,\mathrm{d}x_j + \tfrac{1}{2}(\omv \times \mathrm{d}\xv)_i,}
+\]
+representing deformation (stretching/compression) plus rigid-body rotation.
+
+%=============================================================================
+\section{Lectures 17--18 --- Constitutive Equations for a Newtonian Fluid (Ch.\ 8)}
+%=============================================================================
+
+\subsection{Newton's Law of Viscosity}
+
+An isotropic fluid at rest: $T_{ij} = -p\,\delta_{ij}$.
+
+A fluid in motion should have this plus something else:
+\[
+    T_{ij} = -p\,\delta_{ij} + T'_{ij} \quad \longrightarrow \quad \text{deviatoric stress.}
+\]
+
+\textbf{Newton's law of viscosity:} For a fluid in motion, $T'_{zx} = \mu\,\frac{\mathrm{d}u_x}{\mathrm{d}z}$ (observation).
+
+\textbf{Stokes' hypothesis:} $T'_{ij}$ is a linear function of the strain rate tensor $e_{ij}$:
+\[
+    \boxed{T'_{ij} = 2\mu\,e_{ij} + \lambda\,e_{kk}\,\delta_{ij},}
+    \tag{1}
+\]
+where $\mu$ is the \textbf{dynamic viscosity} $[\mu] = \text{N}\cdot\text{s/m}^2$ (later we will use $\nu = \mu/\rho$, kinematic viscosity, $[\nu] = \text{m}^2/\text{s}$), and $\lambda$ is the \textbf{compressible viscosity}. Observe that the full stress tensor for a \textbf{Newtonian fluid} is:
+\[
+    \boxed{T_{ij} = -p\,\delta_{ij} + \mu\left(\pdx{u_i}{x_j} + \pdx{u_j}{x_i}\right) + \lambda\,\nabla\cdot\uv\,\delta_{ij}.}
+    \tag{2}
+\]
+
+Equations (1) + (2) $\to$ Newtonian fluid.
+
+\subsection{Momentum Equations for a Newtonian Fluid (\S8.1)}
+
+The momentum equations: $\rho\,\Dt u_i = -\rho\pdx{\Pi}{x_i} + \pdx{}{x_j}T_{ji}$.
+
+The surface force can now be evaluated. Since $T_{ij} = T_{ji}$ (symmetry):
+\[
+    \pdx{T_{ji}}{x_j} = \pdx{}{x_j}\left(-p\,\delta_{ij} + \mu\left(\pdx{u_i}{x_j} + \pdx{u_j}{x_i}\right) + \lambda\,\nabla\cdot\uv\,\delta_{ij}\right).
+\]
+
+Evaluating:
+\[
+    \nabla\cdot\tens{T} = -\pdx{p}{x_i} + \mu\,\nabla^2 u_i + (\mu + \lambda)\pdx{}{x_i}(\nabla\cdot\uv)
+    = -\nabla p + \mu\,\nabla^2\uv + (\lambda + \mu)\nabla(\nabla\cdot\uv).
+\]
+
+Our momentum equations for a \textbf{compressible fluid} are:
+\[
+    \boxed{\rho\,\Dt\uv = -\rho\nabla\Pi - \nabla p + \mu\,\nabla^2\uv + (\mu + \lambda)\nabla(\nabla\cdot\uv).}
+\]
+
+For an \textbf{incompressible} fluid ($\nabla\cdot\uv = 0$), the momentum equation simplifies to:
+\[
+    \boxed{\rho\,\Dt\uv = -\rho\nabla\Pi - \nabla p + \mu\,\nabla^2\uv.}
+\]
+
+\subsection{Energy Equation for a Newtonian Fluid (\S8.2)}
+
+In Lecture 15, we derived an equation for the total mechanical energy density:
+\[
+    \Dt\mathcal{E} + \mathcal{E}\,\nabla\cdot\uv = \uv\cdot(\nabla\cdot\tens{T}).
+\]
+
+We claimed that the equation for total energy density should be of the form:
+\[
+    \Dt(\mathcal{E} + \rho e) + (\mathcal{E} + \rho e)\,\nabla\cdot\uv = -\nabla\cdot(\vec{q} - \tens{T}\cdot\uv).
+\]
+
+Subtracting the first from the second and simplifying the LHS (using mass conservation as before, the LHS reduces to $\rho\,\Dt e$), the RHS combines to give $T_{ji}\pdx{u_i}{x_j}$.
+
+But we saw earlier:
+\[
+    \pdx{}{x_j}(T_{ji}\,u_i) = T_{ji}\pdx{u_i}{x_j} + u_i\pdx{T_{ji}}{x_j}
+    \quad \Longrightarrow \quad
+    T_{ji}\pdx{u_i}{x_j} = T_{ji}(e_{ij} + \tfrac{1}{2}r_{ij}) = T_{ji}\,e_{ij},
+\]
+since $T_{ji}$ is symmetric and $r_{ij}$ is antisymmetric (their contraction vanishes).
+
+Now we substitute the Newtonian form. The evolution equation for the internal energy of a Newtonian fluid is $\rho\,\Dt e = -\nabla\cdot\vec{q} + T_{ji}\,e_{ij}$. We evaluate $T_{ji}\,e_{ij}$:
+\[
+    T_{ji}\,e_{ij} = (-p\,\delta_{ji} + \lambda\,(\nabla\cdot\uv)\,\delta_{ji} + 2\mu\,e_{ji})\,e_{ij}
+    = -p\,\underbrace{e_{ii}}_{=\,\nabla\cdot\uv} + \lambda\,(\nabla\cdot\uv)^2 + 2\mu\,e_{ij}\,e_{ij}.
+\]
+
+We use Fourier's law (experiment suggests $\vec{q} = -k\nabla T$, Fick's law), and plug everything in to get:
+\[
+    \rho\,\Dt e = \nabla\cdot(k\nabla T) - p\,\nabla\cdot\uv + \Phi,
+\]
+where $\Phi = \lambda\,(\nabla\cdot\uv)^2 + 2\mu\,e_{ij}\,e_{ij} \geq 0$ is the \textbf{viscous dissipation}.
+
+\begin{example}[Ideal Gas]
+$e = c_v T$. In this case our equation becomes (if $k$ is constant):
+\[
+    \boxed{\rho c_v\, \Dt T = k\,\nabla^2 T - p\,\nabla\cdot\uv + \Phi.}
+\]
+\end{example}
+
+The three terms represent: \textbf{diffusion of heat}, \textbf{work done by expansion}, and \textbf{viscous dissipation}.
+
+\subsection{Summary of Governing Equations}
+
+\begin{align}
+    &\Dt\rho + \rho\,\nabla\cdot\uv = 0, \tag{Mass}\\
+    &\rho\,\Dt\uv = -\rho\nabla\Pi - \nabla p + \mu\,\nabla^2\uv + (\mu+\lambda)\nabla(\nabla\cdot\uv), \tag{Momentum}\\
+    &\rho\,\Dt e = \nabla\cdot(k\nabla T) - p\,\nabla\cdot\uv + \Phi, \tag{Energy}
+\end{align}
+plus constitutive relations: $e(p,T)$ (example: $e = c_v T$) and $p(\rho, T)$ (example: $p = \rho R T$).
+
+For a \textbf{homogeneous, incompressible} fluid ($\rho = \text{const}$), the unknowns reduce to $\uv$ and $p$:
+\begin{align}
+    \nabla\cdot\uv &= 0, \tag{Mass}\\
+    \rho_0\,\Dt\uv &= -\rho\nabla\Pi - \nabla p + \mu\,\nabla^2\uv. \tag{Momentum}
+\end{align}
+This is also a closed system.
+
+%=============================================================================
+\section{Lecture 19 --- Vorticity (Ch.\ 10)}
+\textit{March 16, 2026}
+%=============================================================================
+
+Today: circular flows, surfaces of constant pressure, vortex dynamics, Kelvin's circulation theorem, vorticity equation.
+
+\subsection{Circular Flows (\S10.1)}
+
+A circular solution to the equations of motion is
+\[
+    \uv = u_\theta(r)\,\hat{e}_\theta,
+\]
+and the vorticity is $\omv = \nabla\times\uv = \zeta\,\hat{e}_z$, with
+\[
+    \zeta = \frac{1}{r}\frac{\mathrm{d}}{\mathrm{d}r}(r\,u_\theta).
+\]
+
+\begin{example}[Solid body rotation]
+$u_\theta(r) = \omega_0\,r$, so $\zeta = \frac{1}{r}\frac{\mathrm{d}}{\mathrm{d}r}(\omega_0 r^2) = 2\omega_0$ (constant, nonzero vorticity everywhere).
+\end{example}
+
+\begin{example}[Irrotational (point) vortex]
+$u_\theta(r) = \frac{\Gamma_0}{2\pi r}$, so $\zeta = \frac{1}{r}\frac{\mathrm{d}}{\mathrm{d}r}\!\left(\frac{\Gamma_0}{2\pi}\right) = 0$ for $r \neq 0$.
+\end{example}
+
+Stokes' theorem allows us to write the \textbf{circulation} as
+\[
+    \boxed{\Gamma = \oint_{\partial\mathcal{R}} \uv\cdot\mathrm{d}\vec{s} = \iint_{\mathcal{R}} (\nabla\times\uv)\cdot\mathrm{d}\vec{A}.}
+\]
+
+What is the circulation in the two examples?
+
+\textbf{Example 1:} $\Gamma = \oint \uv\cdot\mathrm{d}\vec{s} = u_\theta(a)\cdot 2\pi a = \omega_0\,a \cdot 2\pi a$, so $\Gamma = 2\omega_0(\pi a^2)$. This depends on the radius.
+
+\textbf{Example 2:} $\Gamma = u_\theta(a)\cdot 2\pi a = \frac{\Gamma_0}{2\pi a}\cdot 2\pi a = \Gamma_0$. This is independent of the radius.
+
+\begin{example}[Rankine vortex --- a realistic vortex]
+\[
+    u_\theta(r) = \begin{cases} \omega_0\,r & r < a \quad \text{(solid body rotation)},\\ \frac{\omega_0\,a^2}{r} & r > a \quad \text{(irrotational vortex)}.\end{cases}
+\]
+Need velocity to be continuous at $r = a$.
+\end{example}
+
+\subsection{Surfaces of Constant Pressure (\S10.2)}
+
+Consider a circular flow $\uv = u_\theta(r)\,\hat{e}_\theta$ for a fluid of constant density (homogeneous) and inviscid ($\mu = 0$).
+
+The radial momentum equation (with $u_r = 0$):
+\[
+    \underbrace{\pdt{u_r}}_{=\,0} + \underbrace{(\uv\cdot\nabla)u_r}_{=\,0} - \frac{u_\theta^2}{r} = -\frac{1}{\rho_0}\pdx{p}{r}.
+\]
+
+The terms on the LHS are: acceleration, advection, and centripetal acceleration. The RHS is the pressure force. Since $u_r = 0$, we have a balance equation:
+\[
+    \boxed{\frac{u_\theta^2}{r} = \frac{1}{\rho_0}\pdx{p}{r}}  \qquad \text{(radial momentum equation)}.
+\]
+
+In the vertical direction ($u_z = 0$, $\Pi = gz$):
+\[
+    \pdx{p}{z} = -g\rho_0 \qquad \text{(hydrostatic balance)}.
+\]
+
+\begin{example}[Solid body rotation]
+$u_\theta = \omega_0 r$ gives $\pdx{p}{r} = \rho_0\omega_0^2 r$. Integrating: $p = \frac{\rho_0\omega_0^2 r^2}{2} + f(z)$.
+
+But $\pdx{p}{z} = f'(z) = -g\rho_0$, so $f(z) = -g\rho_0 z + C$. Therefore:
+\[
+    \boxed{p(r,z) = \frac{\rho_0\omega_0^2 r^2}{2} - g\rho_0 z + C.}
+\]
+
+Where is the pressure constant? Set $p = p_0$ and solve for $z$:
+\[
+    \rho_0 g z = -p_0 + \frac{\rho_0\omega_0^2 r^2}{2} + C
+    \qquad \Longrightarrow \qquad
+    z = \frac{\omega_0^2 r^2}{2g} - \frac{p_0}{\rho_0 g} + \frac{C}{\rho_0 g} \quad \text{(paraboloid)}.
+\]
+At the center: $z_{\text{centre}} = -\frac{p_0}{\rho_0 g} + \frac{C}{\rho_0 g}$. At the wall: $z_{\text{wall}} = \frac{\omega_0^2 a^2}{2g} - \frac{p_0}{\rho_0 g} + \frac{C}{\rho_0 g}$.
+
+Height difference: $z_{\text{wall}} - z_{\text{centre}} = \frac{\omega_0^2 a^2}{2g}$.
+\end{example}
+
+\begin{example}[Irrotational vortex]
+$u_\theta = \frac{\Gamma_0}{2\pi r}$ gives $\pdx{p}{r} = \frac{\rho_0\Gamma_0^2}{4\pi^2 r^3}$. Integrating:
+\[
+    p = -\frac{\rho_0\Gamma_0^2}{8\pi^2 r^2} + f(z),
+\]
+and $f'(z) = -g\rho_0$, so $f(z) = -g\rho_0 z + C$:
+\[
+    \boxed{p(r,z) = -\frac{\rho_0\Gamma_0^2}{8\pi^2 r^2} - g\rho_0 z + C.}
+\]
+
+To find surfaces of constant pressure, set $p = p_0$ and solve for $z$:
+\[
+    z = -\frac{\Gamma_0^2}{8\pi^2 g r^2} - \frac{p_0}{\rho_0 g} + \frac{C}{\rho_0 g}.
+\]
+
+This equation is singular at $r = 0$.
+\end{example}
+
+\subsection{Vortex Dynamics (\S10.3)}
+
+\begin{definition}
+A \textbf{vortex line} is a curve that is everywhere tangent to the vorticity field $\omv = \nabla\times\uv$. A \textbf{vortex tube} is a set of vortex lines passing through any simple closed contour.
+\end{definition}
+
+\begin{theorem}
+The circulation around any closed curve that passes once around the vortex tube is independent of the choice of curve.
+\end{theorem}
+
+\begin{proof}
+Suppose $S$ is the surface formed by the vortex tube and the two ends $S_1$, $S_2$ (with outward normals $\hat{n}_1$, $\hat{n}_2$) and the tube surface $S_3$ (with normal $\hat{n}_3$).
+
+Since $\nabla\cdot\omv = \nabla\cdot(\nabla\times\uv) = 0$:
+\[
+    \iiint_V \nabla\cdot(\nabla\times\uv)\,\mathrm{d}V = 0
+    \quad \xrightarrow{\text{Gauss}} \quad
+    \oiint_S (\nabla\times\uv)\cdot\nhat\,\mathrm{d}A = 0.
+\]
+
+Decomposing:
+\[
+    \iint_{S_1} \omv\cdot\hat{n}_1\,\mathrm{d}A + \iint_{S_2} \omv\cdot\hat{n}_2\,\mathrm{d}A + \underbrace{\iint_{S_3} \omv\cdot\hat{n}_3\,\mathrm{d}A}_{=\,0\;\text{(by design: $\omv \perp \hat{n}_3$)}} = 0.
+\]
+
+Hence $\iint_{S_1} \omv\cdot(-\hat{n}_1)\,\mathrm{d}A = \iint_{S_2} \omv\cdot\hat{n}_2\,\mathrm{d}A$.
+
+Each of these is the circulation of their respective contours. Since these are equal, the circulation is the same on $S_1$ and $S_2$ and on any other closed contour going around the vortex tube (by Stokes' theorem):
+\[
+    \oint_{C_1} \uv\cdot\mathrm{d}\vec{s} = \oint_{C_2} \uv\cdot\mathrm{d}\vec{s}. \qedhere
+\]
+\end{proof}
+
+\subsection{Kelvin's Circulation Theorem (\S10.4)}
+
+The circulation is $\Gamma \equiv \oint_{C(t)} \uv\cdot\mathrm{d}\vec{s}$, where $C(t)$ is a \emph{material} contour. By the 2nd Reynolds transport theorem:
+\[
+    \frac{\mathrm{d}\Gamma}{\mathrm{d}t} = \oint_{C(t)} \Dt\uv \cdot \mathrm{d}\vec{s}.
+\]
+
+If we assume the momentum equation for a fluid is
+\[
+    \Dt\uv = -\frac{1}{\rho}\nabla p - \nabla\Pi + \frac{1}{\rho}\vec{F}' \qquad \text{($\vec{F}' = \nabla\cdot\tens{T}'$, deviatoric stress tensor)},
+\]
+then plugging in:
+\[
+    \frac{\mathrm{d}\Gamma}{\mathrm{d}t} = \oint_{C(t)} \left(-\frac{1}{\rho}\nabla p\right)\cdot\mathrm{d}\vec{s}
+    - \underbrace{\oint_{C(t)} \nabla\Pi\cdot\mathrm{d}\vec{s}}_{=\,0}
+    + \oint_{C(t)} \frac{1}{\rho}\vec{F}'\cdot\mathrm{d}\vec{s}.
+\]
+
+Consider each term:
+\begin{enumerate}[label=(\roman*)]
+    \item $\oint \nabla\Pi\cdot\mathrm{d}\vec{s} = 0$: gravity does not change the circulation because it is conservative.
+    \item By Stokes' theorem: $\oint -\frac{1}{\rho}\nabla p\cdot\mathrm{d}\vec{s} = \iint_{A(t)} \nabla\times\!\left(-\frac{1}{\rho}\nabla p\right)\cdot\nhat\,\mathrm{d}S$. Now $\nabla\times\!\left(-\frac{1}{\rho}\nabla p\right) = \nabla\!\left(-\frac{1}{\rho}\right)\times\nabla p = \frac{1}{\rho^2}\nabla\rho\times\nabla p$. If $\rho = \rho(p)$ (barotropic), then this is $\vec{0}$. But not true always --- if density and pressure surfaces are not exactly aligned, then circulation can change.
+    \item Finally, $\oint \frac{1}{\rho}\vec{F}'\cdot\mathrm{d}\vec{s} \xrightarrow{\text{Stokes}} \iint \nabla\times\!\left(\frac{1}{\rho}\vec{F}'\right)\cdot\nhat\,\mathrm{d}S$: this can also change the circulation.
+\end{enumerate}
+
+\begin{theorem}[Kelvin's Circulation Theorem]
+For a barotropic ($\rho = \rho(p)$), inviscid ($\vec{F}' = \vec{0}$) fluid in a conservative body force field:
+\[
+    \boxed{\frac{\mathrm{d}\Gamma}{\mathrm{d}t} = 0.}
+\]
+\end{theorem}
+
+\subsection{The Vorticity Equation (\S10.5)}
+
+The momentum equation for an incompressible fluid ($\nabla\cdot\uv = 0$) is
+\[
+    \pdt{\uv} + (\uv\cdot\nabla)\uv = -\frac{1}{\rho}\nabla p - \nabla\Pi + \nu\,\nabla^2\uv.
+\]
+
+Recall: $(\uv\cdot\nabla)\uv = \nabla\!\left(\tfrac{1}{2}\uv\cdot\uv\right) + \omv\times\uv$. So:
+\[
+    \pdt{\uv} + \omv\times\uv = -\nabla\!\left(\tfrac{1}{2}\uv\cdot\uv + \Pi\right) - \frac{1}{\rho}\nabla p + \nu\,\nabla^2\uv.
+\]
+
+To find an evolution equation for the vorticity, we apply $\nabla\times$ to this equation:
+\[
+    \pdt{\omv} + \nabla\times(\omv\times\uv) = -\nabla\times\!\left(\frac{1}{\rho}\nabla p\right) + \nu\,\nabla^2\omv.
+\]
+
+Note: $-\nabla\times\!\left(\frac{1}{\rho}\nabla p\right) = \frac{1}{\rho^2}\nabla\rho\times\nabla p$.
+
+Using the BAC-CAB formula: $\nabla\times(\omv\times\uv) = (\uv\cdot\nabla)\omv - (\omv\cdot\nabla)\uv + \underbrace{(\nabla\cdot\uv)}_{=\,0}\omv - \underbrace{(\nabla\cdot\omv)}_{=\,0}\uv$.
+
+Substituting into our equation, the \textbf{vorticity equation} is:
+\[
+    \boxed{\Dt\omv = (\omv\cdot\nabla)\uv + \frac{1}{\rho^2}\nabla\rho\times\nabla p + \nu\,\nabla^2\omv.}
+\]
+
+\textbf{3 mechanisms that can cause vorticity to change:}
+\begin{enumerate}[label=(\roman*)]
+    \item $(\omv\cdot\nabla)\uv$: \textbf{Tilting/stretching term.} In component form: $(\omv\cdot\nabla)\uv = (\omega_x, \omega_y, \omega_z)\cdot(\partial_x, \partial_y, \partial_z)\,\uv = (\omega_x\partial_x + \omega_y\partial_y + \omega_z\partial_z)\uv$.
+
+    \textbf{Example 1 (stretching):} In the vertical direction we have $\omega_z\pdx{w}{z}$. If $\omega_z > 0$ and $\pdx{w}{z} > 0$, then $\omega_z\pdx{w}{z} > 0$. This causes vorticity to increase in the $z$-direction. This is \textbf{vortex stretching}.
+
+    \textbf{Example 2 (tilting):} The $x$-component of this term is $\omega_z\pdx{u}{z}$. If $\omega_z > 0$ and $\pdx{u}{z} > 0$, then $\omega_z\pdx{u}{z} > 0$. This can generate positive $x$-vorticity. This is called \textbf{tilting}.
+
+    \item $\frac{1}{\rho^2}\nabla\rho\times\nabla p$: \textbf{Baroclinic generation} (see Kelvin's theorem).
+    \item $\nu\,\nabla^2\omv$: \textbf{Viscosity} (also seen in Kelvin's theorem).
+\end{enumerate}
+
+For \textbf{constant density} flows, the baroclinic term vanishes:
+\[
+    \Dt\omv = (\omv\cdot\nabla)\uv + \nu\,\nabla^2\omv.
+\]
+
+%=============================================================================
+\section{Lecture 22 --- Magnetohydrodynamics (MHD)}
+\textit{March 25, 2026}
+%=============================================================================
+
+\textbf{Magnetohydrodynamics (MHD)} is the study of electrically conductive fluids. Examples include plasma in stars, salt water, and electrolytes.
+
+\subsection{Part 1: Maxwell's Equations}
+
+The relevant fields are:
+\begin{itemize}[nosep]
+    \item $\vec{E}$: electric field,
+    \item $\vec{B}$: magnetic field,
+    \item $\vec{J}$: charge current density,
+    \item $\uv$: velocity,
+    \item $\rho_e$: total charge density.
+\end{itemize}
+
+The electric field has two components:
+\[
+    \vec{E} = \vec{E}_s + \vec{E}_i,
+\]
+where $\vec{E}_s$ is the \textbf{electrostatic field} (set by $\rho_e$) and $\vec{E}_i$ is the \textbf{induced field} due to $\vec{B}$.
+
+\subsubsection{Electric Field and Lorentz Force (\S1.1)}
+
+The force on a point charge $q$ moving with velocity $\uv$ in electric and magnetic fields is given by the \textbf{Lorentz force}:
+\[
+    \boxed{\vec{F} = q\vec{E} + q\,\uv \times \vec{B}.}
+\]
+
+The first term $q\vec{E}$ is the \textbf{Coulomb (electrostatic) force}. The second term $q\,\uv \times \vec{B}$ is the \textbf{Lorentz force} (the term we study in MHD).
+
+\bigskip
+\textit{Note: Pages 2--5 of the uploaded lecture file (covering the remainder of Lectures 22--23 on Maxwell's equations, Ohm's law, the induction equation, and the MHD momentum equation) were not accessible for transcription. Please re-upload the file for complete coverage.}
+
+\end{document}
