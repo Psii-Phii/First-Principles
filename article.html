@@ -187,7 +187,7 @@ window.MathJax = {
     if (meta.date) bits.push(meta.date);
     if (bits.length) {
       kickerEl.innerHTML = bits.join(' &nbsp;&middot;&nbsp; ');
-      if (meta.topic) kickerEl.querySelector('b').textContent = meta.topic;
+      if (meta.topic) kickerEl.querySelector('b').textContent = (Array.isArray(meta.topics) && meta.topics.length ? meta.topics : [meta.topic]).join(' · ');
       kickerEl.hidden = false;
     }
   }

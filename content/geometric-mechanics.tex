@@ -15,16 +15,15 @@
 %  Comment out an \input line below to compile without that section.
 % =====================================================================
 \documentclass[12pt]{article}
-% <<< preamble.tex
 % Preamble for main.tex -- \documentclass lives in main.tex
 % --- Keep your existing libraries ---
-\usepackage{geometry}
-\geometry{
-    a4paper,
-    total={170mm,257mm},
-    left=15mm,top=25mm,
-    headheight=15pt
-}
+% [set in Format] \usepackage{geometry}
+% [set in Format] \geometry{
+% [set in Format]     a4paper,
+% [set in Format]     total={170mm,257mm},
+% [set in Format]     left=15mm,top=25mm,
+% [set in Format]     headheight=15pt
+% [set in Format] }
 
 \usepackage{amsmath,amsfonts,amssymb,amsthm}
 \usepackage{hyperref}
@@ -68,24 +67,36 @@
 
 % --- Readability tweaks ---
 \AtBeginDocument{\fontsize{13.5}{17}\selectfont}
-\setstretch{1.28}
+% [set in Format] \setstretch{1.28}
 \setlength{\parskip}{0.5em}
 \setlength{\parindent}{0pt}
 \emergencystretch=3em
 \allowdisplaybreaks
 
 % --- Pagestyle Setup ---
-\pagestyle{fancy}
-\fancyhf{}
-\renewcommand{\headrulewidth}{0.4pt}
+% [set in Format] \pagestyle{fancy}
+% [set in Format] \fancyhf{}
+% [set in Format] \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
-\lhead{Classical Mechanics on Manifolds}
-\rhead{\nouppercase{\leftmark}}
-\cfoot{\thepage}
+% [set in Format] \lhead{Classical Mechanics on Manifolds}
+% [set in Format] \rhead{\nouppercase{\leftmark}}
+% [set in Format] \cfoot{\thepage}
 
 % Handy shorthand for the Lie derivative
 \providecommand{\Lie}{\mathcal{L}}
-% >>> preamble.tex
+
+% ==== Panopticon · Format (change it in the Format panel, or edit here) ====
+% panopticon-format: {"paper": "a4", "margin_top": 25, "margin_bottom": 25, "margin_left": 20, "margin_right": 20, "size": "12pt", "font": "lm", "spacing": 1.28, "paragraphs": "indent", "head_l": "Classical Mechanics on Manifolds", "head_c": "", "head_r": "{section}", "foot_l": "", "foot_c": "{page}", "foot_r": "", "head_rule": false}
+\usepackage[a4paper,top=25.0mm,bottom=25.0mm,left=20.0mm,right=20.0mm,headheight=15pt]{geometry}
+\usepackage{lmodern}
+\usepackage{setspace}\setstretch{1.28}
+\usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}
+\lhead{Classical Mechanics on Manifolds}
+\rhead{\nouppercase{\leftmark}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\cfoot{\thepage}\renewcommand{\headrulewidth}{0pt}}
+% ==== end Format ====
 
 \title{Geometric Formulation of Classical Mechanics}
 \author{}
@@ -95,10 +106,9 @@
 \maketitle
 \thispagestyle{fancy}
 
-% <<< sections/01-introduction-and-overview.tex
 \section{Introduction and Overview}\label{sec:intro}
 
-Every student of physics encounters at least two formulations of classical mechanics. The first is codified in terms of Newton's laws of motion, where, for the most part, an individual's capability to solve a problem is capped by their capability to draw out all the forces involved, which in hindsight seems like the very antithesis of an exact science (it's inexact, dependent on getting the diagram right). In later years one is introduced to the power of Lagrangians and Hamiltonians, which render such doodling pointless and give a systematic way of deriving the equations of motion for a given system. However, the student is rarely told the mathematical basis of these objects, i.e., they're seldom told what kind of mathematical object a Hamiltonian actually is. Where does it ``live''? What is the deeper structure underlying such powerful machinery? The aim of these notes is to answer these questions properly. It turns out that mechanics, at its heart, is geometric, and we shall build up exactly the geometry needed to see how and why.
+Every student of physics encounters at least two formulations of classical mechanics. The first is codified in terms of Newton's laws of motion, where, for the most part, an individual's capability to solve a problem is capped by their capability to draw out all the forces involved, which in hindsight seems like the very antithesis of an exact science (it's inexact, dependent on getting the diagram right). In later years one is introduced to the power of Lagrangians and Hamiltonians, which render such doodling pointless and give a systematic way of deriving the equations of motion for a given system. However, the student is rarely told the mathematical basis of these objects, i.e., they're seldom told what kind of mathematical object a Hamiltonian actually is. Where does it ``live''? What is the deeper structure underlying such powerful machinery? The aim of these notes is to answer these questions properly. It turns out that mechanics, at its heart, is geometric, and we shall build up exactly the geometry needed to see how and why. 
 
 A word on prerequisites, because it fixes the entire design of these notes. We assume the reader is comfortable with multivariable calculus (partial derivatives, the chain rule, the inverse function theorem used informally) and with linear algebra (vector spaces, linear maps, bases, matrices, determinants). We do \emph{not} assume any differential geometry. Every geometric object we use, manifolds, tangent vectors, covectors, tensors, differential forms, flows, will be defined before it is used, and the definitions are not optional seasoning: the payoff of the whole subject is that the definitions do the work. When we reach a formula and ask ``why is this natural?'', the answer will always be traceable back to a definition made earlier, and we will make a point of doing the tracing.
 
@@ -107,8 +117,6 @@ One recurring theme deserves to be announced in advance, because it is the engin
 % A brief outline of what these notes cover. We start with the \emph{configuration space} $\mc{Q}$ of a mechanical system and use it as the motivation to define smooth manifolds honestly (\S\ref{sec:config}). We then build the calculus that lives on a manifold: tangent vectors and the tangent bundle, where velocities live (\S\ref{sec:tangent}), together with vector fields and their flows. With that in hand we can say what a Lagrangian is, and, importantly, we \emph{derive} rather than postulate the quadratic form $\frac{1}{2}g_{ab}\dot q^a \dot q^b$ that kinetic energy takes in generalized coordinates, which is where the metric $g_{ab}$ enters mechanics (\S\ref{sec:lagrangian}). Next comes duality: covectors, the differential of a function, and the cotangent bundle (\S\ref{sec:covectors}), followed by the Legendre transform (\S\ref{sec:legendre}), which carries us to the Hamiltonian and to Hamilton's equations (\S\ref{sec:hamilton}) and in doing so relocates the theory to \emph{phase space}, the cotangent bundle $T^*\mc{Q}$ (\S\ref{sec:phasespace}). On phase space we meet the Poisson bracket and prove that bracket evolution and Hamiltonian evolution are the same thing (\S\ref{sec:poisson}). Then the geometry proper begins: after a careful toolkit of tensors and differential forms (\S\ref{sec:forms}), we introduce the symplectic form (\S\ref{sec:symplectic}), rewrite Hamilton's equations without coordinates (\S\ref{sec:coordfree}), study the flows generated by observables (\S\ref{sec:hamvf}), and generalize to abstract symplectic manifolds, where Darboux's theorem tells us something remarkable: symplectic geometry has no local invariants at all (\S\ref{sec:sympman}). Symplectic (canonical) transformations (\S\ref{sec:symptrans}) and Liouville's theorem (\S\ref{sec:liouville}) follow almost for free, and we close with statistical distributions on phase space and the Liouville equation (\S\ref{sec:statistical}), which is the precise classical twin of the von Neumann equation.
 
 Conventions: configuration coordinates i.e. components of a position vector are labeled with an upper indices $q^a$, co-vectors are labeled with lower indices $p_a$, with $a = 1, \dots, n$ for $n$ degrees of freedom. Repeated indices,  upper  one lower, are summed ( Einstein convention) unless said otherwise; the reason for this peculiar notation will soon become apparent as we deifne what vecotrs and covectors mean.
-% >>> sections/01-introduction-and-overview.tex
-% <<< sections/02-configuration-space-and-what-a-manifold.tex
 \section{Configuration Space, and What a Manifold Is}\label{sec:config}
 
 \subsection{Configuration space by examples}
@@ -166,14 +174,14 @@ Is this declaration consistent, i.e., could a function look smooth in one chart 
 
 By construction, our earlier examples qualify. The circle $S^1$ is covered by two angular charts (say, $\theta \in (0, 2\pi)$ and $\theta' \in (-\pi, \pi)$, each omitting one point), with transition maps $\theta' = \theta$ or $\theta' = \theta - 2\pi$ on the two components of the overlap eac of which are smooth, and invertible.
 
-From now on we say ``the configuration space of a mechanical system with $n$ degrees of freedom is a smooth $n$-dimensional manifold $\mc{Q}$'', and carry out computations in whatever local coordinates $q^a$ are convenient, provided we always have a well defined way of changing between coordinates.
+From now on we say ``the configuration space of a mechanical system with $n$ degrees of freedom is a smooth $n$-dimensional manifold $\mc{Q}$'', and carry out computations in whatever local (generalized) coordinates $q^a$ are convenient, provided we always have a well defined way of changing between coordinates.
 
-Now that the position data is arranged in a way that lets us do calculus on it, it is natural to move to the next-order quantity, velocity, and ask where \emph{it} lives.
-% >>> sections/02-configuration-space-and-what-a-manifold.tex
-% <<< sections/03-velocities-tangent-vectors-vector.tex
+Now that the position data is arranged in a way that lets us do calculus on it, it is natural to move to the next-order quantity, velocity, and ask where \emph{it} lives. 
 \section{Velocities: Tangent Vectors, Vector Fields, and Flows}\label{sec:tangent}
 
 \subsection{Tangent vectors via curves}
+
+
 
 A configuration alone doesn't determine the future; we also need the velocity. If the system traces a curve through configuration space, a smooth map
 \begin{flalign}
@@ -185,6 +193,9 @@ Fix a point $x \in \mc{Q}$ and consider all smooth curves passing through $x$ at
 \begin{flalign}
     \dv{t}\Big|_{0}\, \phi\br{\gamma_1(t)} = \dv{t}\Big|_{0}\, \phi\br{\gamma_2(t)}. \label{curve-equiv}
 \end{flalign}
+we take this to be the working definition of chart 
+
+
 The crucial check, our master rule in action: if \eqref{curve-equiv} holds in one chart, it holds in every chart, because in any other chart the chain rule gives
 \begin{flalign}
     \dv{\tilde{q}^a}{t} = \pdv{\tilde{q}^a}{q^b}\,\dv{q^b}{t}, \label{chain-check}
@@ -252,8 +263,6 @@ a linear ODE on the space of functions, solved formally by exponentiating the op
     f_s = e^{s X} f \qquad \text{with } X = X^a\partial_a \label{expflow}
 \end{flalign}
 (convergence for analytic data; formally always, which is the register in which we'll use it). The simplest example, worth doing in full: on $\mathbb{R}^2$ with coordinates $(q,p)$, take $X = \partial_q$ (unit velocity in $q$, none in $p$). The ODEs are $\dot q = 1$, $\dot p = 0$, so $\varphi^X_s(q,p) = (q+s,\, p)$: rigid translation. And by Taylor's theorem, $f(q + s, p) = e^{s\,\partial_q} f(q, p)$, which is \eqref{expflow} in its most familiar clothing. The pattern, \emph{evolution equals exponentiated generator}, is one the reader has met in quantum mechanics wearing the costume $T(t;t_0) = e^{-iH(t - t_0)/\hbar}$; it is the same mathematics, and by the end of these notes the analogy will be exact and systematic. Which vector field on phase space has the physical time evolution as its flow, and which function generates translations, are questions we'll be equipped to answer precisely in \S\ref{sec:hamvf}.
-% >>> sections/03-velocities-tangent-vectors-vector.tex
-% <<< sections/04-the-lagrangian-and-where-gab-comes-from.tex
 \section{The Lagrangian, and Where $g_{ab}$ Comes From}\label{sec:lagrangian}
 
 \subsection{The Lagrangian as a function on the tangent bundle}
@@ -262,8 +271,8 @@ We can now say cleanly what a Lagrangian is. An instantaneous state, in the Lagr
 \begin{flalign}
     L : T\mc{Q} \times \mathbb{R} \to \mathbb{R}, \qquad (q, \dot{q}, t) \mapsto L(q, \dot{q}, t).
 \end{flalign}
-This one line already answers a question from the introduction: the Lagrangian ``lives'' on the tangent bundle. The dynamics is selected by Hamilton's principle: physical trajectories between fixed endpoints extremize the action $S[q] = \int L\,\dd{t}$, which produces the Euler--Lagrange equations
-\begin{flalign}
+This one line already answers a question from the introduction: the Lagrangian ``lives'' on the tangent bundle. The dynamics is selected by Hamilton's principle: physical trajectories between fixed endpoints extremize the action $S[q] = \int L\,\dd{t}$, which produces the Euler--Lagrange equations 
+\begin{flalign} 
     \dv{t}\br{\pdv{L}{\dot{q}^a}} - \pdv{L}{q^a} = 0. \label{EL}
 \end{flalign}
 We take \eqref{EL} as known from the standard course and won't rederive it; our business here is what happens \emph{next}.
@@ -334,8 +343,6 @@ the formula every mechanics course derives by hand; here it drops out of the gen
     g_{ab} = \ell^2\begin{pmatrix} m_1 + m_2 & m_2\cos(\theta_1 - \theta_2) \\ m_2\cos(\theta_1 - \theta_2) & m_2 \end{pmatrix}.
 \end{flalign}
 Note the off-diagonal entry: the metric is generally a full matrix, coupling the coordinate velocities, and it varies over the configuration torus. Symmetric: visibly. Positive-definite: the determinant is $\ell^4 m_2\sbr{m_1 + m_2\sin^2(\theta_1 - \theta_2)} > 0$ and the top-left entry is positive, so both eigenvalues are positive. Everything advertised, on display in one example.
-% >>> sections/04-the-lagrangian-and-where-gab-comes-from.tex
-% <<< sections/05-duality-covectors-and-the-cotangent.tex
 \section{Duality: Covectors and the Cotangent Bundle}\label{sec:covectors}
 
 \subsection{The dual of a vector space}
@@ -391,8 +398,6 @@ Exactly as tangent spaces glued into the tangent bundle, the cotangent spaces gl
     T^*\mc{Q} = \bigcup_{x \in \mc{Q}} \cbr{x} \times T^*_x\mc{Q},
 \end{flalign}
 a $2n$-dimensional manifold whose points are pairs (configuration, covector at that configuration), coordinatized locally by $(q^a, \lambda_a)$. At this stage of the notes it is just ``the other bundle''. Two sections from now it will be revealed as phase space, and by \S\ref{sec:symplectic} it will be the stage on which all of mechanics plays out. First we need the reason momenta live here rather than in $T\mc{Q}$, and that reason is the Legendre transform.
-% >>> sections/05-duality-covectors-and-the-cotangent.tex
-% <<< sections/06-the-legendre-transform.tex
 \section{The Legendre Transform}\label{sec:legendre}
 
 \subsection{The construction}
@@ -483,8 +488,6 @@ For the quadratic case, the Hamiltonian is fully explicit:
     = \frac{1}{2}\, g^{ab}\, p_a p_b + V(q), \label{quadH}
 \end{flalign}
 using $g_{cd}\,g^{ca}\,g^{db} = \delta_d^a\, g^{db} = g^{ab}$. The Hamiltonian is the total energy $T + V$, with the kinetic term now built from the \emph{inverse} metric, as it must be: kinetic energy is half the squared length of the velocity, and expressing a vector's length through its lowered-index avatar always calls on $g^{ab}$. (We'll redo this calculation from the Hamilton's-equations side as a worked exercise in \S\ref{sec:hamilton}.)
-% >>> sections/06-the-legendre-transform.tex
-% <<< sections/07-hamiltons-equations.tex
 \section{Hamilton's Equations}\label{sec:hamilton}
 
 \subsection{The derivation: compute $\dd{H}$ two ways}
@@ -540,8 +543,6 @@ To compare with Euler--Lagrange, differentiate $p_a = g_{ab}\dot{q}^b$ in time a
 \begin{mybox}
 \textbf{A caveat about ``$H = $ energy''.} The Hamiltonian \eqref{hamdef} is the Legendre transform of $L$; it equals the mechanical energy $T + V$ when $L = T - V$ with $T$ purely quadratic in velocities, as in \eqref{quadH}. Both hypotheses can fail. The charged particle in a magnetic field has $L = \frac{m}{2}\dot{\vb{x}}^2 + \frac{e}{c}\dot{\vb{x}}\cdot\vb{A}(\vb{x}) - e\phi(\vb{x})$, linear-plus-quadratic in velocity; the canonical momentum $\vb{p} = m\dot{\vb{x}} + \frac{e}{c}\vb{A}$ is \emph{not} $m\dot{\vb{x}}$ (and not the metric image of the velocity: this is the promised example where \eqref{canmom} outruns the metric picture), and $H = \frac{1}{2m}\br{\vb{p} - \frac{e}{c}\vb{A}}^2 + e\phi$ is the energy only after this substitution. The lesson generalizes: the canonical momentum is defined by \eqref{canmom} and by nothing else, and confusing it with $m\dot{q}$ is the classic error this formalism punishes.
 \end{mybox}
-% >>> sections/07-hamiltons-equations.tex
-% <<< sections/08-phase-space-one-arena-one-matrix.tex
 \section{Phase Space: One Arena, One Matrix}\label{sec:phasespace}
 
 \subsection{Phase space is the cotangent bundle}
@@ -578,8 +579,6 @@ the second by block multiplication. So $\tilde{\Omega}$ is antisymmetric and squ
 Equation \eqref{hameqs-xi} is worth staring at. It says: the phase-space velocity field of the dynamics is \emph{the gradient of $H$, rotated by $\tilde{\Omega}$}. In ordinary gradient flow, $\dot{\xi} = -\nabla H$, trajectories run downhill and $H$ decreases. Here the ``gradient'' is turned sideways before use, so trajectories run along level sets of $H$ instead of across them, and $H$ is conserved. One matrix, and dissipation becomes conservation. This picture, dynamics as symplectically-rotated gradient flow, is the coordinate avatar of the coordinate-free statement $i_X\Omega = -\dd{H}$ toward which we're building.
 
 (A skeptical reader should be asking, per the master rule of \S\ref{sec:config}: does the tidy form \eqref{hameqs-xi} survive a change of phase-space coordinates, and what transformation law do the components $\tilde\Omega^{\alpha\beta}$ obey? Excellent question, deferred deliberately: it is answered in \S\ref{sec:symplectic}, where it becomes the birth of the symplectic form, and the coordinate changes that preserve the canonical form of $\tilde\Omega$ get a section of their own, \S\ref{sec:symptrans}.)
-% >>> sections/08-phase-space-one-arena-one-matrix.tex
-% <<< sections/09-poisson-brackets.tex
 \section{Poisson Brackets}\label{sec:poisson}
 
 \subsection{Definition and first properties}
@@ -666,8 +665,6 @@ A \emph{constant of motion} is an observable with $\cbr{f, H} = 0$ (and no expli
 \emph{Proof.} By Jacobi, $\cbr{\cbr{f,g}, H} = -\cbr{\cbr{g,H},f} - \cbr{\cbr{H,f},g} = -\cbr{0, f} - \cbr{0, g} = 0$. $\blacksquare$
 
 Occasionally this manufactures genuinely new conservation laws (two components of angular momentum bracket to the third); more often it returns zero or a function of the ones already in hand. Either way, structurally it says the constants of motion form a \emph{closed subalgebra} under the bracket, which is the seed of the entire integrability story (Liouville--Arnold), a story for another set of notes.
-% >>> sections/09-poisson-brackets.tex
-% <<< sections/10-tensors-and-differential-forms.tex
 \section{Tensors and Differential Forms}\label{sec:forms}
 
 Before the symplectic form can be introduced honestly we need to widen the cast of geometric objects from vectors and covectors to \emph{tensors}, and then specialize to the antisymmetric ones, the \emph{differential forms}, together with the operations on them. Everything in this section is built from the raw materials of \S\S\ref{sec:tangent} and \ref{sec:covectors}, and nothing in it is specific to mechanics; it's the toolkit.
@@ -746,8 +743,6 @@ The statement ``$\omega$ is invariant under the flow of $X$'' is exactly $\Lie_X
 valid on forms of any degree. (Sanity check on functions: $\Lie_X f = i_X\,\dd{f} + 0 = X^\alpha\partial_\alpha f$, the directional derivative \eqref{directional}, as it must be.) We won't prove \eqref{cartan} in general (induction on form degree, using that both sides are derivations agreeing on functions and differentials), but we will use it constantly, because it converts flow-invariance questions into pure algebra with $\dd{}$ and $i_X$. Watch how much work it does in \S\ref{sec:symptrans}.
 
 Finally, for the record and for orientation: forms are the natural integrands ($k$-forms integrate over $k$-dimensional oriented surfaces), and the exterior derivative is dual to the boundary operator via \emph{Stokes' theorem}, $\int_S \dd{\omega} = \int_{\partial S}\omega$; it contains the divergence and curl theorems of vector calculus as special cases. We'll need it exactly once (for integral invariants, \S\ref{sec:symptrans}), and we'll cite it rather than prove it.
-% >>> sections/10-tensors-and-differential-forms.tex
-% <<< sections/11-the-symplectic-form.tex
 \section{The Symplectic Form}\label{sec:symplectic}
 
 \subsection{From the symplectic matrix to the symplectic form}
@@ -804,8 +799,6 @@ Consequently
     \Omega = \dd{\theta} = \dd{p_a}\wedge\dd{q^a}
 \end{empheq}
 is likewise canonical: \emph{every} cotangent bundle is a symplectic manifold, with no choices made. This is the precise sense, promised in \S\ref{sec:phasespace}, in which phase space has more structure than velocity space: $T^*\mc{Q}$ comes symplectic from the factory, while $T\mc{Q}$ acquires such structure only after a Lagrangian is chosen to identify it with $T^*\mc{Q}$ (via \eqref{canmom}). And notice which physical object $\theta$ is: $p_a\,\dd{q^a}$ is the integrand of the abbreviated action $\int p\,\dd{q}$, the quantity whose stationarity gives Maupertuis' principle and whose quantization gives Bohr--Sommerfeld. The tautological form is not a formal device; it's the action integrand, promoted to geometry.
-% >>> sections/11-the-symplectic-form.tex
-% <<< sections/12-hamiltons-equations-without-coordinates.tex
 \section{Hamilton's Equations Without Coordinates}\label{sec:coordfree}
 
 We now have all the pieces to state the dynamics geometrically. A Hamiltonian system is a triple: a phase space $\Gamma$, a symplectic form $\Omega$ on it, and a function $H : \Gamma \to \mathbb{R}$. The dynamics is the flow (in the exact sense of \S\ref{sec:flows}) of the vector field $X_H$ determined by
@@ -835,8 +828,6 @@ Energy conservation, third derivation, now purely algebraic: the rate of change 
 where the last step is nothing but the antisymmetry of $\Omega$: any $2$-form vanishes when fed the same vector twice. Compare the coordinate computation \eqref{Hdot}: what looked there like a fortunate cancellation of two sums is here the single word ``antisymmetry''. That's the geometry paying rent. And notice what the argument \emph{didn't} use: nothing about $H$, nothing about coordinates, not even closedness of $\Omega$. Conservation of the generator is a structural fact about antisymmetric dynamics, full stop. (We'll upgrade this observation into a two-line Noether-type theorem in \S\ref{sec:hamvf}.)
 
 The picture to keep: $\dd{H}$ is a covector field, pointing ``uphill'' across the level sets of $H$. The symplectic isomorphism converts it into the vector field $X_H$, and by \eqref{econs-geo} that vector field is everywhere \emph{tangent} to the level sets. The conversion rotates uphill into along-the-contour. This is the coordinate-free version of the ``sideways gradient flow'' picture of \S\ref{sec:phasespace}, and it's exact, not a cartoon.
-% >>> sections/12-hamiltons-equations-without-coordinates.tex
-% <<< sections/13-hamiltonian-vector-fields-and-the.tex
 \section{Hamiltonian Vector Fields and the Algebra of Observables}\label{sec:hamvf}
 
 \subsection{Every observable generates a flow}
@@ -898,8 +889,6 @@ The flow characterization \eqref{PB-flow} makes the symmetry--conservation link 
     \text{$g$ generates a symmetry of $H$} \quad&\iff\quad \text{$g$ is conserved.} \notag
 \end{empheq}
 Momentum is conserved when $H$ is translation-invariant, and $H$ is translation-invariant when momentum is conserved, and these are one fact, not two facts joined by a theorem. Energy conservation itself is the diagonal case $g = H$. (The Lagrangian Noether theorem, with its variational hypotheses and boundary terms, is the same statement met under worse lighting; on phase space the symmetry--conservation duality is just the antisymmetry of $\Omega$.)
-% >>> sections/13-hamiltonian-vector-fields-and-the.tex
-% <<< sections/14-symplectic-manifolds.tex
 \section{Symplectic Manifolds}\label{sec:sympman}
 
 \subsection{The abstraction}
@@ -948,8 +937,6 @@ Pause on what's being claimed, because it's stronger than it may look. For a Rie
 \emph{Proof sketch (Arnold's induction).} The strategy is induction on $n$, constructing the coordinate pair $(q^1, p_1)$ by hand and splitting it off. Take any function $p_1$ with $\dd{p_1}\neq 0$ near the point (a coordinate function will do). Its Hamiltonian field $X_{p_1}$ is nonvanishing there, so we may choose a function $q^1$ with $X_{p_1}q^1 = 1$, i.e. $\cbr{q^1, p_1} = 1$ (solve the ODE ``$q^1$ increases at unit rate along the flow of $p_1$'', taking $q^1 = 0$ on a hypersurface transverse to the flow; existence and smooth dependence come from the standard straightening theorem for nonvanishing vector fields). The two flows $\varphi^{q^1}_s$ and $\varphi^{p_1}_u$ commute, because by \eqref{liehom} $\sbr{X_{q^1}, X_{p_1}} = X_{\cbr{p_1, q^1}} = X_{-1} = 0$, constants generating nothing. Using the two commuting flows as two of the coordinate directions, one shows the remaining directions, the joint level set of $(q^1, p_1)$ swept out suitably, form a $(2n-2)$-dimensional manifold on which $\Omega$ restricts to a closed nondegenerate form; apply the inductive hypothesis there, and verify that the assembled coordinates give exactly \eqref{darboux} (the cross terms vanish precisely because of the commutation and the normalizations $\cbr{q^1,p_1}=1$). The base case $n=0$ is empty. $\blacksquare$
 
 We've been honest that this is a sketch; the full bookkeeping (that the restricted form is symplectic, that no cross terms survive) is a page of careful checking in Arnold \S43. The two ideas worth retaining are (i) coordinates are \emph{built from dynamics}: the canonical pair $(q^1, p_1)$ is manufactured out of a flow and its clock, and (ii) the Jacobi identity, via \eqref{liehom}, is what makes the construction close, which is the promised sense in which $\dd{\Omega} = 0$ (equivalent to Jacobi, as one can check by expressing the Jacobiator of \eqref{PB} in terms of $\dd{\Omega}$) carries the dynamical content of the subject.
-% >>> sections/14-symplectic-manifolds.tex
-% <<< sections/15-symplectic-canonical-transformations.tex
 \section{Symplectic (Canonical) Transformations}\label{sec:symptrans}
 
 \subsection{Definition and the classical propositions}
@@ -1005,8 +992,6 @@ Proposition 4 has quantitative teeth. If $\varphi^*\Omega = \Omega$ then also $\
     \int_{\varphi(S)} \Omega^k = \int_S \varphi^*\br{\Omega^k} = \int_S \Omega^k : \label{integral-invariants}
 \end{flalign}
 the integrals of all powers of $\Omega$ are \emph{integral invariants} of every canonical transformation, in particular of Hamiltonian time evolution. The $k = 1$ case has a vivid reading in canonical coordinates: $\int_S \Omega = \sum_a \int_S \dd{p_a}\wedge\dd{q^a}$ is the \emph{sum of the oriented areas of the shadows of $S$} on the $n$ canonical planes $(q^a, p_a)$ (oriented area in precisely the sense computed in \S\ref{sec:forms}), and this sum of shadow-areas is frozen under the dynamics however wildly $S$ itself is stretched and folded. That is the precise cash value of the slogan from \S\ref{sec:forms}: symplectic geometry is the geometry of area, and Hamiltonian dynamics is area-preserving in exactly this sense. For closed surfaces there is a companion \emph{relative} invariant: if $C = \partial S$ is a closed curve, Stokes gives $\oint_C \theta = \int_S \dd{\theta} = \int_S\Omega$ (on a phase space where $\Omega = \dd{\theta}$), so the loop integral of the action form $\oint p_a\,\dd{q^a}$ is likewise preserved, the classical quantity that Bohr--Sommerfeld quantization later declares to be $2\pi\hbar$ times an integer. The $k = n$ case of \eqref{integral-invariants} is a statement about volume, and it's important enough to be the next section.
-% >>> sections/15-symplectic-canonical-transformations.tex
-% <<< sections/16-liouvilles-theorem.tex
 \section{Liouville's Theorem}\label{sec:liouville}
 
 \subsection{The symplectic volume and the theorem}
@@ -1057,8 +1042,6 @@ Volume preservation plus bounded phase space has a startling consequence, worth 
 \emph{Proof.} Consider the images $U, \varphi(U), \varphi^2(U), \dots$. All have the same (positive) volume as $U$. If they were pairwise disjoint, $D$ would contain infinitely many disjoint sets of equal positive volume, contradicting $\mathrm{vol}(D) < \infty$. So some pair intersects: $\varphi^k(U)\cap\varphi^\ell(U)\neq\emptyset$ with $k > \ell \geq 0$. Apply $\varphi^{-\ell}$ (invertibility): $\varphi^{k-\ell}(U)\cap U \neq \emptyset$. Pick $y$ in that intersection: then $y \in U$, and $x \equiv \varphi^{-(k-\ell)}(y)$ lies in $U$ (since $y \in \varphi^{k-\ell}(U)$) with $\varphi^{k-\ell}(x) = y \in U$. So $x$ is a point of $U$ that returns to $U$ after $k - \ell$ steps. $\blacksquare$
 
 Apply it to the time-$\tau$ map of a Hamiltonian flow on a bounded energy shell (bounded, e.g., for confining potentials): \emph{almost every state returns arbitrarily close to itself, infinitely often}. Now the famous paradox: gas in the left half of a box, partition removed, gas spreads; recurrence says the all-molecules-back-in-the-left-half configuration will be revisited to any accuracy. It will. The resolution is quantitative, not logical: the recurrence time for macroscopic $N$ is stupendous (estimates run to $10^{10^{N}}$-ish multiples of any human timescale), and the theorem is silent about \emph{when}. The moral for us is structural: Hamiltonian dynamics is, at the level of the invariant measure, \emph{reversible and recurrent}, and the arrow of time in thermodynamics must therefore be a statement about initial conditions and timescales, not about the mechanics. The mechanics has no arrow; we've just proven it.
-% >>> sections/16-liouvilles-theorem.tex
-% <<< sections/17-statistical-distributions-and-the.tex
 \section{Statistical Distributions and the Liouville Equation}\label{sec:statistical}
 
 \subsection{Distributions on phase space}
@@ -1092,6 +1075,5 @@ This is the \emph{Liouville equation}, the master evolution law of classical sta
 \subsection{The bridge to quantum mechanics}
 
 Assemble the classical structures in one column and their quantum counterparts in the other. Observables: functions on phase space $\longleftrightarrow$ Hermitian operators on Hilbert space. Bracket: $\cbr{f,g} \longleftrightarrow \frac{1}{i\hbar}[\hat{f},\hat{g}]$ (Dirac's correspondence, with the $i\hbar$ mandatory: see the box in \S\ref{sec:poisson}). Fundamental brackets \eqref{fundamental-PB}: $\cbr{q^a,p_b} = \delta^a_b \longleftrightarrow [\hat{q}^a,\hat{p}_b] = i\hbar\,\delta^a_b$. Generators and flows (\S\ref{sec:hamvf}): every observable generates a one-parameter group of canonical transformations $\longleftrightarrow$ every Hermitian operator generates a one-parameter unitary group $e^{-is\hat{f}/\hbar}$. Constants trivial in the generator (\S\ref{sec:hamvf}) $\longleftrightarrow$ global phase invisible. Observable evolution $\dot f = \cbr{f,H}$ $\longleftrightarrow$ Heisenberg's $\dv*{\hat{A}_H}{t} = \frac{1}{i\hbar}[\hat{A}_H, \hat{H}]$. State evolution \eqref{liouville-eq} $\longleftrightarrow$ von Neumann's $\pdv*{\hat\rho}{t} = \frac{1}{i\hbar}[\hat H, \hat\rho]$, sign flip included. Liouville's theorem, evolution preserves the measure $\longleftrightarrow$ unitarity, evolution preserves the inner product. The dictionary is too systematic to be coincidence, and it isn't one: quantization, in every one of its formulations (canonical, path-integral, deformation, geometric), is an attempt to promote precisely the symplectic structures of these notes to operator or amplitude form, and the classical column is not scaffolding to be discarded but the $\hbar \to 0$ skeleton the quantum theory is built on. Which is where these notes hand off to their companions: the path integral is what the tautological form's $\int p\,\dd q - H\,\dd t$ becomes when Dirac's ``$e^{iS/\hbar}$ corresponds to the propagator'' is taken with full seriousness, and the reader is warmly pointed there.
-% >>> sections/17-statistical-distributions-and-the.tex
 
 \end{document}

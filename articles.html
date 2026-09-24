@@ -93,6 +93,9 @@
       .toLowerCase();
   }
 
+  // an article can belong to several topics: "topics": ["quantum","optics"] (falls back to the single "topic")
+  const topicsOf = a => (Array.isArray(a.topics) && a.topics.length ? a.topics : [a.topic]).filter(Boolean);
+
   function loadBodies() {
     articles.forEach(a => {
       fetch('content/' + a.file, { cache: 'no-store' })
@@ -104,7 +107,7 @@
 
   function matchesQuery(a, q) {
     if (!q) return true;
-    const hay = [a.title, a.excerpt, a.topic, a.date, slugOf(a), bodyText[slugOf(a)] || '']
+    const hay = [a.title, a.excerpt, topicsOf(a).join(' '), a.date, slugOf(a), bodyText[slugOf(a)] || '']
       .join(' ').toLowerCase();
     return q.split(/\s+/).filter(Boolean).every(term => hay.includes(term));
   }
@@ -114,14 +117,14 @@
     const q = (searchEl.value || '').trim().toLowerCase();
     const pool = visible();
     const shown = pool
-      .filter(a => activeTopic === 'all' || (a.topic || '') === activeTopic)
+      .filter(a => activeTopic === 'all' || topicsOf(a).includes(activeTopic))
       .filter(a => matchesQuery(a, q));
     if (q) {
       const terms = q.split(/\s+/).filter(Boolean);
       const rank = a => {
         const t = (a.title || '').toLowerCase();
         if (terms.every(term => t.includes(term))) return 0;
-        const e = ((a.excerpt || '') + ' ' + (a.topic || '')).toLowerCase();
+        const e = ((a.excerpt || '') + ' ' + topicsOf(a).join(' ')).toLowerCase();
         if (terms.every(term => e.includes(term))) return 1;
         return 2;
       };
@@ -129,14 +132,14 @@
     }
     shown.forEach(a => {
       const li = document.createElement('li');
-      li.dataset.topic = a.topic || '';
+      li.dataset.topic = topicsOf(a).join(' ');
       const pub = isPublished(a);
       if (!pub) li.style.opacity = '0.55';
 
       const when = document.createElement('p');
       when.className = 'when';
       when.innerHTML = (a.date || '') + ' &nbsp;&mdash;&nbsp; <b></b>';
-      when.querySelector('b').textContent = a.topic || 'article';
+      when.querySelector('b').textContent = topicsOf(a).join(' · ') || 'article';
       if (ADMIN) {
         const tag = document.createElement('b');
         tag.textContent = pub ? '' : ' · draft';
@@ -181,7 +184,7 @@
   searchEl.addEventListener('input', renderList);
 
   function buildTopics() {
-    const topics = [...new Set(visible().map(a => a.topic).filter(Boolean))].sort();
+    const topics = [...new Set(visible().flatMap(topicsOf))].sort();
     if (!topics.length) return;
     const mk = (name, val) => {
       const b = document.createElement('button');
