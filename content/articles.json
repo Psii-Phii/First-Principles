@@ -5,7 +5,7 @@
     "title": "Two-Level Atomic Systems",
     "date": "2026-09-15",
     "topic": "quantum",
-    "excerpt": "Running notes from Quantum Optics, Lecture 2. The Stern–Gerlach experiment forces two-valuedness on us; sequential measurements alone are enough to reconstruct the spin operators; and every two-level Hamiltonian turns out to rotate a vector on a sphere."
+    "excerpt": "Running Notes from Quantum Optics Course"
   },
   {
     "file": "geometric-mechanics.tex",
