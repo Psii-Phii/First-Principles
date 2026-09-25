@@ -1,0 +1,863 @@
+\documentclass[12pt]{article}
+% ======================= PREAMBLE =======================
+% [set in Format] \usepackage{geometry}
+% [set in Format] \geometry{
+% [set in Format]     a4paper,
+% [set in Format]     total={170mm,257mm},
+% [set in Format]     left=15mm,top=25mm
+% [set in Format] }
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{theoremref}
+\usepackage{fancyhdr}
+% dhortcmds / dhortthms with portable fallbacks (the real packages win when present)
+\IfFileExists{dhortcmds.sty}{\usepackage{dhortcmds}}{}
+\usepackage{panopticon-thm}  % boxed theorems like Panopticon's viewer; replaces: \IfFileExists{dhortthms.sty}{\usepackage{dhortthms}}{}
+% portable fallbacks (no-ops when dhortcmds is present)
+\providecommand{\br}[1]{\left(#1\right)}
+\providecommand{\sbr}[1]{\left[#1\right]}
+\providecommand{\cbr}[1]{\left\{#1\right\}}
+\providecommand{\mc}[1]{\mathcal{#1}}
+\usepackage{physics}
+\usepackage{ragged2e}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{centernot}
+\usepackage{setspace}
+\usepackage{array}
+\usepackage{mdframed}
+\usepackage{faktor}
+\IfFileExists{bbm.sty}{\usepackage{bbm}}{}
+\providecommand{\mathbbm}[1]{{\mathchoice{\mathrm{1}\mskip-4mu \mathrm{l}}{\mathrm{1}\mskip-4mu \mathrm{l}}{\mathrm{1}\mskip-4.5mu \mathrm{l}}{\mathrm{1}\mskip-5mu \mathrm{l}}}}
+\usepackage{empheq}
+\usepackage{tcolorbox}
+\tcbuselibrary{most}
+\newtcbox{\mathbox}{nobeforeafter, colback=white, colframe=black, boxrule=0.5pt, arc=3pt}
+\newtcolorbox{mybox}{
+    colback=white,
+    colframe=black,
+    boxrule=0.5pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt
+}
+
+% ---- header / footer (delete these five lines if you don't want them) ----
+% [set in Format] \pagestyle{fancy}
+% [set in Format] \fancyhf{}
+% [set in Format] \lhead{\textit{ECE 105 Tutorial 2}}
+% [set in Format] \rhead{RK}
+% [set in Format] \cfoot{\thepage}
+
+% ===================== END PREAMBLE =====================
+
+% problem sets
+\newcounter{problem}
+\newenvironment{problem}[1][]{\refstepcounter{problem}\par\medskip\noindent\textbf{Problem \theproblem}\ifx&#1&\else\ (#1)\fi.\ }{\par}
+\newenvironment{solution}{\par\noindent\textit{Solution.}\ }{\hfill\rule{0.55em}{0.55em}\par}
+
+% theorem-style environments (skipped for any your packages already define)
+\makeatletter
+\@ifpackageloaded{ntheorem}{}{\@ifpackageloaded{amsthm}{}{\usepackage{amsthm}}}
+\@ifundefined{theorem}{\newtheorem{theorem}{Theorem}[section]}{}
+\@ifundefined{proposition}{\newtheorem{proposition}[theorem]{Proposition}}{}
+\@ifundefined{lemma}{\newtheorem{lemma}[theorem]{Lemma}}{}
+\@ifundefined{corollary}{\newtheorem{corollary}[theorem]{Corollary}}{}
+\@ifundefined{claim}{\newtheorem{claim}[theorem]{Claim}}{}
+\theoremstyle{definition}
+\@ifundefined{definition}{\newtheorem{definition}[theorem]{Definition}}{}
+\@ifundefined{example}{\newtheorem{example}[theorem]{Example}}{}
+\@ifundefined{exercise}{\newtheorem{exercise}{Exercise}[section]}{}
+\theoremstyle{remark}
+\@ifundefined{remark}{\newtheorem*{remark}{Remark}}{}
+\@ifundefined{note}{\newtheorem*{note}{Note}}{}
+\theoremstyle{plain}
+\makeatother
+% boxed theorems, matching Panopticon's viewer (Format → Theorems → Plain turns them off)
+\IfFileExists{panopticon-thm.sty}{\usepackage{panopticon-thm}}{}
+% a box with any title: \begin{textbox}[Your title] ... \end{textbox} (boxed with the package above, a titled paragraph without it)
+\makeatletter\AtBeginDocument{\@ifundefined{textbox}{\newenvironment{textbox}[1][]{\par\medskip\noindent\if\relax\detokenize{#1}\relax\else\textbf{#1.}\enspace\fi\ignorespaces}{\par\medskip}}{}}\makeatother
+
+
+
+
+
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows.meta,patterns}
+% \eye{(x,y)}{gaze angle}{size}: a small eye looking in the given direction
+\newcommand{\eye}[3]{%
+  \begin{scope}[shift={#1},rotate=#2,scale=#3]
+    \draw[line width=0.7pt,fill=white] (-0.55,0) .. controls (-0.2,0.42) and (0.2,0.42) .. (0.55,0)
+                                      .. controls (0.2,-0.42) and (-0.2,-0.42) .. (-0.55,0) -- cycle;
+    \fill[black!75] (0.12,0) circle (0.2);
+    \fill[white] (0.17,0.06) circle (0.05);
+    \draw[->,gray,line width=0.6pt] (0.62,0) -- (1.05,0);
+  \end{scope}}
+
+
+
+
+
+
+
+
+
+
+\title{ECE 105 Tutorial 2}
+\author{Ritik Kotak}
+
+% ==== Panopticon · Format (change it in the Format panel, or edit here) ====
+% panopticon-format: {"paper": "a4", "margin_top": 25, "margin_bottom": 25, "margin_left": 25, "margin_right": 25, "size": "12pt", "font": "cm", "spacing": 1.15, "paragraphs": "space", "head_l": "\\textit{ECE 105 Tutorial 2}", "head_c": "", "head_r": "007", "foot_l": "", "foot_c": "{page}", "foot_r": "", "head_rule": true, "theorems": "boxes", "colors": {}, "air": "comfortable"}
+\usepackage[a4paper,top=25.0mm,bottom=25.0mm,left=25.0mm,right=25.0mm,headheight=15pt]{geometry}
+\usepackage{setspace}\setstretch{1.15}
+\setlength{\parskip}{0.7em plus 0.2em minus 0.1em}\setlength{\parindent}{0pt}
+\setlength{\jot}{0.6em}\allowdisplaybreaks[2]
+\makeatletter\g@addto@macro\normalsize{\setlength\abovedisplayskip{0.9em plus 0.3em minus 0.2em}\setlength\belowdisplayskip{0.9em plus 0.3em minus 0.2em}\setlength\abovedisplayshortskip{0.4em plus 0.2em}\setlength\belowdisplayshortskip{0.7em plus 0.2em minus 0.1em}}\makeatother
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}
+\lhead{\textit{ECE 105 Tutorial 2}}
+\rhead{007}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\cfoot{\thepage}\renewcommand{\headrulewidth}{0pt}}
+\usepackage{panopticon-thm}  % boxed theorems, like the viewer
+% ==== end Format ====
+
+
+%% ---- definitions from your own packages, so the website can show the same maths ----
+\let\var\relax  \let\rank\relax \let\tr\relax   \let\ip\relax
+\let\rank\relax \let\tr\relax   \let\ip\relax
+\let\tr\relax   \let\ip\relax
+\let\ip\relax
+\let\norm\relax \let\grad\relax \let\bra\relax  \let\ket\relax
+\let\grad\relax \let\bra\relax  \let\ket\relax
+\let\bra\relax  \let\ket\relax
+\let\ket\relax
+\newcommand{\ms}{\mathscr}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mf}{\mathfrak}
+\newcommand{\mb}{\mathbb}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ol}{\overline}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\mathbb{R}^n}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\h}{\mathcal{H}}
+\newcommand{\rel}{\mathcal{R}}
+\newcommand{\lin}{\mathcal{L}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\p}{\mathcal{P}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\li}{\mathcal{L}}
+\newcommand{\Mn}{Mn(\F)}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\var}{Var}
+\DeclareMathOperator{\spn}{Span} % \span already exists so I'm using \spn
+\DeclareMathOperator{\ran}{Range}
+\DeclareMathOperator{\rank}{Rank}
+\DeclareMathOperator{\nul}{Null}
+\DeclareMathOperator{\nulty}{Nullity}
+\DeclareMathOperator{\tr}{Tr}
+\newcommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\newcommand{\smallmat}[1]{\left[\begin{smallmatrix}#1\end{smallmatrix}\right]}
+\DeclareMathOperator{\form}{Form}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\gal}{Gal}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\ch}{ch}
+\newcommand{\dif}[3][]{\frac{d^{#1}#2}{d#3^{#1}}}
+\newcommand{\pd}[3][]{\frac{\partial^{#1}#2}{\partial#3^{#1}}}
+\newcommand{\ip}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+\newcommand{\grad}{\nabla}
+\newcommand{\hess}{\nabla^2}
+\newcommand{\bra}[1]{\left\langle#1\right|}
+\newcommand{\ket}[1]{\left|#1\right\rangle}
+\newcommand{\bk}[2]{\left\langle#1\middle|#2\right\rangle}
+\newcommand{\kb}[2]{\left|#1\middle\rangle\middle\langle#2\right|}
+\newcommand{\com}[2]{\left[#1,#2\right]}
+\newcommand{\hb}{\hbar}
+\newcommand{\dg}{\dagger}
+\newcommand{\kpsi}{\ket{\psi}}
+\newcommand{\kPsi}{\ket{\Psi}}
+\newcommand{\kphi}{\ket{\phi}}
+\newcommand{\kPhi}{\ket{\Phi}}
+\newcommand{\ot}{\otimes}
+\newcommand{\sub}{\subseteq}
+\newcommand{\nsub}{\nsubseteq}
+\newcommand{\bl}[1]{B_{#1}}
+\newcommand{\cbr}[1]{\left \{ #1 \right \}}
+\newcommand{\lbr}[1]{\left  \langle #1 \right \rangle}
+\newcommand{\br}[1]{\left( #1 \right)}
+\newcommand{\sbr}[1]{\left[ #1 \right]}
+\newcommand{\mcl}[1]{\mathcal{#1}}
+\newcommand{\creq}[1]{\underset{#1}{\approx}}
+\newcommand{\seq}[2]{\br{#1_#2}_{#2 =1}^{\infty}}
+\DeclareMathOperator{\diam}{diam}
+\newcommand{\Int}[1]{\text{Int}\br{#1}}
+\newcommand{\cs}[1]{\cos\br{#1}}
+\newcommand{\sn}[1]{\sin{\br{#1}}}
+\newcommand{\tn}[1]{\tan{\br{#1}}}
+\newcommand{\css}[1]{\cos^2\br{#1}}
+\newcommand{\snn}[1]{\sin^2{\br{#1}}}
+\newcommand{\tnn}[1]{\tan^2{\br{#1}}}
+\newcommand{\csh}[1]{\cosh\br{#1}}
+\newcommand{\snh}[1]{\sinh{\br{#1}}}
+\newcommand{\cshh}[1]{\cosh^2\br{#1}}
+\newcommand{\snhh}[1]{\sinh^2{\br{#1}}}
+\newcommand{\Lg}[1]{\log\br{#1}}
+\newcommand{\gam}[1]{\sqrt{1 - \frac{#1}{c^2}}}
+\newcommand{\pgam}[1]{\sqrt{1 + \frac{#1}{c^2}}}
+\newcommand{\ring}[1]{\mathring{#1}}
+\newcommand\ringring[1]{%
+  {% make an Ord atom
+   \mathop{\kern0pt #1}\limits^{% set a box over the variable
+     \vbox to-1.85ex{
+       \kern-2ex % lower the ring accents
+       \hbox to 0pt{\hss\normalfont\kern.1em \r{}\kern-.45em \r{}\hss}%
+       \vss % fill
+     }% end of \vbox
+   }% end of the superscript
+  }% end of \mathop
+}
+\newcommand{\bigbmatrix}[1]{%
+  \begingroup
+    \renewcommand{\arraystretch}{1.5}% Increase vertical spacing
+    \setlength{\arraycolsep}{12pt}% Increase horizontal spacing
+    \mathlarger{%
+      \begin{bmatrix}
+        #1%
+      \end{bmatrix}%
+    }%
+  \endgroup
+}
+\renewcommand{\arraystretch}{1.5}% Increase vertical spacing
+\newcommand{\chris}[3]{\Gamma^{#1}_{\phantom{#1}#2#3}}
+\newcommand{\iso}{\cong}
+\newcommand{\nd}{\hspace{-3pt}\not|\,}
+\newcommand{\w}{\wedge}
+\newcommand{\md}[2]{#1\bigl/ #2}
+\newcommand{\highlight}[1]{%
+  \colorbox{darkpastelblue!50}{$\displaystyle#1$}}
+\newcommand{\highlightone}[1]{%
+  \colorbox{limegreen!50}{$\displaystyle#1$}}
+\newcommand{\highlighttwo}[1]{%
+  \colorbox{ashgrey!50}{$\displaystyle#1$}}
+\newcommand{\highlightthree}[1]{%
+  \colorbox{coralpink!50}{$\displaystyle#1$}}
+\newcommand{\highlightlt}[1]{%
+  \colorbox{denim!20}{$\displaystyle#1$}}
+\newcommand{\white}{{\color{white}-}\\}
+\newtheorem{#1}{#3}[section]}{\newtheorem{#1}[#2]{#3}}}
+\newtheorem{#1}[#2]{#3}}}
+\newtheorem{theorem}{Theorem}[section]}{}
+\newtheorem{claim}{Claim}}{\newtheorem{claim}{Claim}[theorem]}}{}
+\newtheorem{claim}{Claim}[theorem]}}{}
+\newtheorem{corollary}[claim]{Corollary}}}{}
+\newtheorem{definition}{Definition}[section]}{}
+\newtheorem{axiom}{Axiom}[section]}{}
+\newtheorem{example}{Example}[section]}{}
+\newtheorem*{remark}{Remark}}{}
+\newtheorem*{note}{Note}}{}
+\let\Axiom\axiom\let\endAxiom\endaxiom}{}   % dhortthms spelling%
+\let\endAxiom\endaxiom}{}   % dhortthms spelling%
+\newtheorem{exercise}{Exercise}[section]}{}%
+\newtheorem{problem}{Problem}[section]}{}%
+\newtheorem{question}{Question}[section]}{}%
+%% ----
+\begin{document}
+\maketitle
+
+
+We begin with a brief recap of projectile motion.
+
+\begin{center}
+\begin{tikzpicture}[scale=1.02,>=Stealth]
+  \coordinate (d) at (-1.35,-0.90);
+  % ground plane
+  \fill[gray!13] (-0.5,0) -- (5.6,0) -- ($(5.6,0)+(d)$) -- ($(-0.5,0)+(d)$) -- cycle;
+  \draw[gray!50] (5.6,0) -- ($(5.6,0)+(d)$) ($(5.6,0)+(d)$) -- ($(-0.5,0)+(d)$);
+  % axes (y vertical, z out of the page, to match the solution below)
+  \draw[->,thick] (0,0) -- (6.0,0) node[right] {$x$};
+  \draw[->,thick] (0,0) -- ($1.15*(d)$) node[below left] {$z$};
+  \draw[->,thick] (0,0) -- (0,3.3) node[above] {$y$};
+  % trajectory: x = 4.6 t, y = 8.8 t(1-t), t in [0,1]
+  \draw[very thick,blue!70!black,domain=0:1,smooth,variable=\t,samples=60]
+      plot ({4.6*\t},{8.8*\t*(1-\t)});
+  % equal-time dots on trajectory + projections
+  \foreach \t in {0.125,0.25,0.375,0.5,0.625,0.75,0.875}{
+    \fill[blue!70!black] ({4.6*\t},{8.8*\t*(1-\t)}) circle (1.6pt);
+    \draw[gray!60,densely dotted] ({4.6*\t},{8.8*\t*(1-\t)}) -- ({4.6*\t},0);
+    \draw[gray!60,densely dotted] ({4.6*\t},{8.8*\t*(1-\t)}) -- (-0.22,{8.8*\t*(1-\t)});
+    \fill[orange!85!black] ({4.6*\t},0) circle (1.6pt);
+    \fill[red!75!black] (-0.22,{8.8*\t*(1-\t)}) circle (1.6pt);
+  }
+  \fill[orange!85!black] (0,0) circle (1.6pt);
+  \fill[orange!85!black] (4.6,0) circle (1.6pt);
+  % launch vector
+  \draw[very thick,->,blue!70!black] (0,0) -- (50:1.25);
+  \node[blue!70!black] at (50:1.55) {$\vec u$};
+  % captions for the two shadows
+  \node[orange!85!black,align=center] at (4.9,-0.62)
+      {\footnotesize equal steps:\\[-3pt]\footnotesize uniform in $x$};
+  \node[red!75!black,align=center,anchor=east] at (-0.42,2.55)
+      {\footnotesize bunches at the top:\\[-3pt]\footnotesize decelerating in $y$};
+  % eyes
+  \eye{(2.3,3.55)}{-90}{0.55}
+  \node[anchor=west] at (3.0,3.62) {\small view from the top: only $x$ changes};
+  \eye{(6.9,1.35)}{180}{0.55}
+  \node[anchor=west,align=left] at (6.15,0.55)
+      {\small view from the front:\\[-2pt]\small only $y$ changes};
+\end{tikzpicture}
+\end{center}
+
+The figure shows the same motion from two perspectives. The observer at the top sees only the orange points: motion along $x$ with uniform velocity. The observer on the right sees only the red points: motion along $y$, just like a ball thrown straight up and caught at the same height.
+
+This is the reliable way to deal with any projectile problem: treat the motion as two independent motions, analyze each direction on its own, and use time to link them. For example, the distance covered in $x$ depends entirely on how long the object spends in the air (ignoring bounces, air resistance, etc.).
+
+With that, the four horsemen of kinematics are all we need.
+\newpage
+
+\begin{textbox}[Essential Kinematic Equations] You should have a thorough, intuitive understanding of how each of these is derived.
+
+\begin{flalign}
+&v = u + at\\[4pt]
+&s = ut + \frac{1}{2} at^2\\[4pt]
+&v^2 = u^2 +2as\\[4pt]
+&s = \br{\frac{u +v}{2}} t
+\end{flalign}
+    Here $u$ is the initial velocity, $v$ the final velocity, $a$ the acceleration, $s$ the displacement and $t$ the time. These hold only when $a$ is constant, which is exactly the case for each component of projectile motion.
+\end{textbox}
+
+\begin{problem}
+    A projectile is launched from level ground with speed $u$ at angle $\theta$
+above the horizontal. Find:
+\begin{enumerate}
+  \item[(a)] the time of flight $T$;
+  \item[(b)] the maximum height $H$;
+  \item[(c)] the range $R$, and the angle that maximizes it;
+  \item[(d)] the trajectory $y(x)$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+
+\textbf{(a)} As noted earlier, the time of flight depends only on the vertical motion, which here is along $\hat{y}$. So we solve
+    \begin{flalign}
+        y(T) = 0 = u_y T + \frac{1}{2} a T^2 \label{eq:tof}
+    \end{flalign}
+    Equation \eqref{eq:tof} has two solutions, which makes sense: $y = 0$ exactly at the beginning and at the end of the motion. So if one of your roots isn't zero, you've gone astray somewhere. Can you think of a property of this quadratic that makes this obvious?
+
+    Now $u_y = u \sin{\theta}$ (Why?) and $a = -g$ (Why?). Plugging these in and taking the nonzero root,
+    \begin{flalign}
+        T = \frac{2u \sin{\theta}}{g} \label{eq:T}
+    \end{flalign}
+    Can you think of another way to derive this same result?
+
+\textbf{(b)} At the maximum height the projectile stops rising for an instant, so $v_y = 0$ (Why?). We don't care about time here, so the horseman that doesn't involve $t$ is the natural choice:
+    \begin{flalign}
+        0 = u^2\sin^2{\theta} - 2gH
+    \end{flalign}
+    which gives
+    \begin{flalign}
+        H = \frac{u^2 \sin^2{\theta}}{2g} \label{eq:H}
+    \end{flalign}
+    Check: you should get the same result by plugging $t = T/2$ into $y(t)$. Why is the top reached at exactly half the time of flight?
+
+\textbf{(c)} Now the $x$-direction. Here $u_x = u\cos{\theta}$ and $a_x = 0$ (Why?), so the motion is uniform and the range is just $u_x$ times the time spent in the air, which we found in \eqref{eq:T}:
+    \begin{flalign}
+        R = u_x T = \frac{2u^2 \sin{\theta}\cos{\theta}}{g} = \frac{u^2 \sin{2\theta}}{g} \label{eq:R}
+    \end{flalign}
+    This is exactly the point made at the start: the vertical motion sets the time, and the time sets the horizontal distance.
+
+    $R$ is largest when $\sin{2\theta} = 1$, i.e.\ $\theta = 45^\circ$, giving $R_{\max} = u^2/g$. Notice that $\theta$ and $90^\circ - \theta$ give the same range. Why?
+
+\textbf{(d)} To get $y(x)$ we eliminate $t$. From the $x$-motion,
+    \begin{flalign}
+        x = u\cos{\theta}\, t \quad\Longrightarrow\quad t = \frac{x}{u\cos{\theta}}
+    \end{flalign}
+    Substituting into $y(t) = u\sin{\theta}\, t - \frac{1}{2} g t^2$,
+    \begin{flalign}
+        y(x) = x\tan{\theta} - \frac{g}{2u^2\cos^2{\theta}}\, x^2 \label{eq:traj}
+    \end{flalign}
+    This is a downward-opening parabola. As a sanity check, set $y = 0$: you should recover $x = 0$ and $x = R$ from part (c).
+\end{solution}
+
+\newpage
+
+Before the next question, a quick word on relative motion.
+
+\begin{textbox}[Relative Motion]
+If $A$ and $B$ have positions $\vec r_A$ and $\vec r_B$, then the position of $A$ as seen by $B$ is
+\begin{flalign}
+&\vec r_{A/B} = \vec r_A - \vec r_B
+\end{flalign}
+Differentiating once and then twice,
+\begin{flalign}
+&\vec v_{A/B} = \vec v_A - \vec v_B \label{eq:relv}\\[4pt]
+&\vec a_{A/B} = \vec a_A - \vec a_B \label{eq:rela}
+\end{flalign}
+So an observer moving at constant velocity measures the same accelerations we do; only the velocities shift. An accelerating observer sees every acceleration shifted by $-\vec a_B$.
+\end{textbox}
+
+\begin{problem}
+A girl standing on the road holds her umbrella at $45^\circ$ to the vertical to keep the rain off. She puts the umbrella away and starts running at $15~\mathrm{km/h}$, and now the rain falls vertically onto her head. Find:
+\begin{enumerate}
+  \item[(a)] the velocity of the rain with respect to the ground (magnitude and direction);
+  \item[(b)] the speed of the rain with respect to the running girl.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+Take $\hat x$ along the direction she runs and $\hat y$ upwards, and write the rain's velocity relative to the ground as $\vec v_r = v_x\,\hat x - v_y\,\hat y$.
+
+\textbf{(a)} While she stands still, the rain she sees is just $\vec v_r$ (Why?). The umbrella at $45^\circ$ tells us the rain arrives at $45^\circ$ to the vertical, so
+\begin{flalign}
+\tan{45^\circ} = \frac{v_x}{v_y} \quad\Longrightarrow\quad v_x = v_y
+\end{flalign}
+Once she runs with $\vec v_g = 15\,\hat x$, \eqref{eq:relv} gives the rain relative to her:
+\begin{flalign}
+\vec v_{r/g} = \vec v_r - \vec v_g = (v_x - 15)\,\hat x - v_y\,\hat y
+\end{flalign}
+Vertical rain means the $\hat x$ component vanishes, so $v_x = 15$ and therefore $v_y = 15$:
+\begin{flalign}
+|\vec v_r| = \sqrt{15^2 + 15^2} = 15\sqrt2 \approx 21.2~\mathrm{km/h}
+\end{flalign}
+at $45^\circ$ to the vertical, moving in the direction she runs. Which way was she tilting her umbrella while standing?
+
+\textbf{(b)} $\vec v_{r/g} = -15\,\hat y$, so the rain hits her at $15~\mathrm{km/h}$, straight down.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.16,>=Stealth]
+  \draw[very thick,->,red!75!black] (0,15) -- (0,0) node[midway,left] {\small $\vec v_{r/g}$};
+  \draw[very thick,->,orange!85!black] (0,0) -- (15,0) node[midway,below] {\small $\vec v_g$};
+  \draw[very thick,->,blue!70!black] (0,15) -- (15,0) node[midway,above right] {\small $\vec v_r = \vec v_g + \vec v_{r/g}$};
+\end{tikzpicture}
+\end{center}
+
+What would she see if she ran the other way at the same speed?
+\end{solution}
+
+\begin{problem}[Fun Facts]
+Two projectiles are launched from level ground with the same speed $u$, at angles $\theta \neq \phi$ (both between $0^\circ$ and $90^\circ$), and land at the same range $R$.
+\begin{enumerate}
+  \item[(a)] Prove that $\theta + \phi = 90^\circ$.
+  \item[(b)] Show that the flight times satisfy $t_\theta\, t_\phi = \dfrac{2R}{g}$.
+  \item[(c)] Show that the maximum heights satisfy $h_\theta\, h_\phi = \dfrac{R^2}{16}$.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+Everything here comes straight out of Problem 1.
+
+\textbf{(a)} Equal ranges from \eqref{eq:R} give
+\begin{flalign}
+\sin{2\theta} = \sin{2\phi}
+\end{flalign}
+Why can't we just conclude $\theta = \phi$? Because $\sin x = \sin(180^\circ - x)$, so on $(0^\circ, 180^\circ)$ each value of sine is hit twice. Since $\theta \neq \phi$, we must have $2\phi = 180^\circ - 2\theta$, i.e.
+\begin{flalign}
+\theta + \phi = 90^\circ
+\end{flalign}
+
+\textbf{(b)} From (a), $\sin\phi = \cos\theta$ (Why?). Using \eqref{eq:T} for both,
+\begin{flalign}
+t_\theta\, t_\phi = \frac{2u\sin{\theta}}{g}\cdot\frac{2u\cos{\theta}}{g} = \frac{2}{g}\cdot\frac{2u^2\sin{\theta}\cos{\theta}}{g} = \frac{2R}{g}
+\end{flalign}
+
+\textbf{(c)} Using \eqref{eq:H} for both, and $u^2\sin{\theta}\cos{\theta} = Rg/2$ from \eqref{eq:R},
+\begin{flalign}
+h_\theta\, h_\phi = \frac{u^2\sin^2{\theta}}{2g}\cdot\frac{u^2\cos^2{\theta}}{2g} = \frac{\br{u^2\sin{\theta}\cos{\theta}}^2}{4g^2} = \frac{(Rg/2)^2}{4g^2} = \frac{R^2}{16}
+\end{flalign}
+What happens to $\theta$ and $\phi$ as $R$ approaches its maximum?
+\end{solution}
+
+\newpage
+
+\begin{problem}[The Cyclops takes aim]
+Blinded and furious, Polyphemus stands on a cliff $10~\mathrm{m}$ above the shore and hurls two boulders at Odysseus's escaping ship, both with speed $5\sqrt3~\mathrm{m/s}$: one straight out horizontally, the other at $60^\circ$ above the horizontal. Being blind, he throws them one after the other, and the two boulders smash into each other in mid-air at a point $P$, sparing the ship. Take the origin at the foot of the cliff directly below his hand, and $g = 10~\mathrm{m/s^2}$.
+\begin{enumerate}
+  \item[(a)] Which boulder did he throw first?
+  \item[(b)] Find the time interval between the two throws.
+  \item[(c)] Find the coordinates of $P$.
+\end{enumerate}
+\end{problem}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.42,>=Stealth]
+  \draw[thick] (-2.0,0) -- (13.5,0);
+  \fill[pattern=north east lines] (-2.0,-0.6) rectangle (13.5,0);
+  \fill[gray!15] (-2.0,0) rectangle (0,10);
+  \draw[thick] (0,10) -- (0,0);
+  \draw[thick] (-2.0,10) -- (0,10);
+  \node[below left] at (0.3,-0.6) {\small $O$};
+  \draw[->] (0,0) -- (2.6,0) node[below] {\small $x$};
+  \draw[->] (0,0) -- (0,2.6); \node at (0.7,2.3) {\small $y$};
+  \draw[<->] (-1.3,0.15) -- (-1.3,9.85) node[midway,left] {\small $10~\mathrm{m}$};
+  \draw[very thick,->,blue!70!black] (0,10) -- (4.0,10) node[below right=-3pt] {\small $u$};
+  \draw[very thick,->,red!75!black] (0,10) -- ({4.4*cos(60)},{10+4.4*sin(60)}) node[above=1pt] {\small $u$};
+  \draw (1.8,10) arc (0:60:1.8); \node at (2.75,10.95) {\small $60^\circ$};
+  \draw[blue!70!black,very thick,dashed,domain=0:1,smooth,variable=\s,samples=40]
+      plot ({8.660*\s},{10-5*\s*\s});
+  \draw[red!75!black,very thick,dashed,domain=0:2,smooth,variable=\t,samples=60]
+      plot ({4.330*\t},{10+7.5*\t-5*\t*\t});
+  \fill (8.660,5) circle (4.5pt) node[right=4pt] {\small $P$};
+  \draw[densely dotted] (8.660,5) -- (8.660,0);
+\end{tikzpicture}
+\end{center}
+
+\begin{solution}
+Both boulders leave Polyphemus's hand at $(0, 10)$. To collide they must be at the same place \emph{at the same instant}.
+
+\textbf{(a)} Compare horizontal speeds. The horizontal boulder has $u_x = 5\sqrt3$, while the $60^\circ$ boulder only has $5\sqrt3\cos{60^\circ} = \tfrac{5\sqrt3}{2}$. So the $60^\circ$ boulder takes twice as long to reach any given $x$, and must be thrown first.
+
+\textbf{(b)} Let the $60^\circ$ boulder be thrown at $t = 0$ and the horizontal boulder a time $\Delta t$ later, so at time $t$ the horizontal boulder has been flying for $t_1 = t - \Delta t$. Then
+\begin{flalign}
+&\text{Horizontal boulder:} \quad x_1 = 5\sqrt3\, t_1, \qquad y_1 = 10 - 5t_1^2\\[4pt]
+&\text{$60^\circ$ boulder:} \quad x_2 = \tfrac{5\sqrt3}{2}\, t, \qquad y_2 = 10 + \tfrac{15}{2}\, t - 5t^2
+\end{flalign}
+Equal $x$ gives $t = 2t_1$, exactly as argued in (a). Equal $y$ then gives
+\begin{flalign}
+10 - 5t_1^2 = 10 + 15t_1 - 20t_1^2 \quad\Longrightarrow\quad 15t_1^2 = 15t_1
+\end{flalign}
+so $t_1 = 0$ or $t_1 = 1~\mathrm{s}$. The $t_1 = 0$ root is both boulders still in his hand (Why do we throw it out?). So $t_1 = 1~\mathrm{s}$, $t = 2~\mathrm{s}$, and
+\begin{flalign}
+\Delta t = 1~\mathrm{s}
+\end{flalign}
+
+\textbf{(c)} Plugging $t_1 = 1~\mathrm{s}$ into the horizontal boulder,
+\begin{flalign}
+P = \br{5\sqrt3,\ 5}~\mathrm{m} \approx (8.66,\ 5)~\mathrm{m}
+\end{flalign}
+Check with the other boulder: $y_2(2) = 10 + 15 - 20 = 5$.
+\end{solution}
+
+\newpage
+
+\begin{problem}[Newton's Train Journey]
+A train moves along a straight track with constant acceleration $a$. Newton, bored on the journey, has taken to thinking about gravity, and, as one does when thinking about gravity, he throws a ball forward at $10~\mathrm{m/s}$ and $60^\circ$ to the horizontal, \emph{as measured in the train}. To catch the ball at the height it was thrown from, he has to walk $1.15~\mathrm{m}$ forward inside the train. Find $a$ (take $g = 10~\mathrm{m/s^2}$, $\sqrt3 \approx 1.73$).
+\end{problem}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9,>=Stealth]
+  \draw[thick] (0,0) rectangle (8,3.2);
+  \draw[thick] (-0.6,-0.4) -- (8.6,-0.4);
+  \foreach \x in {1.2,6.8} \draw[thick,fill=white] (\x,-0.2) circle (0.2);
+  \draw[very thick,->] (8.3,1.6) -- (9.5,1.6) node[right] {$a$};
+  % Newton
+  \draw (1.45,0) -- (1.6,0.45) -- (1.75,0);
+  \draw (1.6,0.45) -- (1.6,1.05);
+  \draw (1.6,1.2) circle (0.15);
+  \draw (1.6,0.85) -- (1.85,0.95);
+  % throw
+  \draw[very thick,->,blue!70!black] (1.85,0.95) -- ++(60:1.3) node[above right=-2pt] {\small $10~\mathrm{m/s}$};
+  \draw[densely dotted] (1.85,0.95) -- (2.8,0.95);
+  \draw (2.35,0.95) arc (0:60:0.5); \node at (2.65,1.3) {\small $60^\circ$};
+  % walking distance
+  \draw[densely dotted] (1.6,0) -- (1.6,-1.2);
+  \draw[densely dotted] (2.635,0) -- (2.635,-1.2);
+  \draw[<->] (1.6,-1.1) -- (2.635,-1.1) node[midway,below] {\small $1.15$ m};
+\end{tikzpicture}
+\end{center}
+
+\begin{solution}
+This is easiest in the train frame. From \eqref{eq:rela}, the ball's acceleration relative to the train is
+\begin{flalign}
+\vec a_{b/t} = \vec a_b - \vec a_t = -g\,\hat y - a\,\hat x
+\end{flalign}
+So in the train frame the ball is a projectile with an extra backward acceleration $a$. The speed and angle are given in the train frame, so
+\begin{flalign}
+u_x = 10\cos{60^\circ} = 5, \qquad u_y = 10\sin{60^\circ} = 5\sqrt3
+\end{flalign}
+The vertical motion is unaffected by the train's acceleration (Why?), so \eqref{eq:T} still holds:
+\begin{flalign}
+T = \frac{2u_y}{g} = \sqrt3~\mathrm{s}
+\end{flalign}
+Horizontally, relative to the train, the ball lands where Newton has to walk to:
+\begin{flalign}
+\Delta x = u_x T - \frac{1}{2} a T^2 = 5\sqrt3 - \frac{3}{2}a = 1.15
+\end{flalign}
+which gives
+\begin{flalign}
+a = \frac{8.65 - 1.15}{1.5} = 5~\mathrm{m/s^2}
+\end{flalign}
+
+In the train frame the ball's path looks like this (it drifts forward, then gets pulled back):
+\begin{center}
+\begin{tikzpicture}[scale=0.75,>=Stealth]
+  \draw[->] (-0.3,0) -- (3.3,0) node[right] {\small $x$ (train)};
+  \draw[->] (0,-0.2) -- (0,4.2) node[above] {\small $y$};
+  \draw[very thick,blue!70!black,domain=0:1.732,smooth,variable=\t,samples=50]
+      plot ({5*\t-2.5*\t*\t},{8.66*\t-5*\t*\t});
+  \fill (1.15,0) circle (2pt) node[below] {\small $1.15$};
+  \draw[densely dotted] (2.5,0) -- (2.5,3.66);
+  \node[below] at (2.5,0) {\small $2.5$};
+\end{tikzpicture}
+\end{center}
+
+Let's check this in the ground frame. Say the train has speed $v_0$ at the throw. Once released, nothing pushes the ball horizontally, so $x_b = (v_0 + 5)T$. Newton rides the train and walks $1.15~\mathrm{m}$, so $x_{\text{N}} = v_0 T + \frac12 aT^2 + 1.15$. Setting these equal,
+\begin{flalign}
+5T = \frac{1}{2}aT^2 + 1.15
+\end{flalign}
+the same equation as before. What should $a$ be so Newton catches the ball without moving? Is it safe to travel at such an $a$?
+
+Setting the walking distance to zero,
+\begin{flalign}
+5T = \frac{1}{2}aT^2 \quad\Longrightarrow\quad a = \frac{10}{T} = \frac{10}{\sqrt3} \approx 5.77~\mathrm{m/s^2} \approx 0.59\,g
+\end{flalign}
+In the train the effective gravity $\vec g - \vec a$ is tilted $\arctan(a/g) = 30^\circ$ back from the vertical, so the $60^\circ$ throw points straight ``up'' along it (Why?). A seated passenger can handle $0.59\,g$ for a few seconds, but anyone standing would need to lean $30^\circ$ forward to stay upright. Real trains stay around $0.1$--$0.15\,g$.
+\end{solution}
+
+\newpage
+
+\begin{problem}[Thrown into a new world]
+A projectile is fired from level ground with speed $v$ at angle $\theta$. Under gravity $g$ its range would be $d$. At the highest point of its trajectory it enters a region where the effective gravity is $g' = \dfrac{g}{0.81}$. The new range is $d' = nd$. Find $n$.
+\end{problem}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85,>=Stealth]
+  \fill[red!7] (4,0) rectangle (10.0,3.7);
+  \draw[red!50,densely dashed] (4,0) -- (4,3.7);
+  \node[red!60!black,anchor=west] at (4.2,3.4) {\small region with $g' = g/0.81$};
+  \node[anchor=east] at (3.8,3.4) {\small ordinary gravity $g$};
+  \draw[thick] (-0.5,0) -- (10.0,0);
+  \fill[pattern=north east lines] (-0.5,-0.22) rectangle (10.0,0);
+  \draw[very thick,blue!70!black,domain=0:4,smooth,variable=\x,samples=40]
+      plot ({\x},{\x*(8-\x)/8});
+  \draw[thick,gray!60,dashed,domain=4:8,smooth,variable=\x,samples=40]
+      plot ({\x},{\x*(8-\x)/8});
+  \node[gray!70!black,anchor=west] at (7.9,1.3) {\small path if $g$};
+  \node[gray!70!black,anchor=west] at (7.9,0.95) {\small continued};
+  \draw[very thick,red!75!black,domain=0:1,smooth,variable=\t,samples=40]
+      plot ({4+3.6*\t},{2-2*\t*\t});
+  \fill (4,2) circle (2pt);
+  \node[anchor=east] at (3.85,2.3) {\small top: $v_y = 0$};
+  \draw[very thick,->,blue!70!black] (0,0) -- (0.95,0.95);
+  \draw (0.6,0) arc (0:45:0.6); \node at (0.95,0.24) {\small $\theta$};
+  \draw[<->] (0,-0.55) -- (4,-0.55) node[midway,below] {\small $d/2$};
+  \draw[<->] (4,-0.55) -- (7.6,-0.55) node[midway,below] {\small $?$};
+\end{tikzpicture}
+\end{center}
+
+\begin{solution}
+Split the flight at the top. Up to the top nothing has changed: the ball covers $d/2$ horizontally, reaches some height $h$, and moves horizontally at $v\cos{\theta}$ the whole time.
+
+From the top the ball starts with $v_y = 0$ (Why?) at height $h$ and falls under $g'$. From $s = ut + \frac12 at^2$,
+\begin{flalign}
+h = \frac{1}{2}g't'^2 \quad\Longrightarrow\quad t' = \sqrt{\frac{2h}{g'}} = \sqrt{0.81}\,\sqrt{\frac{2h}{g}} = 0.9\,t_a
+\end{flalign}
+where $t_a = \sqrt{2h/g}$ is the time the fall would have taken under $g$, which is the same as the time to go up (Why?). Gravity is vertical, so $v_x$ is untouched and the second half covers
+\begin{flalign}
+(v\cos{\theta})(0.9\,t_a) = 0.9\cdot\frac{d}{2} = 0.45\,d
+\end{flalign}
+So
+\begin{flalign}
+d' = 0.5\,d + 0.45\,d = 0.95\,d \quad\Longrightarrow\quad n = 0.95
+\end{flalign}
+$g' > g$, so the ball falls faster, spends less time in the air, and lands short. So $n < 1$.
+\end{solution}
+
+\newpage
+
+\begin{problem}[Sibling Peaks]
+Two mountain peaks $A$ and $B$ rise from the same flat valley floor. Peak $A$ is $30~\mathrm{m}$ high and its face towards $B$ drops at $60^\circ$ to the horizontal. Peak $B$ is $10~\mathrm{m}$ high and its face towards $A$ drops at $45^\circ$. The summits are $40~\mathrm{m}$ apart horizontally. A ball is thrown from the summit of $A$ towards $B$ at $45^\circ$ above the horizontal. Take $g = 10~\mathrm{m/s^2}$.
+\begin{enumerate}
+  \item[(a)] Find the launch speed $u$ needed for the ball to land exactly on the summit of $B$.
+  \item[(b)] Find the time of flight, and the greatest height of the ball above the valley floor.
+  \item[(c)] Find the speed and direction of the ball as it lands on $B$.
+  \item[(d)] The ball is instead thrown at $45^\circ$ with speed $10\sqrt2~\mathrm{m/s}$. Where does it land?
+\end{enumerate}
+\end{problem}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.95,>=Stealth]
+  % peaks
+  \fill[gray!18] (-1.6,0) -- (0,6) -- (3.464,0) -- cycle;
+  \draw[thick] (-1.6,0) -- (0,6) -- (3.464,0);
+  \fill[gray!18] (6,0) -- (8,2) -- (9.6,0) -- cycle;
+  \draw[thick] (6,0) -- (8,2) -- (9.6,0);
+  % valley floor
+  \draw[thick] (-2.6,0) -- (10.6,0);
+  \fill[pattern=north east lines] (-2.6,-0.25) rectangle (10.6,0);
+  \node[above left] at (0,6) {$A$};
+  \node[above right] at (8,2) {$B$};
+  % face angles
+  \draw (2.664,0) arc (180:120:0.8); \node at ($(3.464,0)+(150:1.2)$) {\small $60^\circ$};
+  \draw (6.8,0) arc (0:45:0.8); \node at ($(6,0)+(22:1.25)$) {\small $45^\circ$};
+  % heights
+  \draw[densely dotted] (0,6) -- (-2.4,6);
+  \draw[<->] (-2.2,0) -- (-2.2,6) node[midway,left] {\small $30$ m};
+  \draw[densely dotted] (8,2) -- (10.6,2);
+  \draw[<->] (10.4,0) -- (10.4,2) node[midway,right] {\small $10$ m};
+  % horizontal distance
+  \draw[densely dotted] (0,6) -- (0,8.2);
+  \draw[densely dotted] (8,2) -- (8,8.2);
+  \draw[<->] (0,8.0) -- (8,8.0) node[midway,above] {\small $40$ m};
+  % trajectory (1 unit = 5 m)
+  \draw[very thick,blue!70!black,dashed,domain=0:40,smooth,variable=\x,samples=60]
+      plot ({\x/5},{6+(\x-3*\x*\x/80)/5});
+  % launch
+  \draw[densely dotted] (0,6) -- (1.3,6);
+  \draw[very thick,->,blue!70!black] (0,6) -- ++(45:1.2) node[above left=-1pt] {\small $u$};
+  \draw (0.6,6) arc (0:45:0.6); \node at ($(0,6)+(22:0.95)$) {\small $45^\circ$};
+\end{tikzpicture}
+\end{center}
+
+\begin{solution}
+Put the origin at the summit of $A$, with $x$ towards $B$ and $y$ up. Then the summit of $B$ is at $(40, -20)$. Notice that $B$ is \emph{below} the launch point, so $y$ comes out negative. At $45^\circ$ the two launch components are equal, $u_x = u_y = u/\sqrt2$, which keeps everything below clean.
+
+\textbf{(a)} We solve this three ways. They all give the same answer, but each one shows something different about the motion.
+
+\textbf{Method 1: the trajectory.} We already have $y(x)$ from \eqref{eq:traj}. With $\theta = 45^\circ$, $\tan\theta = 1$ and $2\cos^2\theta = 1$, so
+\begin{flalign}
+y = x - \frac{g x^2}{u^2}
+\end{flalign}
+It has to pass through $(40, -20)$:
+\begin{flalign}
+-20 = 40 - \frac{10(40)^2}{u^2} \quad\Longrightarrow\quad u^2 = \frac{800}{3} \quad\Longrightarrow\quad u = 20\sqrt{\tfrac{2}{3}} \approx 16.3~\mathrm{m/s} \label{eq:u7}
+\end{flalign}
+This works (Why?), but its not very illuminating. 
+
+\textbf{Method 2: an imaginary slope.} The ball only ever touches two points: the summit of $A$ and the summit of $B$. So as far as the ball is concerned, we can replace the terrain with the straight line joining the summits. Landing on $B$ is then just landing on this slope.
+
+\begin{center}
+\begin{tikzpicture}[scale=1.05,>=Stealth]
+  % faint terrain
+  \fill[gray!10] (-1.6,0) -- (0,6) -- (3.464,0) -- cycle;
+  \draw[gray!50] (-1.6,0) -- (0,6) -- (3.464,0);
+  \fill[gray!10] (6,0) -- (8,2) -- (9.6,0) -- cycle;
+  \draw[gray!50] (6,0) -- (8,2) -- (9.6,0);
+  \draw[gray!60] (-2.0,0) -- (10.2,0);
+  \fill[pattern=north east lines,pattern color=gray!60] (-2.0,-0.22) rectangle (10.2,0);
+  % imaginary slope
+  \draw[very thick,black!80] (0,6) -- (8,2);
+  \node[rotate=-26.565,above] at (3.9,4.05) {\small imaginary slope, $L = 20\sqrt5$ m};
+  \fill (0,6) circle (1.8pt) node[above left] {$A$};
+  \fill (8,2) circle (1.8pt) node[below right] {$B$};
+  % beta at B
+  \draw[densely dotted] (8,2) -- (6.2,2);
+  \draw (6.7,2) arc (180:153.435:1.3);
+  \node at ($(8,2)+(166.7:1.75)$) {\small $\beta$};
+  % trajectory
+  \draw[thick,blue!70!black,dashed,domain=0:40,smooth,variable=\x,samples=60]
+      plot ({\x/5},{6+(\x-3*\x*\x/80)/5});
+  % tilted axes at A
+  \draw[->,thick] (0,6) -- ++(-26.565:2.3) node[below left=-1pt] {$x'$};
+  \draw[->,thick] (0,6) -- ++(63.435:2.0) node[above] {$y'$};
+  % launch vector and alpha
+  \draw[very thick,->,blue!70!black] (0,6) -- ++(45:1.7) node[above right=-2pt] {$u$};
+  \draw[blue!70!black] ($(0,6)+(-26.565:0.75)$) arc (-26.565:45:0.75);
+  \node[blue!70!black] at ($(0,6)+(9:1.0)$) {\small $\alpha$};
+  % gravity decomposition on the ball
+  \coordinate (P) at (4,7);
+  \fill[blue!70!black] (P) circle (2pt);
+  \draw[very thick,->,red!75!black] (P) -- ++(0,-1.3) node[right] {\small $g$};
+  \draw[thick,->,orange!85!black] (P) -- ++(-26.565:0.581) coordinate (Ga);
+  \draw[thick,->,orange!85!black] (P) -- ++(-116.565:1.163) coordinate (Gp);
+  \draw[densely dotted,gray] (Ga) -- ($(P)+(0,-1.3)$) -- (Gp);
+  \node[orange!85!black,anchor=west] at ($(Ga)+(0.05,0.12)$) {\small $g\sin\beta$};
+  \node[orange!85!black,anchor=east] at ($(Gp)+(-0.05,0)$) {\small $g\cos\beta$};
+  % dimensions
+  \draw[<->] (0,-0.7) -- (8,-0.7) node[midway,below] {\small $40$ m};
+  \draw[densely dotted] (8,2) -- (10.4,2);
+  \draw[densely dotted] (8.9,6) -- (10.4,6);
+  \draw[<->] (10.2,2) -- (10.2,6) node[midway,right] {\small $20$ m};
+\end{tikzpicture}
+\end{center}
+
+The slope drops $20~\mathrm{m}$ over $40~\mathrm{m}$, so
+\begin{flalign}
+\tan\beta = \frac{1}{2} \quad\Longrightarrow\quad \sin\beta = \frac{1}{\sqrt5}, \quad \cos\beta = \frac{2}{\sqrt5}, \qquad L = \sqrt{40^2 + 20^2} = 20\sqrt5~\mathrm{m}
+\end{flalign}
+The ball leaves $45^\circ$ above the horizontal and the slope is $\beta$ below it, so measured from the slope the launch angle is $\alpha = 45^\circ + \beta$. Expanding,
+\begin{flalign}
+\sin\alpha = \frac{3}{\sqrt{10}}, \qquad \cos\alpha = \frac{1}{\sqrt{10}}
+\end{flalign}
+Now tilt the axes: $x'$ down the slope, $y'$ perpendicular to it. Gravity splits as in the figure, so
+\begin{flalign}
+&x': \quad u_{x'} = u\cos\alpha, \qquad a_{x'} = +g\sin\beta\\[4pt]
+&y': \quad u_{y'} = u\sin\alpha, \qquad a_{y'} = -g\cos\beta
+\end{flalign}
+The $y'$ motion is the clock. It is an ordinary up-and-down throw under a weaker gravity $g\cos\beta$, and it ends when the ball comes back to the slope. This is Problem 1(a) with $g \to g\cos\beta$:
+\begin{flalign}
+T = \frac{2u\sin\alpha}{g\cos\beta} = \frac{3u}{10\sqrt2}
+\end{flalign}
+The $x'$ motion is \emph{not} uniform this time (Why?). Gravity helps the ball down the slope:
+\begin{flalign}
+L = u\cos\alpha\, T + \frac{1}{2}\, g\sin\beta\, T^2 = \frac{3u^2}{20\sqrt5} + \frac{9u^2}{40\sqrt5} = \frac{3u^2}{8\sqrt5}
+\end{flalign}
+The first term is how far the ball's own speed carries it along the slope, the second is the extra distance gravity drags it. Setting $L = 20\sqrt5$,
+\begin{flalign}
+u^2 = \frac{800}{3}
+\end{flalign}
+the same as \eqref{eq:u7}. What does this reduce to when $\beta = 0$?
+
+\textbf{Method 3: falling away from the launch line.} Without gravity the ball would move in a straight line along its $45^\circ$ launch direction, and at $x = 40$ it would be $40~\mathrm{m}$ \emph{above} $A$. Gravity pulls it below that line by $\frac12 gt^2$, exactly like a dropped ball (Why?). To land on $B$, gravity has to pull it down $40 + 20 = 60~\mathrm{m}$:
+\begin{flalign}
+\frac{1}{2}(10)\,T^2 = 60 \quad\Longrightarrow\quad T = 2\sqrt3~\mathrm{s}
+\end{flalign}
+The horizontal motion is uniform, so
+\begin{flalign}
+u\cos{45^\circ}\cdot T = 40 \quad\Longrightarrow\quad u = \frac{40\sqrt2}{2\sqrt3} = 20\sqrt{\tfrac{2}{3}}
+\end{flalign}
+No formulas needed, and the time of flight comes out first. Keep this picture in mind for part (d).
+
+\textbf{(b)} Methods 2 and 3 already gave the time of flight:
+\begin{flalign}
+T = 2\sqrt3 \approx 3.46~\mathrm{s}
+\end{flalign}
+Why can't we use $T = 2u\sin\theta/g$ here? That formula assumed the ball lands at the height it was thrown from. Here it lands $20~\mathrm{m}$ lower, so it stays in the air longer.
+
+The greatest height is where $v_y = 0$. The climb only depends on $u_y$, not on where the ball lands, so \eqref{eq:H} still holds:
+\begin{flalign}
+H_A = \frac{u^2\sin^2{45^\circ}}{2g} = \frac{400/3}{20} = \frac{20}{3} \approx 6.7~\mathrm{m}
+\end{flalign}
+so the ball reaches $30 + 6.7 \approx 36.7~\mathrm{m}$ above the valley floor. This happens at $x = 40/3 \approx 13.3~\mathrm{m}$, not halfway across. Why not?
+
+\textbf{(c)} $v_x$ doesn't change, and $v_y$ follows $v = u + at$:
+\begin{flalign}
+v_x = \frac{20}{\sqrt3} \approx 11.5~\mathrm{m/s}, \qquad v_y = \frac{20}{\sqrt3} - 10\br{2\sqrt3} = -\frac{40}{\sqrt3} \approx -23.1~\mathrm{m/s}
+\end{flalign}
+So
+\begin{flalign}
+|\vec v| = \sqrt{\frac{400}{3} + \frac{1600}{3}} \approx 25.8~\mathrm{m/s}, \qquad \tan\alpha_{\text{land}} = \frac{|v_y|}{v_x} = 2 \;\Rightarrow\; \alpha_{\text{land}} \approx 63.4^\circ
+\end{flalign}
+below the horizontal. Check $v_y$ with $v^2 = u^2 + 2as$ over the $20~\mathrm{m}$ drop: $v_y^2 = \frac{400}{3} + 400 = \frac{1600}{3}$. Why is the ball faster at $B$ than when it left $A$?
+
+\textbf{(d)} So far the real slopes haven't mattered. Now they do. With $u^2 = 200$ the trajectory is
+\begin{flalign}
+y = x - \frac{x^2}{20}
+\end{flalign}
+The ball comes back down to summit height ($y = -20$) at $x = 10 + \sqrt{500} \approx 32.4~\mathrm{m}$, short of $B$'s summit, so it must hit something. $B$'s face rises at $45^\circ$ towards the summit, so in our coordinates it is the line through $(40,-20)$ with slope $1$:
+\begin{flalign}
+y = x - 60
+\end{flalign}
+This is the launch line shifted down by $60~\mathrm{m}$, the same gap as in Method 3. The ball hits the face when gravity has pulled it $60~\mathrm{m}$ below the launch line:
+\begin{flalign}
+\frac{x^2}{20} = 60 \quad\Longrightarrow\quad x = 20\sqrt3 \approx 34.6~\mathrm{m}, \qquad y \approx -25.4~\mathrm{m}
+\end{flalign}
+Is this point actually on the face? The face reaches the valley floor ($y = -30$) at $x = 30$, so it runs from $x = 30$ to $x = 40$, and our point is inside that range. At $x = 30$ the ball is still at $y = -15$, above the floor, so it doesn't land on the floor first (Why do we need both checks?). Measured along the face, the ball lands
+\begin{flalign}
+\frac{40 - 20\sqrt3}{\cos{45^\circ}} = \br{40 - 20\sqrt3}\sqrt2 \approx 7.6~\mathrm{m}
+\end{flalign}
+below $B$'s summit. What changes if $B$'s face were at $60^\circ$ instead?
+\end{solution}
+
+
+ \href{https://en.wikipedia.org/wiki/Projectile_motion#Projectile_motion_on_a_planetary_scale}{Nice wikipedia section Covering a very advanced case}.
+
+
+\href{https://}{text}
+
+
+
+
+
+\end{document}

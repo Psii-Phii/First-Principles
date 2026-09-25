@@ -548,3 +548,11 @@ html.dark-ok[data-theme="dark"] body::after { opacity: 0.04; }
 .themebtn:hover, .themebtn:focus-visible { color: var(--accent); }
 
 #body .lxpop h2, #body .lxpop h3, #body .lxpop h4 { font-size: 1.02em !important; }
+
+/* lists with their own labels: \item[(a)], enumitem label=(\alph*); description lists */
+#body .lcustom { list-style: none; }
+#body li.lbl { position: relative; }
+#body li.lbl::marker { content: none; }
+#body .ilbl { position: absolute; right: calc(100% + 0.55em); white-space: nowrap; }
+#body dl.desc dt { font-weight: 600; margin-top: 0.5em; }
+#body dl.desc dd { margin: 0 0 0.3em 1.6em; }

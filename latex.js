@@ -55,6 +55,13 @@ window.LatexArticle = (function () {
   }
 
   /* strip % comments (respecting \%) */
+  /* the name of a TikZ picture's drawing: FNV-1a of its text with comments and whitespace removed (texctl.py computes the same) */
+  function tikzKey(block) {
+    const b = new TextEncoder().encode(block.replace(/\s+/g, ''));
+    let h = 0x811c9dc5;
+    for (let i = 0; i < b.length; i++) { h ^= b[i]; h = Math.imul(h, 0x01000193) >>> 0; }
+    return ('0000000' + h.toString(16)).slice(-8);
+  }
   function stripComments(src) {
     return src.split('\n').map(line => {
       let out = '';
@@ -209,7 +216,6 @@ window.LatexArticle = (function () {
     const b1 = src.lastIndexOf('\\end{document}');
     let body = src.slice(b0 === -1 ? 0 : b0 + '\\begin{document}'.length,
                          b1 === -1 ? src.length : b1);
-    if (SITE) body = tidy(body);
 
     /* -------------------------------------------------------------- *
      * 1. stash math so nothing below touches it
@@ -222,12 +228,14 @@ window.LatexArticle = (function () {
     }
 
     /* TikZ / PGF drawings can't be drawn in a browser: a clear placeholder says where to see them */
+    /* Panopticon draws each picture to figures/tikz/tikz-<hash>.svg when the document compiles; the viewer swaps that in */
     body = body.replace(/\\begin\{(tikzpicture|tikzcd|circuitikz|pgfpicture|forest|pspicture)\}([\s\S]*?)\\end\{\1\}/g, (m, env) => {
-      math.push({ html: '<div class="tikzph" data-env="' + env + '"><span class="tikzph-i">◇</span><span><b>' +
-        (env === 'tikzcd' ? 'Commutative diagram' : 'Diagram') + '</b> (' + env + ') — drawn in the PDF only. ' +
-        'Open Preview to see it; for the website, export it as an SVG and use <code>\\websvg</code>.</span></div>' });
+      math.push({ html: '<div class="tikzph" data-env="' + env + '" data-tikz="' + tikzKey(m) + '"><span class="tikzph-i">◇</span><span><b>' +
+        (env === 'tikzcd' ? 'Commutative diagram' : 'Diagram') + '</b>' + (SITE ? ' — shown in the PDF version of these notes.'
+          : ' (' + env + ') — appears here after the next compile (or open Preview).') + '</span></div>' });
       return '\n\n' + T0 + (math.length - 1) + T1 + '\n\n';
     });
+    if (SITE) body = tidy(body);
 
     /* empheq boxes -> plain env, flagged as boxed */
     body = body.replace(
@@ -348,19 +356,40 @@ window.LatexArticle = (function () {
                .replace(/\\begin\{(solution|soln|sol|answer)\}(\[([^\]]*)\])?/g, (_, e, __, t) => '\n\n<div class="proof sol"><span class="pfhead">' + (t || (e === 'answer' ? 'Answer' : 'Solution')) + '.</span> ')
                .replace(/\\end\{(solution|soln|sol|answer)\}/g, '</div>\n\n');
 
-    /* lists — innermost first so nesting works */
+    /* lists — innermost first so nesting works. \item[(a)] and enumitem's label=(\alph*) keep their own labels;
+       description lists become term/definition pairs */
     (function lists() {
-      const re = /\\begin\{(enumerate|itemize)\}(\[([^\]]*)\])?((?:(?!\\begin\{(?:enumerate|itemize)\})[\s\S])*?)\\end\{\1\}/;
+      const re = /\\begin\{(enumerate|itemize|description)\}(\[([^\]]*)\])?((?:(?!\\begin\{(?:enumerate|itemize|description)\})[\s\S])*?)\\end\{\1\}/;
+      const roman = n => { const v = [[1000,'m'],[900,'cm'],[500,'d'],[400,'cd'],[100,'c'],[90,'xc'],[50,'l'],[40,'xl'],[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']]; let o = ''; for (const [k, r] of v) while (n >= k) { o += r; n -= k; } return o; };
       let m;
       while ((m = body.match(re))) {
-        const whole = m[0], env = m[1], opts = m[3], inner = m[4];
+        const whole = m[0], env = m[1], opts = m[3] || '', inner = m[4];
+        // split into items, reading an optional [label] right after \item (brackets may nest one level)
+        const parts = inner.split(/\\item\b/).slice(1).map(it => {
+          const lm = /^\s*\[((?:[^\[\]]|\[[^\]]*\])*)\]/.exec(it);
+          return lm ? { label: lm[1].trim(), text: it.slice(lm[0].length).trim() } : { label: null, text: it.trim() };
+        });
+        if (env === 'description') {
+          body = body.replace(whole, '\n\n<dl class="desc">\n' + parts.map(p => '<dt>' + (p.label || '') + '</dt><dd>' + p.text + '</dd>').join('\n') + '\n</dl>\n\n');
+          continue;
+        }
+        // enumitem: label=(\alph*), label=\roman*., label={(\arabic*)} …
+        const lt = /label\s*=\s*\{?((?:[^{},]|\{[^}]*\})*?)\}?\s*(?:,|$)/.exec(opts);
+        let n = 0;
+        const auto = lt ? i => lt[1].replace(/\\alph\*/g, String.fromCharCode(97 + i)).replace(/\\Alph\*/g, String.fromCharCode(65 + i))
+                                   .replace(/\\roman\*/g, roman(i + 1)).replace(/\\Roman\*/g, roman(i + 1).toUpperCase()).replace(/\\arabic\*/g, String(i + 1)) : null;
+        const custom = parts.some(p => p.label !== null) || !!auto;
         let cls = '';
-        if (opts && /roman/.test(opts)) cls = ' class="lroman"';
-        else if (opts && /[Aa]lph/.test(opts)) cls = ' class="lalpha"';
-        const items = inner.split(/\\item\b/).slice(1)
-          .map(it => '<li>' + it.trim() + '</li>').join('\n');
+        if (!custom && /roman/.test(opts)) cls = 'lroman';
+        else if (!custom && /[Aa]lph/.test(opts)) cls = 'lalpha';
+        if (custom) cls = (cls + ' lcustom').trim();
+        const items = parts.map(p => {
+          const lab = p.label !== null ? p.label : auto ? auto(n) : null;
+          if (p.label === null) n++;
+          return lab !== null ? '<li class="lbl"><span class="ilbl">' + lab + '</span>' + p.text + '</li>' : '<li>' + p.text + '</li>';
+        }).join('\n');
         const tag = env === 'itemize' ? 'ul' : 'ol';
-        body = body.replace(whole, '\n\n<' + tag + cls + '>\n' + items + '\n</' + tag + '>\n\n');
+        body = body.replace(whole, '\n\n<' + tag + (cls ? ' class="' + cls + '"' : '') + '>\n' + items + '\n</' + tag + '>\n\n');
       }
     })();
 
@@ -442,7 +471,7 @@ window.LatexArticle = (function () {
     body = body.split(/\n{2,}/).map(chunk => {
       const c = chunk.trim();
       if (!c) return '';
-      if (/^<\/?(h2|h3|h4|div|ol|ul|img|p\b|section|details|summary)/.test(c) || tokBlock.test(c)) return c;
+      if (/^<\/?(h2|h3|h4|div|ol|ul|dl|img|p\b|section|details|summary)/.test(c) || tokBlock.test(c)) return c;
       return '<p>' + c + '</p>';
     }).filter(Boolean).join('\n');
 
@@ -600,5 +629,5 @@ window.LatexArticle = (function () {
     });
   }
 
-  return { toHTML, inlineSVGs, parseThms, Counters, refs, enhance };
+  return { toHTML, inlineSVGs, parseThms, preambleDefs, stripComments, Counters, refs, enhance, tikzKey };
 })();
