@@ -82,11 +82,32 @@ window.LatexArticle = (function () {
   ].forEach(([n, t, u]) => { DEFAULT_THMS[n] = { title: t, ctr: n, within: '', numbered: !u }; });
 
   /* ---- used when the website renders an article on its own (no Panopticon viewer around it) ---- */
+  /* what panopticon-thm.sty defines the moment it is loaded (problem, exercise, question wait for \\begin{document}) */
+  const PKG_THMS = {
+    theorem: { title: 'Theorem', ctr: 'theorem', within: 'section' }, proposition: { title: 'Proposition', ctr: 'theorem' },
+    lemma: { title: 'Lemma', ctr: 'theorem' }, conjecture: { title: 'Conjecture', ctr: 'theorem' },
+    claim: { title: 'Claim', ctr: 'claim', within: 'theorem' }, corollary: { title: 'Corollary', ctr: 'claim' },
+    definition: { title: 'Definition', ctr: 'definition', within: 'section' }, notation: { title: 'Notation', ctr: 'definition' },
+    axiom: { title: 'Axiom', ctr: 'axiom', within: 'section' }, example: { title: 'Example', ctr: 'example', within: 'section' },
+    remark: { title: 'Remark', numbered: false }, note: { title: 'Note', numbered: false } };
+  const PKG_LATE = { exercise: 'Exercise', problem: 'Problem', question: 'Question' };
   function parseThms(pre) {
     const T = {};
+    pre = pre.replace(/(^|[^\\])%[^\n]*/g, '$1');
+    const pk = pre.search(/\\usepackage\s*(?:\[[^\]]*\])?\s*\{[^}]*\bpanopticon-thm\b[^}]*\}/);
+    const pkgNames = new Set();
     for (const m of pre.matchAll(/\\newtheorem(\*?)\s*\{([^}]+)\}\s*(?:\[([^\]]+)\])?\s*\{([^}]+)\}\s*(?:\[([^\]]+)\])?/g)) {
-      const [, star, name, share, title, within] = m;
-      T[name.trim()] = { title: title.trim(), ctr: (share || name).trim(), within: (within || '').trim(), numbered: !star };
+      const [, star, name, share, title, within] = m, n = name.trim();
+      // with the package loaded, its definitions come first: a later \\newtheorem of the same name (always guarded by
+      // \\@ifundefined in your preambles) never happens in LaTeX, so it doesn't count here either
+      if (pk >= 0 && m.index > pk && PKG_THMS[n] && !(n in T)) continue;
+      T[n] = { title: title.trim(), ctr: (share || name).trim(), within: (within || '').trim(), numbered: !star };
+    }
+    if (pk >= 0) {
+      for (const n in PKG_THMS) if (!(n in T)) { const d = PKG_THMS[n]; T[n] = { title: d.title, ctr: d.ctr || n, within: d.within || '', numbered: d.numbered !== false }; pkgNames.add(n); }
+      for (const n in PKG_LATE) if (!(n in T) && !new RegExp('\\\\newenvironment\\s*\\{' + n + '\\}').test(pre)) T[n] = { title: PKG_LATE[n], ctr: n, within: 'section', numbered: true };
+      // a shared counter that doesn't exist falls back to its own, numbered within the section (as the package does)
+      for (const n of pkgNames) { const t = T[n]; if (t.ctr !== n && !Object.values(T).some(x => x.ctr === t.ctr && x !== t && (x.ctr === t.ctr))) { t.ctr = n; t.within = 'section'; } }
     }
     for (const m of pre.matchAll(/\\declaretheorem\s*(?:\[([^\]]*)\])?\s*\{([^}]+)\}/g)) {
       const o = m[1] || '', g = k => { const r = new RegExp(k + '\\s*=\\s*\\{?([^,}\\]]+)').exec(o); return r ? r[1].trim() : ''; };
@@ -143,12 +164,23 @@ window.LatexArticle = (function () {
       .replace(/\\(?:TeX)\b/g, 'TeX').replace(/\\(?:LaTeX)\b/g, 'LaTeX');
   }
   /* numbers for sections' theorems, as LaTeX would count them */
+  /* LaTeX's counters: numbered within the section (1.2) or within another counter (claim 2.1.1 inside theorem 2.1) */
+  function Counters() {
+    let sec = 0; const tc = {}, lab = {};
+    return {
+      section() { sec++; for (const k in tc) if (tc[k].w === 'section') tc[k].n = 0; },
+      next(ctr, within) {
+        const c = tc[ctr] || (tc[ctr] = { n: 0, w: '' }); if (within) c.w = within; c.n++;
+        for (const k in tc) if (tc[k].w === ctr) tc[k].n = 0;
+        const pre = c.w === 'section' ? (sec ? sec + '.' : '') : c.w ? (lab[c.w] || '0') + '.' : '';
+        return (lab[ctr] = pre + c.n);
+      } };
+  }
   function numberThms(html) {
-    let sec = 0; const tc = {};
+    const C = Counters();
     return html.replace(/<h2\b|<span class="thmhead" data-ctr="([^"]*)" data-within="([^"]*)">([\s\S]*?)<span class="th-n"><\/span>/g, (m, ctr, within, mid) => {
-      if (m === '<h2') { sec++; for (const k in tc) if (tc[k].w) tc[k].n = 0; return m; }
-      const c = tc[ctr] || (tc[ctr] = { n: 0, w: false }); if (within === 'section') c.w = true; c.n++;
-      return '<span class="thmhead" data-ctr="' + ctr + '" data-within="' + within + '">' + mid + '<span class="th-n">' + (c.w && sec ? sec + '.' : '') + c.n + '</span>';
+      if (m === '<h2') { C.section(); return m; }
+      return '<span class="thmhead" data-ctr="' + ctr + '" data-within="' + within + '">' + mid + '<span class="th-n">' + C.next(ctr, within) + '</span>';
     });
   }
 
@@ -273,10 +305,13 @@ window.LatexArticle = (function () {
       '<span id="' + l.replace(/[^a-zA-Z0-9:_-]/g, '') + '"></span>');
 
     /* \ref{...}: section labels -> linked number; unknown -> math \ref */
-    body = body.replace(/\\ref\{([^}]*)\}/g, (_, l) => {
-      const hit = labels[l];
-      if (hit) return '<a class="secref" href="#' + hit.id + '">' + hit.num + '</a>';
-      return stash('\\(\\ref{' + l + '}\\)', false);
+    /* \ref, \autoref, \cref: a link whose number is filled in from what it points at (section, theorem or equation),
+       so it is right across the whole document; hovering it shows the target (see enhance below) */
+    body = body.replace(/\\(ref|autoref|cref|Cref)\*?\{([^}]*)\}/g, (_, cmd, l) => {
+      l = l.split(',')[0].trim();
+      const hit = labels[l], id = hit ? hit.id : l.replace(/[^a-zA-Z0-9:_-]/g, '');
+      return '<a class="xref' + (hit ? ' secref' : '') + '" href="#' + id + '" data-ref="' + id + '"' + (cmd !== 'ref' ? ' data-auto="1"' : '') + '>' +
+             (hit ? (cmd !== 'ref' ? 'Section ' : '') + hit.num : '?') + '</a>';
     });
     body = body.replace(/\\S\b/g, '&sect;');
 
@@ -296,7 +331,7 @@ window.LatexArticle = (function () {
       (m, env, _o, opt, tcbTitle) => {
         const t = TH[env] || { title: env, ctr: env, within: '', numbered: true };
         const name = opt || (t.tcb ? tcbTitle : '');
-        return '\n\n<div class="thm thm-' + (t.kind || KIND(t.title)) + '"><span class="thmhead" data-ctr="' + (t.ctr || env) + '" data-within="' + (t.within || '') + '">' +
+        return '\n\n<div class="thm thm-' + (t.kind || KIND(t.title)) + '"><span class="thmhead" data-ctr="' + (t.ctr || env) + '" data-within="' + (t.within || ((TH[t.ctr] && (TH[t.ctr].ctr || t.ctr) === t.ctr) ? TH[t.ctr].within || '' : '')) + '">' +
                '<span class="th-t">' + t.title + '</span>' + (t.numbered === false ? '' : ' <span class="th-n"></span>') +
                (name ? ' <span class="thmname">(' + name + ')</span>' : '') + '<span class="th-p">.</span></span> ';
       });
@@ -432,6 +467,11 @@ window.LatexArticle = (function () {
     });
 
     if (SITE && opts.number !== false) body = numberThms(body);
+    if (SITE) {   /* the document's own box colours, from \definecolor{pthm…}{HTML}{…} */
+      const pre1 = src.split('\\begin{document}')[0], css = [];
+      for (const m of pre1.matchAll(/\\definecolor\{pthm(result|definition|example|remark|box)\}\{HTML\}\{([0-9A-Fa-f]{6})\}/g)) css.push('--k-' + m[1] + ':#' + m[2]);
+      if (css.length) body = '<style>#body{' + css.join(';') + '}</style>\n' + body;
+    }
     if (siteDefs) body = '<div class="tex-defs" hidden aria-hidden="true">\\(' + escapeHTML(siteDefs) + '\\)</div>\n' + body;
     return { html: body, title };
   }
@@ -448,5 +488,117 @@ window.LatexArticle = (function () {
     });
   }
 
-  return { toHTML, inlineSVGs };
+  /* ---------------------------------------------------------------- *
+   * reading aids, shared by Panopticon's viewer and the website:
+   *   refs(root)     fill every \ref with the number of what it points at
+   *   enhance(root)  hover a reference to see its target; click "Proof." to fold a proof;
+   *                  hover a displayed equation for a button that copies its LaTeX
+   * ---------------------------------------------------------------- */
+  function findTarget(id) {
+    if (!id) return null;
+    return document.getElementById(id) || document.getElementById('mjx-eqn:' + id) || document.getElementById('mjx-eqn-' + id);
+  }
+  function numberOf(t) {
+    if (!t) return null;
+    if (t.closest('mjx-container')) { const n = (t.textContent || '').trim().replace(/^\(|\)$/g, ''); return { n, kind: 'Equation' }; }
+    const th = t.closest('.thm');
+    if (th) { const n = th.querySelector('.th-n'), k = th.querySelector('.th-t'); return { n: n ? n.textContent.trim() : '', kind: k ? k.textContent.trim() : '' }; }
+    if (/^H[2-4]$/.test(t.tagName)) { const n = t.querySelector('.secnum'); return { n: n ? n.textContent.trim() : '', kind: 'Section' }; }
+    return null;
+  }
+  function refs(root) {
+    root.querySelectorAll('a.xref').forEach(a => {
+      const id = a.dataset.ref, t = findTarget(id);
+      if (t && t.id !== id) a.setAttribute('href', '#' + t.id);
+      const r = numberOf(t);
+      const txt = r && r.n ? (a.dataset.auto ? r.kind + ' ' + r.n : r.n) : '??';
+      if (a.textContent !== txt) a.textContent = txt;
+      a.classList.toggle('xbad', !r || !r.n);
+    });
+  }
+  function injectCSS() {
+    if (document.getElementById('lx-css')) return;
+    const st = document.createElement('style'); st.id = 'lx-css';
+    st.textContent =
+      '.lxpop{position:fixed;z-index:9999;max-width:min(38em,calc(100vw - 24px));max-height:46vh;overflow:auto;padding:.7em 1em;border-radius:10px;' +
+      'background:var(--lxbg,#fffdf8);color:var(--lxink,#1c1b19);border:1px solid color-mix(in srgb,var(--lxink,#000) 16%,transparent);' +
+      'box-shadow:0 14px 40px -12px rgba(0,0,0,.35);font-size:.92em;line-height:1.5;pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .12s,transform .12s}' +
+      '.lxpop.on{opacity:1;transform:none}.lxpop>*{margin-top:0!important;margin-bottom:0!important}.lxpop .thm{box-shadow:none}' +
+      '.lxpop h2,.lxpop h3,.lxpop h4{font-size:1em;margin:0 0 .3em!important}' +
+      'a.xbad{color:#b23b3b}' +
+      '.proof .pfhead{cursor:pointer;user-select:none}.proof .pfhead::after{content:" ▾";font-size:.7em;opacity:.45;font-style:normal}' +
+      '.proof.lxfold{max-height:1.62em;overflow:hidden;cursor:pointer;-webkit-mask-image:linear-gradient(90deg,#000 55%,transparent);mask-image:linear-gradient(90deg,#000 55%,transparent)}' +
+      '.proof.lxfold .pfhead::after{content:" ▸  show"}' +
+      '.lxeq{position:relative}.lxcopy{position:absolute;top:50%;right:-2.1em;transform:translateY(-50%);width:2.2em;height:1.7em;border-radius:6px;border:1px solid color-mix(in srgb,var(--lxink,#000) 18%,transparent);' +
+      'background:var(--lxbg,#fff);color:inherit;opacity:0;cursor:pointer;font:600 10px/1 system-ui,sans-serif;padding:0;transition:opacity .12s}' +
+      '.lxeq:hover .lxcopy{opacity:.55}.lxcopy:hover{opacity:1!important}.lxcopy.ok{opacity:1!important;color:#3f8a55}' +
+      '@media (max-width:700px){.lxcopy{right:0;top:0;transform:none}}';
+    document.head.appendChild(st);
+  }
+  function texOf(block) {
+    try {
+      const items = window.MathJax && MathJax.startup && MathJax.startup.document.getMathItemsWithin(block);
+      if (items && items.length) {
+        const t = items.map(i => (i.display && !/^\s*\\begin/.test(i.math) ? '\\[' + i.math + '\\]' : i.math)).join('\n');
+        return t.replace(/\\label\{[^}]*\}\s*/g, '').trim();
+      }
+    } catch (e) {}
+    return '';
+  }
+  function copyText(t) {
+    const fall = () => { const ta = document.createElement('textarea'); ta.value = t; ta.style.cssText = 'position:fixed;left:-9999px'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} ta.remove(); };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).catch(fall); else fall(); } catch (e) { fall(); }
+  }
+  function enhance(root) {
+    if (!root || root.__lx) return; root.__lx = true; injectCSS();
+    let pop = null, timer = 0;
+    const hide = () => { clearTimeout(timer); if (pop) { pop.classList.remove('on'); const p = pop; setTimeout(() => p.remove(), 150); pop = null; } };
+    const show = a => {
+      const href = decodeURIComponent((a.getAttribute('href') || '').slice(1));
+      const t = findTarget(href); if (!t || !root.contains(t) || t.contains(a)) return;
+      const parts = [];
+      if (/^H[2-4]$/.test(t.tagName)) { parts.push(t); let n = t.nextElementSibling, k = 0;   // the heading, then its first paragraph (past any subheading)
+        while (n && k < 3) { parts.push(n); if (!/^H[2-4]$/.test(n.tagName)) break; n = n.nextElementSibling; k++; } }
+      else { const block = t.closest('.disp,.mathbox') || t.closest('mjx-container') || t.closest('.thm,.proof,li,p'); if (block) parts.push(block); }
+      if (!parts.length) return;
+      const r0 = a.getBoundingClientRect(), rt = parts[0].getBoundingClientRect();
+      if (rt.top >= 0 && rt.bottom <= innerHeight) return;   // the target is already on screen
+      hide(); pop = document.createElement('div'); pop.className = 'lxpop';
+      for (const x of parts) {
+        const c = x.cloneNode(true); c.removeAttribute('id'); c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+        c.querySelectorAll('.lxcopy').forEach(e => e.remove()); c.classList.remove('lxfold', 'lvhere'); pop.appendChild(c);
+      }
+      root.appendChild(pop);
+      const w = pop.offsetWidth, h = pop.offsetHeight;
+      const x = Math.min(Math.max(12, r0.left - 20), innerWidth - w - 12);
+      let y = r0.bottom + 8; if (y + h > innerHeight - 8) y = Math.max(8, r0.top - h - 8);
+      pop.style.left = x + 'px'; pop.style.top = y + 'px';
+      const p = pop; requestAnimationFrame(() => p.classList.add('on'));
+    };
+    root.addEventListener('mouseover', e => {
+      const el = e.target; if (!el.closest) return;
+      const a = el.closest('a[href^="#"]');
+      if (a && root.contains(a) && !a.closest('.lxpop')) { clearTimeout(timer); timer = setTimeout(() => show(a), 160); }
+      const eq = el.closest('.disp,.mathbox');
+      if (eq && root.contains(eq) && !eq.closest('.lxpop') && !eq.querySelector(':scope > .lxcopy') && eq.querySelector('mjx-container')) {
+        eq.classList.add('lxeq'); const b = document.createElement('button'); b.className = 'lxcopy'; b.type = 'button'; b.title = 'Copy the LaTeX'; b.textContent = 'TeX'; eq.appendChild(b);
+      }
+    });
+    root.addEventListener('mouseout', e => { const a = e.target.closest && e.target.closest('a[href^="#"]'); if (a && !a.contains(e.relatedTarget)) hide(); });
+    addEventListener('scroll', hide, true);
+    root.addEventListener('click', e => {
+      const el = e.target; if (!el.closest) return;
+      const c = el.closest('.lxcopy');
+      if (c) { e.preventDefault(); e.stopPropagation(); const t = texOf(c.parentNode);
+        if (t) { copyText(t); c.textContent = '✓'; c.classList.add('ok'); setTimeout(() => { c.textContent = 'TeX'; c.classList.remove('ok'); }, 1300); } return; }
+      const ph = el.closest('.proof .pfhead, .proof.lxfold');
+      if (ph && root.contains(ph)) {
+        const pr = ph.closest('.proof'), fold = !pr.classList.contains('lxfold');
+        if (e.altKey) root.querySelectorAll('.proof').forEach(p => p.classList.toggle('lxfold', fold)); else pr.classList.toggle('lxfold', fold);
+        hide();
+      }
+    });
+  }
+
+  return { toHTML, inlineSVGs, parseThms, Counters, refs, enhance };
 })();

@@ -11,7 +11,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="site.css?v=5" />
+<link rel="stylesheet" href="site.css?v=7" />
+<script>/* dark mode: follows the system setting; the ◐ button in the header overrides it and is remembered */
+(function(){var d=document.documentElement;d.classList.add('dark-ok');try{var t=localStorage.getItem('fp-theme');if(t)d.setAttribute('data-theme',t)}catch(e){}
+document.addEventListener('DOMContentLoaded',function(){var n=document.querySelector('.top nav');if(!n)return;var b=document.createElement('button');b.className='themebtn';b.type='button';b.title='Light or dark';b.setAttribute('aria-label','Switch between light and dark');b.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.7a6.3 6.3 0 0 1 0 12.6z" fill="currentColor"/></svg>';
+b.onclick=function(){var a=d.getAttribute('data-theme'),dark=a?a==='dark':matchMedia('(prefers-color-scheme: dark)').matches,t=dark?'light':'dark';d.setAttribute('data-theme',t);try{localStorage.setItem('fp-theme',t)}catch(e){}};n.appendChild(b)})})();</script>
+
 <script src="site.js?v=5"></script>
 </head>
 <body>

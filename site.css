@@ -511,3 +511,40 @@ mjx-container ::selection, mjx-container::selection { background: rgba(115, 43, 
 #body .tikzph { display: flex; gap: 0.7em; margin: 1.2em auto; max-width: 34em; padding: 0.8em 1em; border-radius: 8px;
   font-size: 0.85em; color: var(--mid); border: 1px dashed var(--rule); }
 #body .tex-defs { display: none; }
+
+/* ---- reading aids (hover previews, copy button) take the page's colours ---- */
+#body { --lxbg: var(--paper); --lxink: var(--ink); }
+#body .xref, #body .secref { color: var(--accent); text-decoration: none; border-bottom: 1px dotted color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* ---- dark mode for the reading pages (articles list and article reader) ----
+   follows the system setting; the ◐ button in the header overrides it and is remembered */
+@media (prefers-color-scheme: dark) {
+  html.dark-ok:not([data-theme="light"]) {
+    --paper: #171614; --ink: #e6e1d6; --mid: #9c968a; --accent: #d49595; --rule: #34312c; color-scheme: dark;
+  }
+}
+html.dark-ok[data-theme="dark"] { --paper: #171614; --ink: #e6e1d6; --mid: #9c968a; --accent: #d49595; --rule: #34312c; color-scheme: dark; }
+
+/* everything that was hard-coded for light paper */
+
+html.dark-ok[data-theme="dark"] #body,
+html.dark-ok[data-theme="dark"] .lxpop { --k-result:#e0876d; --k-definition:#7fa9dc; --k-example:#86b98f; --k-remark:#a4a8b0; --k-proof:#b3a893; --k-box:#b8a0dc; }
+html.dark-ok[data-theme="dark"] #body .thm { box-shadow: 0 1px 0 rgba(255,255,255,.03), 0 12px 30px -20px color-mix(in srgb, var(--k) 45%, transparent); }
+html.dark-ok[data-theme="dark"] #body .thm-remark, html.dark-ok[data-theme="dark"] #body .thm-example { box-shadow: none; }
+html.dark-ok[data-theme="dark"] #body .mathbox, html.dark-ok[data-theme="dark"] #body .mybox { background: rgba(255,255,255,.03); border-color: color-mix(in srgb, var(--ink) 30%, transparent); box-shadow: 0 10px 28px -18px rgba(212,149,149,.35); }
+html.dark-ok[data-theme="dark"] #body svg, html.dark-ok[data-theme="dark"] #body img.figimg { background: #f4f1ea; color: #1a1a18; border-radius: 8px; padding: 6px; }
+html.dark-ok[data-theme="dark"] body::after { opacity: 0.04; }
+@media (prefers-color-scheme: dark) {
+  html.dark-ok:not([data-theme="light"]) #body,
+  html.dark-ok:not([data-theme="light"]) .lxpop { --k-result:#e0876d; --k-definition:#7fa9dc; --k-example:#86b98f; --k-remark:#a4a8b0; --k-proof:#b3a893; --k-box:#b8a0dc; }
+  html.dark-ok:not([data-theme="light"]) #body .thm { box-shadow: 0 1px 0 rgba(255,255,255,.03), 0 12px 30px -20px color-mix(in srgb, var(--k) 45%, transparent); }
+  html.dark-ok:not([data-theme="light"]) #body .thm-remark, html.dark-ok:not([data-theme="light"]) #body .thm-example { box-shadow: none; }
+  html.dark-ok:not([data-theme="light"]) #body .mathbox, html.dark-ok:not([data-theme="light"]) #body .mybox { background: rgba(255,255,255,.03); border-color: color-mix(in srgb, var(--ink) 30%, transparent); box-shadow: 0 10px 28px -18px rgba(212,149,149,.35); }
+  html.dark-ok:not([data-theme="light"]) #body svg, html.dark-ok:not([data-theme="light"]) #body img.figimg { background: #f4f1ea; color: #1a1a18; border-radius: 8px; padding: 6px; }
+  html.dark-ok:not([data-theme="light"]) body::after { opacity: 0.04; }
+}
+.themebtn { background: none; border: 0; padding: 0; margin: 0; cursor: pointer; color: var(--mid); line-height: 0; align-self: center; }
+.themebtn svg { width: 15px; height: 15px; display: block; }
+.themebtn:hover, .themebtn:focus-visible { color: var(--accent); }
+
+#body .lxpop h2, #body .lxpop h3, #body .lxpop h4 { font-size: 1.02em !important; }
