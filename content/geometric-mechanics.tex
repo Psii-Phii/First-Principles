@@ -31,7 +31,7 @@
 \usepackage{fancyhdr}
 % dhortcmds / dhortthms with portable fallbacks (the real packages win when present)
 \IfFileExists{dhortcmds.sty}{\usepackage{dhortcmds}}{}
-\IfFileExists{dhortthms.sty}{\usepackage{dhortthms}}{}
+\usepackage{panopticon-thm}  % boxed theorems like Panopticon's viewer; replaces: \IfFileExists{dhortthms.sty}{\usepackage{dhortthms}}{}
 % portable fallbacks (no-ops when dhortcmds is present)
 \providecommand{\br}[1]{\left(#1\right)}
 \providecommand{\sbr}[1]{\left[#1\right]}
@@ -102,978 +102,161 @@
 \author{}
 \date{}
 
+
+%% ---- definitions from your own packages, so the website can show the same maths ----
+\let\var\relax  \let\rank\relax \let\tr\relax   \let\ip\relax
+\let\rank\relax \let\tr\relax   \let\ip\relax
+\let\tr\relax   \let\ip\relax
+\let\ip\relax
+\let\norm\relax \let\grad\relax \let\bra\relax  \let\ket\relax
+\let\grad\relax \let\bra\relax  \let\ket\relax
+\let\bra\relax  \let\ket\relax
+\let\ket\relax
+\newcommand{\ms}{\mathscr}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mf}{\mathfrak}
+\newcommand{\mb}{\mathbb}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ol}{\overline}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\mathbb{R}^n}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\h}{\mathcal{H}}
+\newcommand{\rel}{\mathcal{R}}
+\newcommand{\lin}{\mathcal{L}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\p}{\mathcal{P}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\li}{\mathcal{L}}
+\newcommand{\Mn}{Mn(\F)}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+\DeclareMathOperator{\var}{Var}
+\DeclareMathOperator{\spn}{Span} % \span already exists so I'm using \spn
+\DeclareMathOperator{\ran}{Range}
+\DeclareMathOperator{\rank}{Rank}
+\DeclareMathOperator{\nul}{Null}
+\DeclareMathOperator{\nulty}{Nullity}
+\DeclareMathOperator{\tr}{Tr}
+\newcommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\newcommand{\smallmat}[1]{\left[\begin{smallmatrix}#1\end{smallmatrix}\right]}
+\DeclareMathOperator{\form}{Form}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\gal}{Gal}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\ch}{ch}
+\newcommand{\dif}[3][]{\frac{d^{#1}#2}{d#3^{#1}}}
+\newcommand{\pd}[3][]{\frac{\partial^{#1}#2}{\partial#3^{#1}}}
+\newcommand{\ip}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+\newcommand{\grad}{\nabla}
+\newcommand{\hess}{\nabla^2}
+\newcommand{\bra}[1]{\left\langle#1\right|}
+\newcommand{\ket}[1]{\left|#1\right\rangle}
+\newcommand{\bk}[2]{\left\langle#1\middle|#2\right\rangle}
+\newcommand{\kb}[2]{\left|#1\middle\rangle\middle\langle#2\right|}
+\newcommand{\com}[2]{\left[#1,#2\right]}
+\newcommand{\hb}{\hbar}
+\newcommand{\dg}{\dagger}
+\newcommand{\kpsi}{\ket{\psi}}
+\newcommand{\kPsi}{\ket{\Psi}}
+\newcommand{\kphi}{\ket{\phi}}
+\newcommand{\kPhi}{\ket{\Phi}}
+\newcommand{\ot}{\otimes}
+\newcommand{\sub}{\subseteq}
+\newcommand{\nsub}{\nsubseteq}
+\newcommand{\bl}[1]{B_{#1}}
+\newcommand{\cbr}[1]{\left \{ #1 \right \}}
+\newcommand{\lbr}[1]{\left  \langle #1 \right \rangle}
+\newcommand{\br}[1]{\left( #1 \right)}
+\newcommand{\sbr}[1]{\left[ #1 \right]}
+\newcommand{\mcl}[1]{\mathcal{#1}}
+\newcommand{\creq}[1]{\underset{#1}{\approx}}
+\newcommand{\seq}[2]{\br{#1_#2}_{#2 =1}^{\infty}}
+\DeclareMathOperator{\diam}{diam}
+\newcommand{\Int}[1]{\text{Int}\br{#1}}
+\newcommand{\cs}[1]{\cos\br{#1}}
+\newcommand{\sn}[1]{\sin{\br{#1}}}
+\newcommand{\tn}[1]{\tan{\br{#1}}}
+\newcommand{\css}[1]{\cos^2\br{#1}}
+\newcommand{\snn}[1]{\sin^2{\br{#1}}}
+\newcommand{\tnn}[1]{\tan^2{\br{#1}}}
+\newcommand{\csh}[1]{\cosh\br{#1}}
+\newcommand{\snh}[1]{\sinh{\br{#1}}}
+\newcommand{\cshh}[1]{\cosh^2\br{#1}}
+\newcommand{\snhh}[1]{\sinh^2{\br{#1}}}
+\newcommand{\Lg}[1]{\log\br{#1}}
+\newcommand{\gam}[1]{\sqrt{1 - \frac{#1}{c^2}}}
+\newcommand{\pgam}[1]{\sqrt{1 + \frac{#1}{c^2}}}
+\newcommand{\ring}[1]{\mathring{#1}}
+\newcommand\ringring[1]{%
+  {% make an Ord atom
+   \mathop{\kern0pt #1}\limits^{% set a box over the variable
+     \vbox to-1.85ex{
+       \kern-2ex % lower the ring accents
+       \hbox to 0pt{\hss\normalfont\kern.1em \r{}\kern-.45em \r{}\hss}%
+       \vss % fill
+     }% end of \vbox
+   }% end of the superscript
+  }% end of \mathop
+}
+\newcommand{\bigbmatrix}[1]{%
+  \begingroup
+    \renewcommand{\arraystretch}{1.5}% Increase vertical spacing
+    \setlength{\arraycolsep}{12pt}% Increase horizontal spacing
+    \mathlarger{%
+      \begin{bmatrix}
+        #1%
+      \end{bmatrix}%
+    }%
+  \endgroup
+}
+\renewcommand{\arraystretch}{1.5}% Increase vertical spacing
+\newcommand{\chris}[3]{\Gamma^{#1}_{\phantom{#1}#2#3}}
+\newcommand{\iso}{\cong}
+\newcommand{\nd}{\hspace{-3pt}\not|\,}
+\newcommand{\w}{\wedge}
+\newcommand{\md}[2]{#1\bigl/ #2}
+\newcommand{\highlight}[1]{%
+  \colorbox{darkpastelblue!50}{$\displaystyle#1$}}
+\newcommand{\highlightone}[1]{%
+  \colorbox{limegreen!50}{$\displaystyle#1$}}
+\newcommand{\highlighttwo}[1]{%
+  \colorbox{ashgrey!50}{$\displaystyle#1$}}
+\newcommand{\highlightthree}[1]{%
+  \colorbox{coralpink!50}{$\displaystyle#1$}}
+\newcommand{\highlightlt}[1]{%
+  \colorbox{denim!20}{$\displaystyle#1$}}
+\newcommand{\white}{{\color{white}-}\\}
+\newtheorem{definition} always wins, wherever this package is loaded)
+\newtheorem{#1}{#3}[section]}{\newtheorem{#1}[#2]{#3}}}
+\newtheorem{#1}[#2]{#3}}}
+\newtheorem{theorem}{Theorem}[section]}{}%
+\newtheorem{claim}{Claim}}{\newtheorem{claim}{Claim}[theorem]}}{}%
+\newtheorem{claim}{Claim}[theorem]}}{}%
+\newtheorem{corollary}[claim]{Corollary}}}{}%
+\newtheorem{definition}{Definition}[section]}{}%
+\newtheorem{axiom}{Axiom}[section]}{}%
+\newtheorem{example}{Example}[section]}{}%
+\newtheorem{exercise}{Exercise}[section]}{}%
+\newtheorem{problem}{Problem}[section]}{}%
+\newtheorem{question}{Question}[section]}{}%
+\newtheorem*{remark}{Remark}}{}%
+\newtheorem*{note}{Note}}{}%
+\let\Axiom\axiom\let\endAxiom\endaxiom}{}   % dhortthms spelling%
+\let\endAxiom\endaxiom}{}   % dhortthms spelling%
+%% ----
 \begin{document}
 \maketitle
 \thispagestyle{fancy}
 
-\section{Introduction and Overview}\label{sec:intro}
-
-Every student of physics encounters at least two formulations of classical mechanics. The first is codified in terms of Newton's laws of motion, where, for the most part, an individual's capability to solve a problem is capped by their capability to draw out all the forces involved, which in hindsight seems like the very antithesis of an exact science (it's inexact, dependent on getting the diagram right). In later years one is introduced to the power of Lagrangians and Hamiltonians, which render such doodling pointless and give a systematic way of deriving the equations of motion for a given system. However, the student is rarely told the mathematical basis of these objects, i.e., they're seldom told what kind of mathematical object a Hamiltonian actually is. Where does it ``live''? What is the deeper structure underlying such powerful machinery? The aim of these notes is to answer these questions properly. It turns out that mechanics, at its heart, is geometric, and we shall build up exactly the geometry needed to see how and why. 
-
-A word on prerequisites, because it fixes the entire design of these notes. We assume the reader is comfortable with multivariable calculus (partial derivatives, the chain rule, the inverse function theorem used informally) and with linear algebra (vector spaces, linear maps, bases, matrices, determinants). We do \emph{not} assume any differential geometry. Every geometric object we use, manifolds, tangent vectors, covectors, tensors, differential forms, flows, will be defined before it is used, and the definitions are not optional seasoning: the payoff of the whole subject is that the definitions do the work. When we reach a formula and ask ``why is this natural?'', the answer will always be traceable back to a definition made earlier, and we will make a point of doing the tracing.
-
-One recurring theme deserves to be announced in advance, because it is the engine behind half the arguments. We will constantly describe curved spaces using coordinates, and coordinates are a \emph{choice}: someone else may make a different choice. An object defined through coordinates is only a genuine, geometric object if either (a) it can be defined without mentioning coordinates at all, or (b) its coordinate description comes with a \emph{transformation law} telling us exactly how the description changes when the coordinates do, so that all observers are describing the same thing. Words like ``natural'' and ``canonical'', which we will use often, have a precise meaning in this light: a construction is natural or canonical when it requires no choices, so that everyone, in every coordinate system, builds the same object. Much of the magic of Hamiltonian mechanics is that its central structure (the symplectic form) is canonical in exactly this sense.
-
-% A brief outline of what these notes cover. We start with the \emph{configuration space} $\mc{Q}$ of a mechanical system and use it as the motivation to define smooth manifolds honestly (\S\ref{sec:config}). We then build the calculus that lives on a manifold: tangent vectors and the tangent bundle, where velocities live (\S\ref{sec:tangent}), together with vector fields and their flows. With that in hand we can say what a Lagrangian is, and, importantly, we \emph{derive} rather than postulate the quadratic form $\frac{1}{2}g_{ab}\dot q^a \dot q^b$ that kinetic energy takes in generalized coordinates, which is where the metric $g_{ab}$ enters mechanics (\S\ref{sec:lagrangian}). Next comes duality: covectors, the differential of a function, and the cotangent bundle (\S\ref{sec:covectors}), followed by the Legendre transform (\S\ref{sec:legendre}), which carries us to the Hamiltonian and to Hamilton's equations (\S\ref{sec:hamilton}) and in doing so relocates the theory to \emph{phase space}, the cotangent bundle $T^*\mc{Q}$ (\S\ref{sec:phasespace}). On phase space we meet the Poisson bracket and prove that bracket evolution and Hamiltonian evolution are the same thing (\S\ref{sec:poisson}). Then the geometry proper begins: after a careful toolkit of tensors and differential forms (\S\ref{sec:forms}), we introduce the symplectic form (\S\ref{sec:symplectic}), rewrite Hamilton's equations without coordinates (\S\ref{sec:coordfree}), study the flows generated by observables (\S\ref{sec:hamvf}), and generalize to abstract symplectic manifolds, where Darboux's theorem tells us something remarkable: symplectic geometry has no local invariants at all (\S\ref{sec:sympman}). Symplectic (canonical) transformations (\S\ref{sec:symptrans}) and Liouville's theorem (\S\ref{sec:liouville}) follow almost for free, and we close with statistical distributions on phase space and the Liouville equation (\S\ref{sec:statistical}), which is the precise classical twin of the von Neumann equation.
-
-Conventions: configuration coordinates i.e. components of a position vector are labeled with an upper indices $q^a$, co-vectors are labeled with lower indices $p_a$, with $a = 1, \dots, n$ for $n$ degrees of freedom. Repeated indices,  upper  one lower, are summed ( Einstein convention) unless said otherwise; the reason for this peculiar notation will soon become apparent as we deifne what vecotrs and covectors mean.
-\section{Configuration Space, and What a Manifold Is}\label{sec:config}
-
-\subsection{Configuration space by examples}
-
-The \emph{configuration space} $\mc{Q}$ of a mechanical system is the set of all positions the system can occupy, one point of $\mc{Q}$ per position of the whole system. For a single particle in ordinary space, $\mc{Q} = \mathbb{R}^3$; this seems unimpressive, the reader is probably familiar with solving problems in this space already.
-
-Things get interesting when we begin restricting degrees of freedom. Consider a planar pendulum whose position is completely specified by one angular coordinate $\theta$ with periodicity $2\pi$, i.e., $\theta$ and $\theta + 2\pi$ are the same physical position, so each position of this system can be mapped onto a point on the circle. The configuration space in this case is therefore a circle, $\mc{Q} = S^1$.
-
-Similarly, a double pendulum has two angular coordinates, and in this case $\mc{Q} = S^1 \times S^1 = T^2$, a torus. To see why, notice that each angle $\theta_1$ and $\theta_2$ independently parametrizes a circle, since each pendulum arm returns to the same physical configuration under a shift of $2\pi$; the configuration space of the whole system is therefore the set of all pairs $(\theta_1, \theta_2)$, which is what the Cartesian product $S^1 \times S^1$ represents. To visualize: imagine a circle (all the values $\theta_1$ can take) and at each point of that circle attach another circle (all the values $\theta_2$ can take); this traces out a torus.
-
-A particle confined to the surface of a sphere has $\mc{Q} = S^2$. A rigid body pinned at its center of mass has as its configuration space the set of all orientations of the body, which is $\mc{Q} = SO(3)$, the group of rotations of $3$-dimensional Euclidean space (a $3$-dimensional curved space in its own right, though a harder one to picture).
-
-In each example, we have taken the position data and found that it naturally arranges itself into a curved, finite-dimensional space. What all these spaces have in common is that they \emph{locally look like} $\mathbb{R}^n$ i.e. if we zoom in on any point of the circle and it looks like a piece of the line in $\mathbb{R}$ similarly look close enough on the torus or the sphere and it looks like a piece of  plane in $\mathbb{R}^2$. This is useful because we know how to do calculus on $\mathbb{R}^n$, and if a space, at close enough range, looks like $\mathbb{R}^n$, we can hope to apply  multivariable calculus on that small region. Spaces with this property are called \emph{manifolds}, we give mathematical rigor to this notion in the next section.
-
-\subsection{Charts, atlases, and the definition of a manifold}
-
-
-
-When we say a space locally looks like $\mathbb{R}^n$, we mean we can set up a continuous, invertible map (whose inverse is also continuous) between an open set \footnote{A set $U \subseteq \mathbb{R}^n$ is \emph{open} if  for each $x \in U$ there is some radius $\varepsilon > 0$ (however small) such that every point within distance $\varepsilon$ of $x$ still lies in $U$. I.e.
-\begin{flalign}
-    B_\varepsilon(x) = \cbr{\, y \in \mathbb{R}^n : \abs{y - x} < \varepsilon \,},
-\end{flalign}
-Every $x \in U$ admits some $B_\varepsilon(x) \subseteq U$.} around a given point in the manifold and an open set of $\mathbb{R}^n$, so that every point in the open set on the manifold can be assigned an unique n-tuple of numbers as its coordinates. The mathematical tool for this  assignment of coordinates is called a \emph{chart} and is defined as 
-
-\begin{mybox}
-   \textbf{Definition (chart and atlas).} A \emph{chart} on a manifold $\mathcal{M}$ is a pair $(U,\phi)$, where $U \subseteq \mathcal{M}$ is an open set and 
-\begin{flalign}
-    \phi \colon U \longrightarrow \phi(U) \subseteq \mathbb{R}^n, \; x \mapsto \br{x^1, x^2,\ldots, x^n}.
-\end{flalign}
-is a continuous, invertible map onto an open region of $\mathbb{R}^n$ whose inverse is also continuous. $U$ is called a \emph{coordinate patch} and the $x^1,x^2,\ldots,x^n$ are called the \emph{coordinates} of the chart. Often multiple charts are used to cover all of $\mc{M}$ hence we define a collection of charts $\cbr{(U_i, \phi)}$ which cover all of $\mc{M}$ as the \emph{atlas}.
-\end{mybox}
-
-
- Wherever two charts say $U_i, U_j$ overlap, a point in the intersection has two coordinate descriptions $\phi_i, \phi_j$, and we can pass between them with the \emph{transition map}
-\begin{flalign}
-    \phi_j \circ \phi_i^{-1} : \phi_i(U_i \cap U_j) \to \phi_j(U_i \cap U_j). \label{transition}
-\end{flalign}
-We are now in a position to give a working definition of a smooth manifold 
-
-\begin{mybox}
-\textbf{Definition (smooth manifold).} An $n$-dimensional \emph{smooth manifold} is a set $\mc{M}$ equipped with an atlas of charts $\phi_i : U_i \to \mathbb{R}^n$ such that every transition map \eqref{transition} is smooth (infinitely differentiable) with smooth inverse. The functions $ \phi^a(x) = q^a$ of any chart are called \emph{local coordinates}, and in mechanics, where $\mc{M} = \mc{Q}$ is a configuration space, they are exactly the \emph{generalized coordinates} of the standard courses.
-\end{mybox}
-
-The above definition omits many key aspects from the definition of a smooth manifold, such as second-countability and Hausdorff-ness; however, for the scope of these notes the above definition is sufficiently rigorous. Moving forward, any mention of a manifold is to be taken to mean a smooth manifold, unless otherwise stated explicitly.
-
-Observe that the differentiability of the manifold is defined via the differentiability of the charts. For instance, a function $f : \mc{M} \to \mathbb{R}$ is  \emph{smooth} if for every chart, the coordinate representative
-\begin{flalign}
-    f \circ \phi^{-1} : \phi(U) \subseteq \mathbb{R}^n \to \mathbb{R}
-\end{flalign} is smooth in the ordinary calculus sense. 
-Is this declaration consistent, i.e., could a function look smooth in one chart and non-smooth in an overlapping one? No: the two representatives differ by composition with a transition map, $f\circ\phi_j^{-1} = (f\circ\phi_i^{-1})\circ(\phi_i\circ\phi_j^{-1})$, and transition maps are smooth by the definition of the manifold.
-
-\begin{mybox}
-\textbf{Note.} Anything we define on a manifold through coordinates must either be checked to be chart-independent, or must come with an explicit transformation law under change of coordinates. When we write a change of coordinates say, $q^a \to \tilde{q}^a(q)$ , we mean precisely a transition map between two overlapping charts, and by the definition of a smooth manifold, the functions $\tilde{q}^a(q)$ are smooth with smooth inverse, so the Jacobian matrix $\pdv*{\tilde{q}^a}{q^b}$ is invertible wherever defined.
-\end{mybox}
-
-By construction, our earlier examples qualify. The circle $S^1$ is covered by two angular charts (say, $\theta \in (0, 2\pi)$ and $\theta' \in (-\pi, \pi)$, each omitting one point), with transition maps $\theta' = \theta$ or $\theta' = \theta - 2\pi$ on the two components of the overlap eac of which are smooth, and invertible.
-
-From now on we say ``the configuration space of a mechanical system with $n$ degrees of freedom is a smooth $n$-dimensional manifold $\mc{Q}$'', and carry out computations in whatever local (generalized) coordinates $q^a$ are convenient, provided we always have a well defined way of changing between coordinates.
-
-Now that the position data is arranged in a way that lets us do calculus on it, it is natural to move to the next-order quantity, velocity, and ask where \emph{it} lives. 
-\section{Velocities: Tangent Vectors, Vector Fields, and Flows}\label{sec:tangent}
-
-\subsection{Tangent vectors via curves}
-
-
-
-A configuration alone doesn't determine the future; we also need the velocity. If the system traces a curve through configuration space, a smooth map
-\begin{flalign}
-    \gamma : \mathbb{R} \to \mc{Q}, \qquad t \mapsto \gamma(t)
-\end{flalign}
-(smooth meaning: its coordinate representative $t \mapsto q^a(t) \equiv \phi^a(\gamma(t))$ is smooth in every chart), then its velocity at time $t$ ``should be'' $\dot{\gamma}(t)$. But what object is that? We cannot subtract nearby points of a manifold and divide by $\Delta t$: there is no subtraction on a circle or a sphere. What we \emph{can} do is differentiate the coordinate representative, getting the $n$ numbers $\dot{q}^a(t)$. The honest definition takes this seriously.
-
-Fix a point $x \in \mc{Q}$ and consider all smooth curves passing through $x$ at $t = 0$. Declare two such curves $\gamma_1, \gamma_2$ \emph{equivalent} if their coordinate representatives have the same derivative at $t=0$ in some chart around $x$:
-\begin{flalign}
-    \dv{t}\Big|_{0}\, \phi\br{\gamma_1(t)} = \dv{t}\Big|_{0}\, \phi\br{\gamma_2(t)}. \label{curve-equiv}
-\end{flalign}
-we take this to be the working definition of chart 
-
-
-The crucial check, our master rule in action: if \eqref{curve-equiv} holds in one chart, it holds in every chart, because in any other chart the chain rule gives
-\begin{flalign}
-    \dv{\tilde{q}^a}{t} = \pdv{\tilde{q}^a}{q^b}\,\dv{q^b}{t}, \label{chain-check}
-\end{flalign}
-the \emph{same} invertible Jacobian multiplying both curves' velocities. So the equivalence is a property of the curves and the point, not of the chart used to test it.
-
-\begin{mybox}
-\textbf{Definition (tangent vector, tangent space).} A \emph{tangent vector} at $x \in \mc{Q}$ is an equivalence class of curves through $x$ under \eqref{curve-equiv}: the class remembers exactly ``the instantaneous direction and speed through $x$'' and forgets everything else about the curve. The set of all tangent vectors at $x$ is the \emph{tangent space} $T_x\mc{Q}$. In a chart, a tangent vector is faithfully labelled by its component tuple $\br{\dot{q}^1, \dots, \dot{q}^n} \in \mathbb{R}^n$, and we use this labelling to give $T_x\mc{Q}$ the structure of an $n$-dimensional real vector space (add and scale components).
-\end{mybox}
-
-Does the vector space structure depend on the chart used to define it? No, and the reason is worth internalizing: the components in two charts are related by \emph{the same linear map} (the Jacobian at $x$) for every vector, and linear maps respect addition and scaling. This is the pattern throughout: chart-dependent labels, chart-independent structure.
-
-For the pendulum, at each point $\theta \in S^1$ the possible velocities $\dot\theta$ form a copy of $\mathbb{R}$: the tangent line to the circle at that point. Crucially, tangent vectors at \emph{different} points of a curved space can't be compared or added; a velocity at the bottom of the pendulum's swing and a velocity at the top live in different one-dimensional spaces. Each point carries its own private copy of $\mathbb{R}^n$.
-
-\subsection{The coordinate basis, and vectors as derivative operators}
-
-A chart hands each tangent space a preferred basis. The \emph{$a$-th coordinate line} through $x$ is the curve that increases $q^a$ at unit rate holding the other coordinates fixed; its tangent vector at $x$ is written
-\begin{flalign}
-    \pdv{}{q^a}\bigg|_x \qquad \text{(often abbreviated } \partial_a\text{)},
-\end{flalign}
-and a general tangent vector with components $X^a$ is $X = X^a\,\partial_a$. The notation is not a whimsy; it earns its keep as follows. A tangent vector $X$ at $x$ knows how to differentiate functions: given a smooth $f : \mc{Q} \to \mathbb{R}$, pick any curve $\gamma$ in the class $X$ and set
-\begin{flalign}
-    X f \equiv \dv{t}\bigg|_0 f\br{\gamma(t)} = \pdv{f}{q^a}\,\dot q^a = X^a\, \pdv{f}{q^a}, \label{directional}
-\end{flalign}
-by the chain rule; the answer depends only on the equivalence class (only on $\dot{q}^a$), so it's well-defined, and it's manifestly chart-independent (it was defined without charts, in the first equality). Equation \eqref{directional} says: as a differential operator, the tangent vector $X$ \emph{is} $X^a\partial_a$. The basis vector $\partial_a$ literally acts on functions as the partial derivative $\pdv*{}{q^a}$. This dual personality of tangent vectors, geometric arrows and first-order differential operators at once, will be used freely.
-
-\subsection{The transformation law}
-
-Under a change of coordinates $q^a \to \tilde{q}^a(q)$, the components of a tangent vector transform, as we already saw in the equivalence check, by the chain rule:
-\begin{empheq}[box=\mathbox]{align}
-    \tilde{X}^a = \pdv{\tilde{q}^a}{q^b}\,X^b. \label{tangent-transform}
-\end{empheq}
-(Upper index, Jacobian acting from the left: this is the defining transformation law of a \emph{contravariant} vector, and we'll shortly meet its mirror image.) Consistently, the basis vectors transform the opposite way, $\tilde{\partial}_a = \pdv*{q^b}{\tilde{q}^a}\;\partial_b$ (chain rule again), so that the assembled object $X = X^a \partial_a = \tilde X^a \tilde\partial_a$ is the same in every chart: the Jacobian and its inverse meet and cancel. Components transform one way, bases the other, the object stays put. Hold on to this cancellation mechanism; it is about to recur with covectors, and later with tensors of every stripe.
-
-\subsection{The tangent bundle}
-
-The collection of all tangent spaces, glued together over $\mc{Q}$,
-\begin{flalign}
-    T\mc{Q} \equiv \bigcup_{x \in \mc{Q}} \cbr{x} \times T_x\mc{Q},
-\end{flalign}
-is the \emph{tangent bundle}: a $2n$-dimensional manifold whose points are pairs (configuration, velocity), coordinatized locally by $(q^a, \dot{q}^a)$, where each chart on $\mc{Q}$ induces a chart on $T\mc{Q}$ via \eqref{tangent-transform}. A point of $T\mc{Q}$ is exactly an allowed instantaneous state of the system in the Lagrangian sense. For the pendulum, $T\mc{Q} = S^1 \times \mathbb{R}$, an infinite cylinder: angle around, angular velocity along the axis. (The tangent bundle of the circle happens to be a global product; not every tangent bundle is, but locally they all are, and local is all we'll need.)
-
-\subsection{Vector fields and their flows}\label{sec:flows}
-
-A \emph{vector field} $X$ on a manifold $\mc{M}$ is a smooth assignment of a tangent vector $X(x) \in T_x\mc{M}$ to every point $x$: in coordinates, smooth component functions $X^a(q)$. Think of it as a velocity prescription: ``if you are at $x$, move with velocity $X(x)$''. Following the prescription means solving the system of ODEs
-\begin{flalign}
-    \dot{q}^a(t) = X^a\br{q(t)}
-\end{flalign}
-from every initial condition simultaneously, and the standard existence and uniqueness theorem for ODEs (the one piece of analysis we import wholesale) says that through each point there passes exactly one solution curve. Packaging all the solutions together produces the \emph{flow} of $X$: the family of maps
-\begin{flalign}
-    \varphi^X_s : \mc{M} \to \mc{M}, \qquad \varphi^X_s(x_0) = \text{(solution at parameter $s$ starting from $x_0$)},
-\end{flalign}
-which slides every point of the manifold along its trajectory for parameter-time $s$. Uniqueness of solutions gives the defining algebraic property, the \emph{group law}
-\begin{empheq}[box=\mathbox]{align}
-    \varphi^X_s \circ \varphi^X_u = \varphi^X_{s+u}, \qquad \varphi^X_0 = \mathrm{id}, \qquad \br{\varphi^X_s}^{-1} = \varphi^X_{-s}, \label{grouplaw}
-\end{empheq}
-flowing for time $u$ and then for time $s$ is flowing for time $s + u$. A flow is a one-parameter group of transformations of the manifold, and the vector field is its \emph{generator}: the derivative of the family at $s = 0$. (Strictly, existence of the flow for all $s$ needs mild hypotheses; for the compact level sets typical of confining Hamiltonians it's automatic, and we won't fuss.)
-
-How does a function $f$ change under the flow? Define $f_s \equiv f \circ \varphi^X_s$ (``look up $f$ at the flowed point''). Differentiating in $s$ and using \eqref{directional} at the flowed point,
-\begin{flalign}
-    \dv{s}\, f_s = \br{X f}_s = X^a\,\partial_a f_s,
-\end{flalign}
-a linear ODE on the space of functions, solved formally by exponentiating the operator:
-\begin{flalign}
-    f_s = e^{s X} f \qquad \text{with } X = X^a\partial_a \label{expflow}
-\end{flalign}
-(convergence for analytic data; formally always, which is the register in which we'll use it). The simplest example, worth doing in full: on $\mathbb{R}^2$ with coordinates $(q,p)$, take $X = \partial_q$ (unit velocity in $q$, none in $p$). The ODEs are $\dot q = 1$, $\dot p = 0$, so $\varphi^X_s(q,p) = (q+s,\, p)$: rigid translation. And by Taylor's theorem, $f(q + s, p) = e^{s\,\partial_q} f(q, p)$, which is \eqref{expflow} in its most familiar clothing. The pattern, \emph{evolution equals exponentiated generator}, is one the reader has met in quantum mechanics wearing the costume $T(t;t_0) = e^{-iH(t - t_0)/\hbar}$; it is the same mathematics, and by the end of these notes the analogy will be exact and systematic. Which vector field on phase space has the physical time evolution as its flow, and which function generates translations, are questions we'll be equipped to answer precisely in \S\ref{sec:hamvf}.
-\section{The Lagrangian, and Where $g_{ab}$ Comes From}\label{sec:lagrangian}
-
-\subsection{The Lagrangian as a function on the tangent bundle}
-
-We can now say cleanly what a Lagrangian is. An instantaneous state, in the Lagrangian picture, is a configuration together with a velocity, i.e., a point of $T\mc{Q}$; the Lagrangian is a smooth function on those states (possibly with explicit time dependence),
-\begin{flalign}
-    L : T\mc{Q} \times \mathbb{R} \to \mathbb{R}, \qquad (q, \dot{q}, t) \mapsto L(q, \dot{q}, t).
-\end{flalign}
-This one line already answers a question from the introduction: the Lagrangian ``lives'' on the tangent bundle. The dynamics is selected by Hamilton's principle: physical trajectories between fixed endpoints extremize the action $S[q] = \int L\,\dd{t}$, which produces the Euler--Lagrange equations 
-\begin{flalign} 
-    \dv{t}\br{\pdv{L}{\dot{q}^a}} - \pdv{L}{q^a} = 0. \label{EL}
-\end{flalign}
-We take \eqref{EL} as known from the standard course and won't rederive it; our business here is what happens \emph{next}.
-
-\subsection{Kinetic energy in generalized coordinates: deriving the metric}
-
-For the mechanical systems we care most about, $L = T - V$, kinetic minus potential energy. In Cartesian language, for a system of $N$ particles with masses $m_i$ and positions $\vb{x}_i \in \mathbb{R}^3$, the kinetic energy is the familiar
-\begin{flalign}
-    T = \sum_{i=1}^{N} \frac{1}{2}\, m_i\, \dot{\vb{x}}_i \cdot \dot{\vb{x}}_i. \label{cartesianT}
-\end{flalign}
-Now suppose the system is described by generalized coordinates: the constraints (rods, hinges, surfaces) plus our choice of chart express every Cartesian position as a smooth function of $n$ coordinates,
-\begin{flalign}
-    \vb{x}_i = \vb{x}_i\br{q^1, \dots, q^n}.
-\end{flalign}
-(This is exactly a chart on the configuration manifold $\mc{Q}$, written from the inside of the ambient $\mathbb{R}^{3N}$.) Differentiate along a trajectory with the chain rule:
-\begin{flalign}
-    \dot{\vb{x}}_i = \pdv{\vb{x}_i}{q^a}\, \dot{q}^a,
-\end{flalign}
-and substitute into \eqref{cartesianT}:
-\begin{flalign}
-    T = \sum_i \frac{1}{2}\, m_i \br{\pdv{\vb{x}_i}{q^a}\,\dot{q}^a} \cdot \br{\pdv{\vb{x}_i}{q^b}\,\dot{q}^b}
-    = \frac{1}{2}\, \underbrace{\sbr{\,\sum_i m_i\, \pdv{\vb{x}_i}{q^a} \cdot \pdv{\vb{x}_i}{q^b}\,}}_{\displaystyle \equiv\; g_{ab}(q)}\; \dot{q}^a \dot{q}^b. \label{gab-derivation}
-\end{flalign}
-So in \emph{any} generalized coordinates whatsoever, the kinetic energy takes the form
-\begin{empheq}[box=\mathbox]{align}
-    T = \frac{1}{2}\, g_{ab}(q)\, \dot{q}^a \dot{q}^b, \qquad
-    g_{ab}(q) = \sum_i m_i\, \pdv{\vb{x}_i}{q^a} \cdot \pdv{\vb{x}_i}{q^b}, \label{kinmetric}
-\end{empheq}
-and hence the Lagrangian of a standard mechanical system reads
-\begin{flalign}
-    L(q, \dot{q}) = \frac{1}{2}\, g_{ab}(q)\, \dot{q}^a \dot{q}^b - V(q). \label{quadL}
-\end{flalign}
-Let us be emphatic about what just happened, because \eqref{quadL} is often presented as an ansatz and it is not one: \emph{the quadratic-in-velocities form of the kinetic energy is forced by the chain rule}. The coefficients $g_{ab}$ are computable functions of position, determined by the masses and by the shape of the coordinate map, and nothing about them was assumed. Three properties come for free from the formula \eqref{kinmetric}:
-\begin{enumerate}[label=(\roman*)]
-    \item \textbf{Symmetry:} $g_{ab} = g_{ba}$, since the dot product doesn't care about the order of its factors.
-    \item \textbf{Positive-definiteness:} $g_{ab}\,u^a u^b = \sum_i m_i \abs{\pdv*{\vb{x}_i}{q^a}\, u^a}^2 \geq 0$, with equality only if every particle's Cartesian velocity vanishes; for genuine coordinates (the map $q \mapsto (\vb{x}_1, \dots, \vb{x}_N)$ has injective Jacobian, i.e., distinct coordinate velocities produce distinct physical motions) this forces $u^a = 0$. Physically: kinetic energy is positive unless nothing is moving.
-    \item \textbf{Tensor transformation law:} under $q^a \to \tilde{q}^a(q)$, applying the chain rule inside \eqref{kinmetric} gives
-    \begin{flalign}
-        \tilde{g}_{ab} = \pdv{q^c}{\tilde{q}^a}\, \pdv{q^d}{\tilde{q}^b}\; g_{cd}, \label{metric-transform}
-    \end{flalign}
-    one \emph{inverse} Jacobian per index. This is exactly what's needed for the assembled scalar $T = \frac{1}{2}g_{ab}\dot q^a \dot q^b$ to be chart-independent: each inverse Jacobian in \eqref{metric-transform} cancels against a Jacobian from a velocity factor \eqref{tangent-transform}. Kinetic energy is a physical quantity; its value cannot depend on our bookkeeping, and \eqref{metric-transform} is the transformation law that guarantees it doesn't. (Master rule, discharged.)
-\end{enumerate}
-
-An object with these properties has a name: a field of symmetric, positive-definite bilinear forms on the tangent spaces, transforming as \eqref{metric-transform}, is a \emph{Riemannian metric} on $\mc{Q}$. At each point it is an inner product on the tangent space, $g(u, v) = g_{ab}u^a v^b$, letting us speak of lengths of and angles between velocities, and \eqref{kinmetric} says: \emph{the masses and constraints of a mechanical system endow its configuration space with a geometry, in which kinetic energy is simply one half the squared length of the velocity.} (There's a lovely story in which free motion is geodesic motion in this metric; it's a different story from the one these notes are telling, and we set it aside after this sentence.) For us the metric plays two concrete roles: it makes \eqref{quadL} convex in the velocities, which the Legendre transform of \S\ref{sec:legendre} will require, and it will be the machine that converts velocities into momenta.
-
-\subsection{Worked examples of $g_{ab}$}
-
-To make \eqref{kinmetric} concrete, three quick computations.
-
-\emph{Planar pendulum.} One coordinate $\theta$; the bob of mass $m$ sits at
-\begin{flalign}
-    \vb{x} = (\ell\sin\theta,\, -\ell\cos\theta), \qquad \pdv{\vb{x}}{\theta} = (\ell\cos\theta,\, \ell\sin\theta),
-\end{flalign}
-and \eqref{kinmetric} gives the $1\times 1$ matrix
-\begin{flalign}
-    g_{\theta\theta} = m\, \pdv{\vb{x}}{\theta}\cdot\pdv{\vb{x}}{\theta} = m\ell^2\br{\cos^2\theta + \sin^2\theta} = m\ell^2, \qquad T = \frac{1}{2}\, m\ell^2\, \dot\theta^2,
-\end{flalign}
-the moment of inertia, recovered as a metric component.
-
-\emph{Free particle in polar coordinates.} Coordinates $(r, \varphi)$ with $\vb{x} = (r\cos\varphi,\, r\sin\varphi)$. Then $\pdv*{\vb{x}}{r} = (\cos\varphi, \sin\varphi)$ and $\pdv*{\vb{x}}{\varphi} = (-r\sin\varphi,\, r\cos\varphi)$, so
-\begin{flalign}
-    g_{ab} = m\begin{pmatrix} 1 & 0 \\ 0 & r^2 \end{pmatrix}, \qquad T = \frac{m}{2}\br{\dot{r}^2 + r^2\dot\varphi^2},
-\end{flalign}
-the formula every mechanics course derives by hand; here it drops out of the general machine, and the position-dependence of $g_{ab}$ (the $r^2$) is seen to be a property of the \emph{chart}, not of the physics: the same flat particle in Cartesian coordinates has constant $g_{ab} = m\,\delta_{ab}$.
-
-\emph{Double pendulum} (equal lengths $\ell$, masses $m_1, m_2$). With $\vb{x}_1 = \ell(\sin\theta_1, -\cos\theta_1)$ and $\vb{x}_2 = \vb{x}_1 + \ell(\sin\theta_2, -\cos\theta_2)$, a two-line computation with \eqref{kinmetric} gives
-\begin{flalign}
-    g_{ab} = \ell^2\begin{pmatrix} m_1 + m_2 & m_2\cos(\theta_1 - \theta_2) \\ m_2\cos(\theta_1 - \theta_2) & m_2 \end{pmatrix}.
-\end{flalign}
-Note the off-diagonal entry: the metric is generally a full matrix, coupling the coordinate velocities, and it varies over the configuration torus. Symmetric: visibly. Positive-definite: the determinant is $\ell^4 m_2\sbr{m_1 + m_2\sin^2(\theta_1 - \theta_2)} > 0$ and the top-left entry is positive, so both eigenvalues are positive. Everything advertised, on display in one example.
-\section{Duality: Covectors and the Cotangent Bundle}\label{sec:covectors}
-
-\subsection{The dual of a vector space}
-
-The next character in the story, momentum, will turn out not to be a tangent vector, and to say what it is instead we need one construction from linear algebra, stated here from scratch. Let $V$ be a finite-dimensional real vector space. The \emph{dual space} $V^*$ is the set of all linear maps from $V$ to the reals,
-\begin{flalign}
-    V^* \equiv \cbr{\,\lambda : V \to \mathbb{R} \;\big|\; \lambda \text{ linear}\,},
-\end{flalign}
-which is itself a vector space (add and scale maps pointwise). Its elements are called \emph{covectors} or \emph{linear functionals}: machines that eat a vector and return a number, linearly. Given a basis $e_1, \dots, e_n$ of $V$, define $n$ special covectors $e^1, \dots, e^n$ by their action on the basis,
-\begin{flalign}
-    e^a(e_b) = \delta^a_b
-\end{flalign}
-($e^a$ reads off the $a$-th component: $e^a(v) = v^a$ for $v = v^b e_b$). These form a basis of $V^*$, the \emph{dual basis}: any $\lambda$ is determined by the numbers $\lambda_a \equiv \lambda(e_a)$, and then $\lambda = \lambda_a e^a$, since both sides agree on every basis vector. In particular $\dim V^* = \dim V$: a space and its dual are the same size. Same size, but \emph{not the same space}, and not identifiable with one another without making choices; we return to this pointedly below, because the distinction is physical, not pedantic.
-
-The evaluation of a covector on a vector is called the \emph{pairing}, and in components it is
-\begin{flalign}
-    \lambda(v) = \lambda_a\, v^a,
-\end{flalign}
-one index up, one index down, summed. This is the index convention of \S\ref{sec:intro} earning its meaning: upper indices label vector components, lower indices label covector components, and a contraction of one of each is a number independent of the basis.
-
-\subsection{Covectors on a manifold: the differential}
-
-Now do this at every point of a manifold. A \emph{covector at $x \in \mc{Q}$} is an element of $T^*_x\mc{Q} \equiv \br{T_x\mc{Q}}^*$, the dual of the tangent space: a linear machine that eats velocities at $x$ and returns numbers.
-
-Nature supplies a prototype. Every smooth function $f : \mc{Q} \to \mathbb{R}$ defines at each point the covector ``rate of change of $f$'': recalling from \eqref{directional} that a tangent vector $X$ differentiates functions, set
-\begin{flalign}
-    \dd{f}\big|_x (X) \equiv X f = X^a\,\pdv{f}{q^a}, \label{differential}
-\end{flalign}
-the \emph{differential} of $f$ at $x$. It's linear in $X$ (visibly, from the components), so it is indeed a covector, and it was defined without mentioning charts (first equality), so it's automatically a geometric object. Applying \eqref{differential} to the coordinate functions themselves, $f = q^a$, gives covectors $\dd{q^a}$ with
-\begin{flalign}
-    \dd{q^a}\br{\partial_b} = \pdv{q^a}{q^b} = \delta^a_b:
-\end{flalign}
-the differentials of the coordinates are precisely the dual basis to the coordinate basis $\partial_a$. A general covector field (a smooth assignment of a covector to each point, also called a \emph{one-form}) is therefore written $\lambda = \lambda_a\, \dd{q^a}$, and the differential of a function is the special case
-\begin{flalign}
-    \dd{f} = \pdv{f}{q^a}\, \dd{q^a},
-\end{flalign}
-the familiar formula of multivariable calculus, now read as an identity between covectors.
-
-How do covector components transform? Demand that the pairing be chart-independent (it must be: it was defined without charts) and let the known law \eqref{tangent-transform} for vectors do the work. Writing $J^a{}_b = \pdv*{\tilde q^a}{q^b}$ for the Jacobian, invariance $\tilde\lambda_a \tilde{X}^a = \lambda_b X^b$ for all $X$ forces
-\begin{empheq}[box=\mathbox]{align}
-    \tilde{\lambda}_a = \pdv{q^b}{\tilde{q}^a}\; \lambda_b, \label{cotangent-transform}
-\end{empheq}
-the \emph{inverse} Jacobian, on the opposite side, compared to \eqref{tangent-transform}. (Check: $\tilde\lambda_a\tilde X^a = \lambda_b\,\pdv*{q^b}{\tilde q^a}\,\pdv*{\tilde q^a}{q^c}\,X^c = \lambda_b\,\delta^b_c\,X^c = \lambda_b X^b$, the Jacobians cancelling exactly as promised in \S\ref{sec:tangent}.) Objects transforming as \eqref{cotangent-transform} are called \emph{covariant}; this is the mirror image announced under \eqref{tangent-transform}, and the up/down index notation is a bookkeeping system that makes the two laws impossible to confuse.
-
-\begin{mybox}
-\textbf{Why vectors and covectors must be kept apart.} In $\mathbb{R}^n$ with Cartesian coordinates the distinction is invisible, because the Jacobians of the allowed coordinate changes (rotations) obey $J^{-\mathrm{T}} = J$, so both species transform identically, and one sloppily identifies them. On a manifold, with arbitrary smooth coordinate changes, \eqref{tangent-transform} and \eqref{cotangent-transform} are genuinely different, and an equation that sets a vector equal to a covector in one chart will be false in the next chart: it isn't an equation between geometric objects at all. There \emph{is} a legitimate way to convert one into the other, but it requires extra structure: a metric. Given $g_{ab}$, the map $u^a \mapsto g_{ab}u^b$ sends vectors to covectors linearly and invertibly (invertibly because $g$ is positive-definite, hence has an inverse matrix, written $g^{ab}$, with $g^{ab}g_{bc} = \delta^a_c$). This is called \emph{lowering the index}, its inverse $\lambda_a \mapsto g^{ab}\lambda_b$ is \emph{raising the index}, and the point to hold onto is that the conversion depends on $g$: no metric, no identification. We will meet a second, antisymmetric conversion machine in \S\ref{sec:symplectic}, and the comparison between the two is one of the punchlines of these notes.
-\end{mybox}
-
-\subsection{The cotangent bundle}
-
-Exactly as tangent spaces glued into the tangent bundle, the cotangent spaces glue into the \emph{cotangent bundle}
-\begin{flalign}
-    T^*\mc{Q} = \bigcup_{x \in \mc{Q}} \cbr{x} \times T^*_x\mc{Q},
-\end{flalign}
-a $2n$-dimensional manifold whose points are pairs (configuration, covector at that configuration), coordinatized locally by $(q^a, \lambda_a)$. At this stage of the notes it is just ``the other bundle''. Two sections from now it will be revealed as phase space, and by \S\ref{sec:symplectic} it will be the stage on which all of mechanics plays out. First we need the reason momenta live here rather than in $T\mc{Q}$, and that reason is the Legendre transform.
-\section{The Legendre Transform}\label{sec:legendre}
-
-\subsection{The construction}
-
-The passage from the Lagrangian to the Hamiltonian picture is the Legendre transform, and it deserves to be understood as a piece of mathematics in its own right rather than as the incantation ``$H = p\dot{q} - L$''. We follow Arnold's presentation, first in one variable.
-
-Let $f : \mathbb{R} \to \mathbb{R}$ be convex, $f''(x) > 0$. The \emph{Legendre transform} of $f$ is a new function $g$ of a new variable $p$, built as follows. Fix $p$ and consider the line $y = px$. The function
-\begin{flalign}
-    F(p, x) = p\,x - f(x)
-\end{flalign}
-measures the vertical gap between the line and the graph of $f$. For fixed $p$, maximize over $x$: since $f$ is convex, $\pdv*{F}{x} = p - f'(x)$ has exactly one root $x(p)$, defined implicitly by
-\begin{flalign}
-    p = f'(x(p)), \label{leg-def}
-\end{flalign}
-and it's a maximum ($\pdv*[2]{F}{x} = -f''(x) < 0$). The Legendre transform is that maximal gap:
-\begin{empheq}[box=\mathbox]{align}
-    g(p) \equiv F(p, x(p)) = p\, x(p) - f(x(p)). \label{legendre}
-\end{empheq}
-Geometrically: $g(p)$ is (minus) the $y$-intercept of the tangent line to the graph of $f$ with slope $p$. The transform trades the description of a convex curve by its points $(x, f(x))$ for a description by its tangent lines $(p, g(p))$. Same curve, dual encoding.
-
-Two quick examples to calibrate. For $f(x) = \frac{m x^2}{2}$: equation \eqref{leg-def} gives $p = mx$, so $x(p) = p/m$ and
-\begin{flalign}
-    g(p) = p\cdot\frac{p}{m} - \frac{m}{2}\frac{p^2}{m^2} = \frac{p^2}{2m}.
-\end{flalign}
-Kinetic energy in velocity form goes to kinetic energy in momentum form; this is the transform we'll be doing for a living. For $f(v) = e^v$: $p = e^v$ gives $v = \log p$ (for $p>0$) and $g(p) = p\log p - p$, which readers who've met entropy will recognize; the Legendre transform is also the engine room of thermodynamics, but that's a different story.
-
-\subsection{Involutivity: the transform undoes itself}
-
-The single most important structural fact about the Legendre transform is that it's an \emph{involution}: applied twice, it gives back the original function. This is what guarantees that the Hamiltonian picture loses nothing, we can always Legendre-transform back and recover $L$. It deserves a proof, and Arnold's is short and slick.
-
-\textbf{Theorem.} If $f$ is convex, then the Legendre transform $g$ of $f$ is convex, and the Legendre transform of $g$ is $f$.
-
-\emph{Proof.} First, convexity of $g$. Differentiate \eqref{legendre} with respect to $p$, remembering that $x(p)$ moves:
-\begin{flalign}
-    g'(p) = x(p) + p\,x'(p) - f'(x(p))\,x'(p) = x(p) + \sbr{p - f'(x(p))}x'(p) = x(p), \label{leg-deriv}
-\end{flalign}
-where the bracket vanishes by the defining condition \eqref{leg-def}. (This little cancellation, the derivative through the implicit maximizer dropping out, is the envelope theorem, and it will happen to us again when we differentiate Hamiltonians.) So $g'(p) = x(p)$, and differentiating once more,
-\begin{flalign}
-    g''(p) = x'(p) = \dv{p}\sbr{(f')^{-1}(p)} = \frac{1}{f''(x(p))} > 0,
-\end{flalign}
-so $g$ is convex, and its Legendre transform is defined.
-
-Now apply the transform to $g$. By definition, the transform of $g$ evaluated at the (new) variable $x$ is
-\begin{flalign}
-    G(x, p)\big|_{p = p(x)} \quad \text{with} \quad G(x,p) = x\,p - g(p), \quad x = g'(p(x)).
-\end{flalign}
-But we just computed $g'(p) = x(p)$: the condition $x = g'(p)$ is precisely the inversion of $p = f'(x)$. Substituting \eqref{legendre},
-\begin{flalign}
-    x\,p - g(p) = x\,p - \sbr{p\,x(p) - f(x(p))} = x\,p - p\,x + f(x) = f(x),
-\end{flalign}
-since at the stationary point $x(p) = x$. The transform of the transform is $f$. $\blacksquare$
-
-There's an elegant symmetric way to say all this. For any $x$ and any $p$ (not necessarily matched), $g(p) \geq px - f(x)$ by the maximality in \eqref{legendre}, i.e.
-\begin{flalign}
-    p\,x \;\leq\; f(x) + g(p), \label{young}
-\end{flalign}
-with equality precisely when $p = f'(x)$. This is \emph{Young's inequality}, and it exhibits $f$ and $g$ as perfectly dual: each is the best possible function making \eqref{young} tight. (Try $f = x^\alpha/\alpha$, $g = p^\beta/\beta$ with $\frac{1}{\alpha} + \frac{1}{\beta} = 1$: the classical Young inequality of analysis drops out.)
-
-\subsection{Many variables, and the physical case}
-
-For a convex function of several variables (positive-definite Hessian), everything goes through verbatim with $x \to (x^1,\dots,x^n)$ and the transform performed in all variables at once:
-\begin{flalign}
-    p_a = \pdv{f}{x^a}, \qquad g(p) = p_a\, x^a(p) - f(x(p)).
-\end{flalign}
-The transform can also be taken in \emph{some} variables while the others sit as spectators; that's exactly our situation. Given a Lagrangian $L(q, \dot{q}, t)$, convex in the velocities (which \eqref{quadL} is: the Hessian $\pdv*{L}{\dot q^a}{\dot q^b} = g_{ab}$ is positive definite, by \S\ref{sec:lagrangian} property (ii), so the general mechanical Lagrangian qualifies automatically), define the \emph{canonical momenta}
-\begin{empheq}[box=\mathbox]{align}
-    p_a \equiv \pdv{L}{\dot{q}^a}, \label{canmom}
-\end{empheq}
-invert to get $\dot{q}^a(q, p, t)$, and set
-\begin{empheq}[box=\mathbox]{align}
-    H(q, p, t) \equiv p_a\, \dot{q}^a(q,p,t) - L\br{q, \dot{q}(q,p,t), t}. \label{hamdef}
-\end{empheq}
-The Hamiltonian is the Legendre transform of the Lagrangian in the velocity slots, with $q$ and $t$ along for the ride. Involutivity guarantees the two descriptions carry identical information.
-
-\subsection{Momenta are covectors}
-
-Now the payoff of \S\ref{sec:covectors}. What kind of object is the momentum \eqref{canmom}? Watch its transformation law. Under a change of configuration coordinates $q \to \tilde q(q)$, velocities transform by \eqref{tangent-transform}, and since that law is linear in the velocity components, $\pdv*{\dot{q}^b}{\dot{\tilde{q}}^a} = \pdv*{q^b}{\tilde{q}^a}$ (differentiate \eqref{tangent-transform}, inverted, with respect to the new velocity). The chain rule then gives
-\begin{flalign}
-    \tilde{p}_a = \pdv{L}{\dot{\tilde{q}}^a} = \pdv{L}{\dot{q}^b}\,\pdv{\dot{q}^b}{\dot{\tilde{q}}^a} = p_b\; \pdv{q^b}{\tilde{q}^a}: \label{momentum-covector}
-\end{flalign}
-the inverse Jacobian, i.e., \emph{exactly the covector law \eqref{cotangent-transform}}. Momenta are not velocities in disguise; they transform oppositely to velocities, and the lower index on $p_a$, chosen back in \S\ref{sec:intro}, was this fact waiting to be noticed. Momentum at a point $q$ is a covector, an element of $T^*_q\mc{Q}$: a linear machine that eats velocities. And physics hands us the pairing directly: $p_a\dot{q}^a$ is the first term of the Hamiltonian \eqref{hamdef}, chart-independent by the usual Jacobian cancellation, and $p_a\,\dd{q^a}$ will shortly be the object whose derivative is the symplectic form. Momentum's job in life is to be paired with velocity; it is a covector by profession, not by accident.
-
-For the quadratic Lagrangian \eqref{quadL} the statement becomes vivid: differentiating \eqref{quadL} gives $p_a = g_{ab}\,\dot{q}^b$, which is precisely the metric \emph{lowering the index} of the velocity, in the sense of the box in \S\ref{sec:covectors}. The metric that the masses and constraints built for us in \eqref{kinmetric} is exactly the machine that converts a velocity (vector) into the corresponding momentum (covector), and its inverse converts back: $\dot{q}^a = g^{ab}p_b$. This is the second advertised role of $g_{ab}$, discharged. Note though that the \emph{definition} \eqref{canmom} never mentions the metric: for non-quadratic Lagrangians (we'll meet one in the box at the end of \S\ref{sec:hamilton}) the momentum is still perfectly well-defined and still a covector, even when it is no longer the metric image of the velocity.
-
-For the quadratic case, the Hamiltonian is fully explicit:
-\begin{flalign}
-    H = p_a\, g^{ab} p_b - \frac{1}{2}\,g_{cd}\; g^{ca}p_a\; g^{db}p_b + V
-    = \frac{1}{2}\, g^{ab}\, p_a p_b + V(q), \label{quadH}
-\end{flalign}
-using $g_{cd}\,g^{ca}\,g^{db} = \delta_d^a\, g^{db} = g^{ab}$. The Hamiltonian is the total energy $T + V$, with the kinetic term now built from the \emph{inverse} metric, as it must be: kinetic energy is half the squared length of the velocity, and expressing a vector's length through its lowered-index avatar always calls on $g^{ab}$. (We'll redo this calculation from the Hamilton's-equations side as a worked exercise in \S\ref{sec:hamilton}.)
-\section{Hamilton's Equations}\label{sec:hamilton}
-
-\subsection{The derivation: compute $\dd{H}$ two ways}
-
-Hamilton's equations fall out of a single clean move: compute the differential of $H$ twice, once from the definition \eqref{hamdef} and once from the fact that $H$ is a function of $(q, p, t)$, then compare coefficients. (We're using the differential of \S\ref{sec:covectors} in its multivariable-calculus clothing; the deeper geometric reading of the same symbols comes in \S\ref{sec:forms}.)
-
-From the definition, treating all of $q, \dot{q}, p, t$ as varying (the constraint that $\dot q$ is the function $\dot q(q,p,t)$ will take care of itself),
-\begin{flalign}
-    \dd{H} &= \dd{\br{p_a \dot{q}^a - L}} \notag \\
-    &= \dot{q}^a\, \dd{p_a} + p_a\, \dd{\dot{q}^a} - \pdv{L}{q^a}\dd{q^a} - \pdv{L}{\dot{q}^a}\dd{\dot{q}^a} - \pdv{L}{t}\dd{t} \notag \\
-    &= \dot{q}^a\, \dd{p_a} + \underbrace{\br{p_a - \pdv{L}{\dot{q}^a}}}_{=\;0 \text{ by } \eqref{canmom}}\dd{\dot{q}^a} - \pdv{L}{q^a}\dd{q^a} - \pdv{L}{t}\dd{t} \notag \\
-    &= \dot{q}^a\, \dd{p_a} - \pdv{L}{q^a}\,\dd{q^a} - \pdv{L}{t}\,\dd{t}. \label{dH-way1}
-\end{flalign}
-The envelope-theorem cancellation strikes again: the $\dd{\dot{q}^a}$ terms drop out exactly because $p$ was \emph{defined} as $\pdv*{L}{\dot{q}}$. This is why the Legendre transform is the right change of variables and not just \emph{a} change of variables: it's the unique one for which the velocity differentials disappear, leaving $H$ a natural function of $(q,p,t)$ alone.
-
-On the other hand, since $H = H(q, p, t)$,
-\begin{flalign}
-    \dd{H} = \pdv{H}{q^a}\dd{q^a} + \pdv{H}{p_a}\dd{p_a} + \pdv{H}{t}\dd{t}. \label{dH-way2}
-\end{flalign}
-The differentials $\dd{q^a}, \dd{p_a}, \dd{t}$ are independent, so \eqref{dH-way1} and \eqref{dH-way2} match term by term:
-\begin{flalign}
-    \pdv{H}{p_a} = \dot{q}^a, \qquad \pdv{H}{q^a} = -\pdv{L}{q^a}, \qquad \pdv{H}{t} = -\pdv{L}{t}. \label{match}
-\end{flalign}
-So far no equations of motion have been used; \eqref{match} is pure Legendre bookkeeping. Now feed in the dynamics. On a physical trajectory the Euler--Lagrange equation \eqref{EL} says $\pdv*{L}{q^a} = \dot{p}_a$ (the time derivative of \eqref{canmom}), and the middle relation of \eqref{match} becomes $\pdv*{H}{q^a} = -\dot{p}_a$. Together with the first relation:
-\begin{empheq}[box=\mathbox]{align}
-    \dot{q}^a = \pdv{H}{p_a}, \qquad \dot{p}_a = -\pdv{H}{q^a}. \label{hameqs}
-\end{empheq}
-These are \emph{Hamilton's equations}: $2n$ first-order ODEs replacing the $n$ second-order Euler--Lagrange equations. The trade is even. What's been gained is structure, and the whole remainder of these notes is about saying precisely what that structure is.
-
-A first taste of the structure: the equations are almost symmetric between $q$ and $p$, spoiled only by a single minus sign. Hold that thought; that minus sign \emph{is} the symplectic form (\S\ref{sec:symplectic}).
-
-\subsection{Energy conservation}
-
-Take the total time derivative of $H$ along a trajectory:
-\begin{flalign}
-    \dv{H}{t} = \pdv{H}{q^a}\dot{q}^a + \pdv{H}{p_a}\dot{p}_a + \pdv{H}{t}
-    = \pdv{H}{q^a}\pdv{H}{p_a} - \pdv{H}{p_a}\pdv{H}{q^a} + \pdv{H}{t} = \pdv{H}{t}, \label{Hdot}
-\end{flalign}
-substituting \eqref{hameqs} in the middle step. The first two terms cancel \emph{identically}, by the antisymmetric structure of Hamilton's equations, not by any property of the particular $H$. So if $H$ has no explicit time dependence ($\pdv*{L}{t} = 0$, hence $\pdv*{H}{t} = 0$ by \eqref{match}), then $H$ is constant along every trajectory: energy conservation. We'll re-derive this in one line, twice more, from progressively more geometric standpoints (\S\ref{sec:poisson}, \S\ref{sec:coordfree}); watching the same fact become more and more obvious is a good way to measure what the geometry buys.
-
-\subsection{Worked exercise: the quadratic Hamiltonian}
-
-Let's run Hamilton's equations on \eqref{quadH}, $H = \frac{1}{2}g^{ab}(q)\,p_a p_b + V(q)$, and check we recover the Euler--Lagrange dynamics of \eqref{quadL}. First equation:
-\begin{flalign}
-    \dot{q}^a = \pdv{H}{p_a} = \frac{1}{2}g^{cb}\br{\delta^a_c\, p_b + p_c\, \delta^a_b} = g^{ab}p_b,
-\end{flalign}
-using the symmetry of $g^{ab}$; this correctly inverts $p_a = g_{ab}\dot{q}^b$. Second equation:
-\begin{flalign}
-    \dot{p}_a = -\pdv{H}{q^a} = -\frac{1}{2}\pdv{g^{bc}}{q^a}\,p_b p_c - \pdv{V}{q^a}.
-\end{flalign}
-To compare with Euler--Lagrange, differentiate $p_a = g_{ab}\dot{q}^b$ in time and use $\pdv*{L}{q^a} = \frac{1}{2}\pdv*{g_{bc}}{q^a}\,\dot{q}^b\dot{q}^c - \pdv*{V}{q^a}$; matching the two requires the identity $\pdv*{g^{bc}}{q^a} = -g^{bd}g^{ce}\,\pdv*{g_{de}}{q^a}$ (differentiate $g^{bd}g_{dc} = \delta^b_c$), and then the two forms agree line by line. It's a worthwhile ten minutes of index gymnastics; the point of recording it is that the Hamiltonian formalism handles position-dependent kinetic terms (curvilinear coordinates, constrained systems) with no special pleading.
-
-\begin{mybox}
-\textbf{A caveat about ``$H = $ energy''.} The Hamiltonian \eqref{hamdef} is the Legendre transform of $L$; it equals the mechanical energy $T + V$ when $L = T - V$ with $T$ purely quadratic in velocities, as in \eqref{quadH}. Both hypotheses can fail. The charged particle in a magnetic field has $L = \frac{m}{2}\dot{\vb{x}}^2 + \frac{e}{c}\dot{\vb{x}}\cdot\vb{A}(\vb{x}) - e\phi(\vb{x})$, linear-plus-quadratic in velocity; the canonical momentum $\vb{p} = m\dot{\vb{x}} + \frac{e}{c}\vb{A}$ is \emph{not} $m\dot{\vb{x}}$ (and not the metric image of the velocity: this is the promised example where \eqref{canmom} outruns the metric picture), and $H = \frac{1}{2m}\br{\vb{p} - \frac{e}{c}\vb{A}}^2 + e\phi$ is the energy only after this substitution. The lesson generalizes: the canonical momentum is defined by \eqref{canmom} and by nothing else, and confusing it with $m\dot{q}$ is the classic error this formalism punishes.
-\end{mybox}
-\section{Phase Space: One Arena, One Matrix}\label{sec:phasespace}
-
-\subsection{Phase space is the cotangent bundle}
-
-Hamilton's equations live on the space of pairs $(q, p)$, and we already possess the geometric name for that space: since $q$ ranges over the configuration manifold and $p$, by \eqref{momentum-covector}, is a covector at $q$, the pair $(q,p)$ is precisely a point of the cotangent bundle of \S\ref{sec:covectors}. Phase space:
-\begin{empheq}[box=\mathbox]{align}
-    \Gamma \equiv T^*\mc{Q}.
-\end{empheq}
-It is a $2n$-dimensional manifold, coordinatized locally by $(q^1,\dots,q^n,p_1,\dots,p_n)$, and a single point of it is a complete instantaneous state of the system: through each point of phase space passes exactly one solution of Hamilton's equations (existence and uniqueness for first-order ODEs, \S\ref{sec:flows}; indeed, comparing with \S\ref{sec:flows}, the physical dynamics is exactly the flow of a certain vector field on $\Gamma$, whose geometric identity is the subject of \S\ref{sec:coordfree}). That's the operational meaning of ``state'' and the reason phase space, not configuration space, is the true home of mechanics.
-
-For the pendulum: $\Gamma = S^1 \times \mathbb{R}$, a cylinder again, but now angle and \emph{angular momentum}. The distinction with $T\mc{Q}$ looks pedantic here (both are cylinders), and indeed whenever a metric is around one can convert velocities to momenta with $g_{ab}$; but the two bundles carry different natural structures. The cotangent bundle has one the tangent bundle lacks: a canonical symplectic form, present before we choose any metric, Lagrangian, or Hamiltonian (recall from \S\ref{sec:intro} what ``canonical'' means: built with no choices). Getting to it is the goal of \S\ref{sec:symplectic}.
-
-\subsection{Unified coordinates and the symplectic matrix}
-
-For everything that follows it pays enormously to stop segregating $q$'s from $p$'s and bundle them into single phase space coordinates
-\begin{flalign}
-    \xi^\alpha = \br{q^1, \dots, q^n,\; p_1, \dots, p_n}, \qquad \alpha = 1, \dots, 2n. \label{xidef}
-\end{flalign}
-(An index at the top for all of them; from the phase-space point of view the $\xi^\alpha$ are just local coordinates on the $2n$-dimensional manifold $\Gamma$, and the $q$-vs-$p$ distinction is bookkeeping we're about to encode in a matrix instead.) Let's rewrite Hamilton's equations \eqref{hameqs} in these variables, slowly, because the rewriting is the point. The first $n$ of the $\xi$'s are the $q$'s and the last $n$ are the $p$'s, so \eqref{hameqs} reads, for $a = 1, \dots, n$,
-\begin{flalign}
-    \dot{\xi}^a = +\pdv{H}{\xi^{n+a}}, \qquad \dot{\xi}^{n+a} = -\pdv{H}{\xi^{a}}.
-\end{flalign}
-Stare at the pattern: the velocity of each coordinate is $\pm$ the derivative of $H$ with respect to its \emph{partner} coordinate ($q^a$ partnered with $p_a$), with a plus sign in one direction and a minus in the other. ``Take the gradient, swap partners, flip one sign'' is a linear operation on the $2n$-component gradient, so it is implemented by a constant matrix, and writing it that way assembles the two half-equations into one:
-\begin{empheq}[box=\mathbox]{align}
-    \dot{\xi}^\alpha = \tilde{\Omega}^{\alpha\beta}\, \pdv{H}{\xi^\beta}, \qquad
-    \tilde{\Omega} = \begin{pmatrix} 0 & \mathbbm{1}_n \\ -\mathbbm{1}_n & 0 \end{pmatrix} \label{hameqs-xi}
-\end{empheq}
-(check by blocks: the top rows of $\tilde\Omega$ pick out the $p$-derivatives with a $+$, the bottom rows pick out the $q$-derivatives with a $-$, which is \eqref{hameqs} verbatim). The constant antisymmetric matrix $\tilde{\Omega}$ is the \emph{symplectic matrix}, and there is nothing mysterious about where it came from: it is nothing but the swap-and-flip pattern of Hamilton's equations, recorded once and for all as a matrix so that we can stop writing two equations. All of Hamiltonian mechanics' asymmetry between position and momentum, the lone minus sign we flagged under \eqref{hameqs}, now lives in this one matrix, and the equations themselves are manifestly uniform in the $2n$ variables. Two algebraic properties we'll use constantly:
-\begin{flalign}
-    \tilde{\Omega}^{\mathrm{T}} = -\tilde{\Omega}, \qquad \tilde{\Omega}^2 = -\mathbbm{1}_{2n}, \label{omega-props}
-\end{flalign}
-the second by block multiplication. So $\tilde{\Omega}$ is antisymmetric and squares to minus one: it is, among other things, a linear complex structure on $\mathbb{R}^{2n}$, a first hint of the deep kinship between symplectic geometry and complex geometry (a hint we'll leave as a hint).
-
-Equation \eqref{hameqs-xi} is worth staring at. It says: the phase-space velocity field of the dynamics is \emph{the gradient of $H$, rotated by $\tilde{\Omega}$}. In ordinary gradient flow, $\dot{\xi} = -\nabla H$, trajectories run downhill and $H$ decreases. Here the ``gradient'' is turned sideways before use, so trajectories run along level sets of $H$ instead of across them, and $H$ is conserved. One matrix, and dissipation becomes conservation. This picture, dynamics as symplectically-rotated gradient flow, is the coordinate avatar of the coordinate-free statement $i_X\Omega = -\dd{H}$ toward which we're building.
-
-(A skeptical reader should be asking, per the master rule of \S\ref{sec:config}: does the tidy form \eqref{hameqs-xi} survive a change of phase-space coordinates, and what transformation law do the components $\tilde\Omega^{\alpha\beta}$ obey? Excellent question, deferred deliberately: it is answered in \S\ref{sec:symplectic}, where it becomes the birth of the symplectic form, and the coordinate changes that preserve the canonical form of $\tilde\Omega$ get a section of their own, \S\ref{sec:symptrans}.)
-\section{Poisson Brackets}\label{sec:poisson}
-
-\subsection{Definition and first properties}
-
-Observables of classical mechanics are smooth functions on phase space, $f : \Gamma \to \mathbb{R}$ (energy, angular momentum, the coordinates themselves). How does an observable change along the motion? Chain rule plus \eqref{hameqs-xi}:
-\begin{flalign}
-    \dv{f}{t} = \pdv{f}{\xi^\alpha}\,\dot{\xi}^\alpha = \pdv{f}{\xi^\alpha}\,\tilde{\Omega}^{\alpha\beta}\,\pdv{H}{\xi^\beta}.
-\end{flalign}
-The bilinear combination on the right is the star of the section. Define, for any two observables $f, g$, the \emph{Poisson bracket}
-\begin{empheq}[box=\mathbox]{align}
-    \cbr{f, g} \equiv \pdv{f}{\xi^\alpha}\,\tilde{\Omega}^{\alpha\beta}\,\pdv{g}{\xi^\beta}
-    = \sum_{a=1}^n\br{\pdv{f}{q^a}\pdv{g}{p_a} - \pdv{f}{p_a}\pdv{g}{q^a}}, \label{PB}
-\end{empheq}
-where the second form just unpacks the blocks of $\tilde{\Omega}$. Then the time evolution of any observable, along any Hamiltonian flow, is
-\begin{empheq}[box=\mathbox]{align}
-    \dv{f}{t} = \cbr{f, H} + \pdv{f}{t}, \label{PB-evolution}
-\end{empheq}
-where the last term is present only if $f$ depends on time explicitly. Two immediate dividends. Setting $f = \xi^\alpha$ recovers Hamilton's equations themselves, $\dot{\xi}^\alpha = \cbr{\xi^\alpha, H}$, so \eqref{PB-evolution} contains all of the dynamics. And setting $f = H$ (time-independent) gives $\dot{H} = \cbr{H, H} = 0$ by antisymmetry: energy conservation, second derivation, now one line.
-
-On the fundamental coordinates the bracket evaluates to
-\begin{flalign}
-    \cbr{\xi^\alpha, \xi^\beta} = \delta^\alpha{}_\mu\, \tilde{\Omega}^{\mu\nu}\, \delta^\beta{}_\nu = \tilde{\Omega}^{\alpha\beta},
-    \qquad\text{i.e.}\qquad
-    \cbr{q^a, p_b} = \delta^a_b, \quad \cbr{q^a, q^b} = \cbr{p_a, p_b} = 0, \label{fundamental-PB}
-\end{flalign}
-the \emph{fundamental Poisson brackets}, whose quantum echo $[\hat{q}^a, \hat{p}_b] = i\hbar\,\delta^a_b$ needs no introduction.
-
-Now the structural properties. For all observables $f, g, h$ and constants $\lambda$:
-\begin{enumerate}[label=(\roman*)]
-    \item \textbf{Antisymmetry:} $\cbr{f, g} = -\cbr{g, f}$.
-    \item \textbf{Bilinearity:} $\cbr{f + \lambda g, h} = \cbr{f,h} + \lambda\cbr{g,h}$, and similarly in the second slot.
-    \item \textbf{Leibniz rule:} $\cbr{fg, h} = f\cbr{g,h} + \cbr{f,h}g$.
-    \item \textbf{Jacobi identity:} $\cbr{f,\cbr{g,h}} + \cbr{g,\cbr{h,f}} + \cbr{h,\cbr{f,g}} = 0$.
-\end{enumerate}
-Antisymmetry is the antisymmetry of $\tilde{\Omega}$ read through \eqref{PB}:
-\begin{flalign}
-    \cbr{g,f} = \partial_\alpha g\, \tilde{\Omega}^{\alpha\beta} \partial_\beta f = \partial_\beta f\, \tilde{\Omega}^{\alpha\beta} \partial_\alpha g = -\partial_\beta f\, \tilde{\Omega}^{\beta\alpha}\partial_\alpha g = -\cbr{f,g}
-\end{flalign}
-(relabel and flip). Bilinearity is the linearity of derivatives. Leibniz is the product rule: $\partial_\alpha(fg) = f\partial_\alpha g + (\partial_\alpha f) g$, inserted into \eqref{PB}. These three say that $\cbr{\,\cdot\,, h}$ is, for each fixed $h$, a \emph{derivation}: it acts on the algebra of observables the way a first-order differential operator does. That's not a metaphor; the operator is $\tilde\Omega^{\alpha\beta}\partial_\beta h\;\partial_\alpha$, visibly of the vector-field form $X^\alpha\partial_\alpha$ from \S\ref{sec:flows}, and we'll take the geometry of that vector field seriously in \S\ref{sec:hamvf}.
-
-Jacobi is the only one that requires actual work, and brute-force expansion is a famously bloody affair. Here is Arnold's argument, which gets it with almost no computation. Consider the first term, $\cbr{f, \cbr{g,h}}$: it's a first-order differential operator applied to $\cbr{g,h}$, which is itself built from first derivatives of $g$ and $h$. So expanded out, $\cbr{f,\cbr{g,h}}$ is a sum of terms each containing \emph{second} derivatives of $g$ or of $h$ (times first derivatives of the others), and no second derivatives of $f$. Now look at the full cyclic sum and collect all terms containing second derivatives of $h$. They can come only from the first two terms of the cycle,
-\begin{flalign}
-    \cbr{f, \cbr{g, h}} + \cbr{g, \cbr{h, f}} = \cbr{f,\cbr{g,h}} - \cbr{g, \cbr{f, h}},
-\end{flalign}
-and this combination is the \emph{commutator} of the two first-order operators $\cbr{f, \,\cdot\,}$ and $\cbr{g, \,\cdot\,}$ acting on $h$. But the commutator of two first-order differential operators is again first-order: writing $A = A^\alpha \partial_\alpha$ and $B = B^\beta\partial_\beta$,
-\begin{flalign}
-    [A, B] = A^\alpha \partial_\alpha (B^\beta \partial_\beta) - B^\beta\partial_\beta(A^\alpha \partial_\alpha)
-    = \br{A^\alpha\partial_\alpha B^\beta - B^\alpha \partial_\alpha A^\beta}\partial_\beta, \label{vf-commutator}
-\end{flalign}
-because the would-be second-derivative pieces $A^\alpha B^\beta \partial_\alpha\partial_\beta$ appear in both products with the same sign and cancel in the difference. So the cyclic sum contains no second derivatives of $h$. By the manifest cyclic symmetry of the expression, it likewise contains no second derivatives of $f$ or of $g$. But every term of the expansion contains a second derivative of something. A sum of terms, each of which must vanish by this counting, is zero. $\blacksquare$
-
-(File the mechanism away: ``commutators of derivations are derivations'' is doing the heavy lifting, and it is exactly the same mechanism that makes commutators of quantum observables close among themselves. Equation \eqref{vf-commutator} also tells us, for later, that the commutator of two vector fields is again a vector field; we'll want that in \S\ref{sec:hamvf}.)
-
-\begin{mybox}
-\textbf{Sign conventions, a genuine hazard.} We follow the convention \eqref{PB}, in which $\cbr{q, p} = +1$ and evolution reads $\dot{f} = \cbr{f, H}$. \emph{Arnold uses the opposite sign}: his bracket is $(f, g) = $ derivative of $f$ along the flow of $g$, which works out to $(f,g) = -\cbr{f,g}$ in our convention; his evolution law and his relation between brackets and commutators of flows carry compensating signs, and everything is internally consistent, but transplanting an equation from Arnold without checking the sign is a reliable way to lose an afternoon. The same alertness will be needed at the quantum interface: Dirac's quantum Poisson bracket is the commutator \emph{divided by} $i\hbar$, so $\cbr{f,g} \to \frac{1}{i\hbar}[\hat{f},\hat{g}]$, and the $i\hbar$ is part of the dictionary, not optional.
-\end{mybox}
-
-\subsection{The converse: bracket evolution is exactly Hamiltonian evolution}
-
-Equation \eqref{PB-evolution} says every Hamiltonian flow is a bracket flow. It's worth asking the converse, because the answer is a genuine theorem and it delimits precisely what the bracket formulation contains. Suppose someone hands us an evolution law of bracket type,
-\begin{flalign}
-    \dv{f}{t} = \cbr{f, G} \quad \text{for all observables } f, \label{bracket-evo}
-\end{flalign}
-for some phase-space function $G$: then it's Hamiltonian by construction, with $H = G$. The sharper question: suppose we're handed a \emph{flow}, in the sense of \S\ref{sec:flows}, i.e. a velocity field $\dot{\xi}^\alpha = X^\alpha(\xi)$ on phase space. When is it of the form \eqref{bracket-evo} for some $G$?
-
-Taking $f = \xi^\alpha$ in \eqref{bracket-evo} gives $X^\alpha = \tilde{\Omega}^{\alpha\beta}\partial_\beta G$, or, multiplying by $\tilde{\Omega}$ and using $\tilde{\Omega}^2 = -\mathbbm{1}$ from \eqref{omega-props},
-\begin{flalign}
-    \partial_\alpha G = -\tilde{\Omega}_{\alpha\beta}\, X^\beta \equiv \lambda_\alpha, \label{lambda-def}
-\end{flalign}
-where we write $\tilde{\Omega}_{\alpha\beta}$ for the (numerically identical, in these coordinates) inverse matrix. So the question is: when is the covector field $\lambda_\alpha$ built from $X$ a gradient? Locally, the answer is the classical integrability condition: $\lambda_\alpha = \partial_\alpha G$ has a solution in a neighbourhood if and only if
-\begin{flalign}
-    \partial_\alpha \lambda_\beta - \partial_\beta \lambda_\alpha = 0, \label{integrability}
-\end{flalign}
-i.e. the antisymmetrized derivative vanishes (necessity is the symmetry of second partials, $\partial_\alpha\partial_\beta G = \partial_\beta\partial_\alpha G$; sufficiency is the Poincar\'e lemma, and the explicit solution is the line-integral construction $G(\xi) = \int_0^1 \dd{s}\, \lambda_\alpha(s\xi)\,\xi^\alpha$ in a star-shaped neighbourhood, exactly the construction familiar from ``when is a force field a potential field''). Condition \eqref{integrability}, unpacked via \eqref{lambda-def}, is a first-order differential condition on the velocity field $X$: it says $X$ must preserve the symplectic structure, in a sense we'll make exact in \S\ref{sec:hamvf} (where \eqref{integrability} will reappear as $\dd{(i_X\Omega)} = 0$).
-
-So: \emph{a flow is a bracket flow if and only if it's locally a Hamiltonian flow}, and the function $G$ generating it is unique up to an additive constant (two solutions of \eqref{lambda-def} differ by a function with vanishing gradient). The word ``locally'' is not decorative: on a topologically nontrivial phase space, condition \eqref{integrability} can hold globally while no single global $G$ exists (the line integral defining $G$ can pick up different values along non-contractible loops). Such flows are called \emph{locally Hamiltonian}, and the gap between locally and globally Hamiltonian is measured by the topology of $\Gamma$, its first de Rham cohomology, to give the gap its proper name. For $\Gamma = \mathbb{R}^{2n}$ the gap is empty and the two notions coincide.
-
-\subsection{Poisson's theorem}
-
-A \emph{constant of motion} is an observable with $\cbr{f, H} = 0$ (and no explicit time dependence). The Jacobi identity has an immediate and useful consequence:
-
-\textbf{Theorem (Poisson).} If $f$ and $g$ are constants of motion, so is $\cbr{f, g}$.
-
-\emph{Proof.} By Jacobi, $\cbr{\cbr{f,g}, H} = -\cbr{\cbr{g,H},f} - \cbr{\cbr{H,f},g} = -\cbr{0, f} - \cbr{0, g} = 0$. $\blacksquare$
-
-Occasionally this manufactures genuinely new conservation laws (two components of angular momentum bracket to the third); more often it returns zero or a function of the ones already in hand. Either way, structurally it says the constants of motion form a \emph{closed subalgebra} under the bracket, which is the seed of the entire integrability story (Liouville--Arnold), a story for another set of notes.
-\section{Tensors and Differential Forms}\label{sec:forms}
-
-Before the symplectic form can be introduced honestly we need to widen the cast of geometric objects from vectors and covectors to \emph{tensors}, and then specialize to the antisymmetric ones, the \emph{differential forms}, together with the operations on them. Everything in this section is built from the raw materials of \S\S\ref{sec:tangent} and \ref{sec:covectors}, and nothing in it is specific to mechanics; it's the toolkit.
-
-\subsection{Tensors}
-
-We've met three kinds of object living at a point $x$ of a manifold: numbers, vectors (elements of $T_x\mc{M}$), and covectors (linear maps $T_x\mc{M} \to \mathbb{R}$). The general species: a \emph{$k$-tensor} (more precisely, a covariant tensor of rank $k$) at $x$ is a multilinear map
-\begin{flalign}
-    \tau : \underbrace{T_x\mc{M} \times \cdots \times T_x\mc{M}}_{k \text{ slots}} \to \mathbb{R},
-\end{flalign}
-``multilinear'' meaning linear in each slot separately when the others are held fixed. A $0$-tensor is a number, a $1$-tensor is a covector, and we've already been using a $2$-tensor for two sections: the metric $g$ of \S\ref{sec:lagrangian}, which eats two velocities and returns $g(u,v) = g_{ab}u^a v^b$. In general, a $k$-tensor is determined by its values on basis vectors, its \emph{components} $\tau_{a_1\cdots a_k} = \tau(\partial_{a_1}, \dots, \partial_{a_k})$, and multilinearity reconstructs everything else: $\tau(u, \dots, w) = \tau_{a_1\cdots a_k}u^{a_1}\cdots w^{a_k}$. Under a change of chart, each slot eats one factor of the vector transformation law \eqref{tangent-transform}, so the components acquire one inverse Jacobian per index, exactly generalizing \eqref{cotangent-transform} and exactly reproducing, for $k = 2$, the metric law \eqref{metric-transform}. (One can also allow slots that eat covectors, producing upper indices, one Jacobian per index; the matrix $\tilde\Omega^{\alpha\beta}$ will turn out to be of this species. The grammar is uniform: each lower index transforms with an inverse Jacobian, each upper index with a Jacobian, and fully contracted expressions are chart-independent.)
-
-A \emph{tensor field} assigns a tensor to each point, smoothly; the metric $g_{ab}(q)$ was our first example.
-
-\subsection{Forms are antisymmetric tensors, and antisymmetry means oriented area}
-
-A \emph{differential $k$-form} on a manifold $\mc{M}$ is a smooth field of \emph{antisymmetric} $k$-tensors: at each point, $\omega$ eats $k$ tangent vectors and returns a number, changing sign under the exchange of any two arguments. A $0$-form is a function. A $1$-form is a covector field (no antisymmetry condition with one slot), such as the differential $\dd{f}$ of \S\ref{sec:covectors}, or a general $\lambda = \lambda_a\,\dd{q^a}$.
-
-Why single out antisymmetry? Because antisymmetric multilinear machines are exactly the machines that measure \emph{oriented $k$-dimensional volume}, and the connection deserves to be seen in coordinates once, at $k = 2$ in the plane, where everything is explicit. Two vectors $u, v \in \mathbb{R}^2$ span a parallelogram whose signed area is the determinant
-\begin{flalign}
-    \mathrm{Area}(u, v) = \det\begin{pmatrix} u^1 & v^1 \\ u^2 & v^2 \end{pmatrix} = u^1 v^2 - u^2 v^1. \label{signed-area}
-\end{flalign}
-This expression is bilinear in $u$ and $v$, and antisymmetric (swap the vectors, the determinant flips sign: the parallelogram is the same but its \emph{orientation}, the sense of rotation from first vector to second, has reversed). Conversely, any antisymmetric bilinear map on $\mathbb{R}^2$ is a multiple of \eqref{signed-area} (a one-line check on components: antisymmetry forces $\tau_{11} = \tau_{22} = 0$ and $\tau_{21} = -\tau_{12}$). So in the plane, ``$2$-form'' and ``area measurer, up to scale'' are the same concept. In higher dimensions a $2$-form assigns to each pair of vectors a weighted, oriented area of their parallelogram (weighted differently depending on the plane the parallelogram sits in), a $k$-form does the same for $k$-dimensional parallelepipeds, and a $d$-form on a $d$-dimensional manifold is a volume element. Keep the picture; the symplectic form is exactly such an area-measurer, and ``symplectic geometry is the geometry of area'' is a slogan we'll cash out precisely in \S\ref{sec:symptrans}.
-
-Higher forms are built from one-forms with the \emph{wedge product}, the antisymmetrized product; for one-forms,
-\begin{flalign}
-    (\lambda \wedge \mu)(X, Y) = \lambda(X)\mu(Y) - \lambda(Y)\mu(X), \label{wedge}
-\end{flalign}
-manifestly bilinear and antisymmetric in $(X, Y)$, so a $2$-form; and manifestly $\lambda\wedge\mu = -\mu\wedge\lambda$, so in particular $\lambda\wedge\lambda = 0$ and $\dd{q^a}\wedge\dd{q^a} = 0$ (no sum). Sanity check against the area picture: on $\mathbb{R}^2$,
-\begin{flalign}
-    \br{\dd{q^1}\wedge\dd{q^2}}(u, v) = \dd{q^1}(u)\,\dd{q^2}(v) - \dd{q^1}(v)\,\dd{q^2}(u) = u^1 v^2 - v^1 u^2,
-\end{flalign}
-which is \eqref{signed-area} on the nose: $\dd{q^1}\wedge\dd{q^2}$ \emph{is} the signed-area form of the $(q^1, q^2)$ plane. A general $k$-form is a combination $\omega = \frac{1}{k!}\,\omega_{\alpha_1\cdots\alpha_k}\, \dd{\xi^{\alpha_1}}\wedge\cdots\wedge\dd{\xi^{\alpha_k}}$ with totally antisymmetric components (the wedge of $k$ one-forms being defined by the same alternating-sum pattern as \eqref{wedge}, one term per permutation, signed). On a $d$-dimensional manifold, $k$-forms with $k > d$ vanish identically (antisymmetry in more slots than there are dimensions forces repetition), and the top forms, $k = d$, are one-dimensional at each point: they are the volume elements, and the objects that can be integrated over $\mc{M}$. That's the ultimate reason forms are the right language for us: Liouville's theorem is a statement about a volume, and the volume in question will be built by wedging the symplectic form with itself.
-
-\subsection{The exterior derivative}
-
-The \emph{exterior derivative} $\dd{}$ takes $k$-forms to $(k+1)$-forms. On functions ($0$-forms) it's the differential of \S\ref{sec:covectors}, $\dd{f} = \partial_\alpha f\, \dd{\xi^\alpha}$. On a general form written in coordinates it differentiates the components and wedges on the new differential:
-\begin{flalign}
-    \dd{\br{\tfrac{1}{k!}\,\omega_{\alpha_1\cdots\alpha_k}\, \dd{\xi^{\alpha_1}}\wedge\cdots\wedge\dd{\xi^{\alpha_k}}}}
-    = \tfrac{1}{k!}\,\partial_\beta\, \omega_{\alpha_1\cdots\alpha_k}\; \dd{\xi^{\beta}}\wedge \dd{\xi^{\alpha_1}}\wedge\cdots\wedge\dd{\xi^{\alpha_k}}. \label{extd}
-\end{flalign}
-(That this chart-wise recipe defines the same $(k+1)$-form in every chart is a check we'll spare the reader; the mechanism is that the non-tensorial second-derivative terms produced by differentiating Jacobians are symmetric in a pair of indices and die against the antisymmetry of the wedges, the very cancellation about to appear as the headline property.) The single most important property:
-\begin{empheq}[box=\mathbox]{align}
-    \dd{}^2 = 0, \label{dd0}
-\end{empheq}
-for the reason that $\dd{}^2$ produces $\partial_\beta\partial_\gamma\,\omega_{\cdots}\, \dd{\xi^\gamma}\wedge\dd{\xi^\beta}\wedge\cdots$, a symmetric object (second partials) contracted with an antisymmetric one ($\dd{\xi^\gamma}\wedge\dd{\xi^\beta}$), which vanishes. A form $\omega$ with $\dd{\omega} = 0$ is called \emph{closed}; a form of the shape $\omega = \dd{\theta}$ is called \emph{exact}. By \eqref{dd0} every exact form is closed. The converse is the Poincar\'e lemma: \emph{locally} (on any contractible patch) every closed form is exact. We've already met this dichotomy in disguise: condition \eqref{integrability} says exactly that the one-form $\lambda = \lambda_\alpha \dd{\xi^\alpha}$ is closed, since
-\begin{flalign}
-    \dd{\lambda} = \partial_\beta \lambda_\alpha\, \dd{\xi^\beta}\wedge\dd{\xi^\alpha} = \tfrac{1}{2}\br{\partial_\beta\lambda_\alpha - \partial_\alpha\lambda_\beta}\, \dd{\xi^\beta}\wedge\dd{\xi^\alpha},
-\end{flalign}
-and being a gradient, $\lambda = \dd{G}$, says it's exact. The discussion of locally versus globally Hamiltonian fields in \S\ref{sec:poisson} was secretly the closed-vs-exact distinction, and we'll say it in those words from now on.
-
-\subsection{Interior product, pullback, Lie derivative}
-
-Three more operations and the kit is complete.
-
-The \emph{interior product} (or contraction) $i_X$ with a vector field $X$ takes $k$-forms to $(k-1)$-forms by feeding $X$ into the first slot:
-\begin{flalign}
-    (i_X\,\omega)(Y_1, \dots, Y_{k-1}) = \omega(X, Y_1, \dots, Y_{k-1}).
-\end{flalign}
-On functions $i_X f \equiv 0$ (nowhere to feed the vector); on one-forms $i_X\lambda = \lambda(X) = \lambda_\alpha X^\alpha$, a function. It's an antiderivation, $i_X(\lambda\wedge\mu) = (i_X\lambda)\wedge\mu + (-1)^{\deg\lambda}\,\lambda\wedge(i_X\mu)$, and $i_X i_X = 0$ (feeding the same vector into two slots of an antisymmetric machine).
-
-The \emph{pullback}: any smooth map $\varphi : \mc{M} \to \mc{N}$ drags forms on $\mc{N}$ back to forms on $\mc{M}$ by pre-composing with the derivative of $\varphi$,
-\begin{flalign}
-    (\varphi^*\omega)\big|_x\,(X_1, \dots, X_k) = \omega\big|_{\varphi(x)}\br{\varphi_* X_1, \dots, \varphi_* X_k},
-\end{flalign}
-where $\varphi_*$ is the induced map on tangent vectors (send the curve $\gamma$ representing $X$ to the curve $\varphi\circ\gamma$; in coordinates, multiply components by the Jacobian of $\varphi$, exactly as in \eqref{tangent-transform}). In coordinates, pullback is ``substitute and use the chain rule'', which is why it's the natural formalization of ``how does this object look after a change of variables/after being carried along a flow''. Pullback commutes with everything in sight: $\varphi^*(\lambda\wedge\mu) = \varphi^*\lambda \wedge \varphi^*\mu$ and, crucially, $\varphi^*\,\dd{\omega} = \dd{(\varphi^*\omega)}$.
-
-The \emph{Lie derivative} $\Lie_X$ measures the rate of change of a geometric object as it's dragged along the flow of $X$, the flow being exactly the one-parameter family $\varphi^X_s$ constructed in \S\ref{sec:flows}:
-\begin{flalign}
-    \Lie_X\, \omega \equiv \dv{s}\bigg|_{s=0} \br{\varphi^X_s}^*\,\omega. \label{lieder}
-\end{flalign}
-The statement ``$\omega$ is invariant under the flow of $X$'' is exactly $\Lie_X\omega = 0$. Computing \eqref{lieder} from the definition is painful; mercifully there is \emph{Cartan's magic formula},
-\begin{empheq}[box=\mathbox]{align}
-    \Lie_X = i_X \circ \dd{} + \dd{} \circ i_X, \label{cartan}
-\end{empheq}
-valid on forms of any degree. (Sanity check on functions: $\Lie_X f = i_X\,\dd{f} + 0 = X^\alpha\partial_\alpha f$, the directional derivative \eqref{directional}, as it must be.) We won't prove \eqref{cartan} in general (induction on form degree, using that both sides are derivations agreeing on functions and differentials), but we will use it constantly, because it converts flow-invariance questions into pure algebra with $\dd{}$ and $i_X$. Watch how much work it does in \S\ref{sec:symptrans}.
-
-Finally, for the record and for orientation: forms are the natural integrands ($k$-forms integrate over $k$-dimensional oriented surfaces), and the exterior derivative is dual to the boundary operator via \emph{Stokes' theorem}, $\int_S \dd{\omega} = \int_{\partial S}\omega$; it contains the divergence and curl theorems of vector calculus as special cases. We'll need it exactly once (for integral invariants, \S\ref{sec:symptrans}), and we'll cite it rather than prove it.
-\section{The Symplectic Form}\label{sec:symplectic}
-
-\subsection{From the symplectic matrix to the symplectic form}
-
-We can now pay the debt left at the end of \S\ref{sec:phasespace}: what kind of object is the symplectic matrix, and what happens to \eqref{hameqs-xi} under a change of phase-space coordinates $\xi \to \tilde{\xi}(\xi)$? The bracket \eqref{PB} is built from two gradients, each transforming with an inverse Jacobian by \eqref{cotangent-transform}, so demanding that $\cbr{f,g}$ be a coordinate-independent object (it must be: evolution rates of physical observables can't depend on bookkeeping) forces the upper-index components to transform with two Jacobians,
-\begin{flalign}
-    \tilde{\Omega}^{\alpha\beta} \longrightarrow \pdv{\tilde{\xi}^\alpha}{\xi^\mu}\, \pdv{\tilde{\xi}^\beta}{\xi^\nu}\, \tilde{\Omega}^{\mu\nu},
-\end{flalign}
-i.e. $\tilde\Omega^{\alpha\beta}$ are the components of an antisymmetric $2$-tensor of the upper-index species flagged in \S\ref{sec:forms} (a \emph{bivector}), and its inverse matrix $\tilde{\Omega}_{\alpha\beta}$ transforms with two inverse Jacobians: the components of an antisymmetric covariant $2$-tensor, which is to say, by \S\ref{sec:forms}, \emph{a $2$-form}. That $2$-form is the fundamental object of the subject. In canonical coordinates,
-\begin{empheq}[box=\mathbox]{align}
-    \Omega \equiv \frac{1}{2}\,\tilde{\Omega}_{\alpha\beta}\;\dd{\xi^\alpha}\wedge\dd{\xi^\beta} = \dd{p_a}\wedge\dd{q^a}, \label{sympform}
-\end{empheq}
-the \emph{symplectic form} on phase space. (The evaluation: with the ordering \eqref{xidef} and $\tilde\Omega$ as in \eqref{hameqs-xi}, the inverse matrix has $\tilde{\Omega}_{a,\,n+b} = -\delta_{ab} = -\tilde{\Omega}_{n+b,\,a}$, and the half-sum over both index orders assembles into $\sum_a \dd{p_a}\wedge\dd{q^a}$; the sign conventions are chosen so that \eqref{sympform} together with \eqref{PB} reproduces $\cbr{q^a, p_b} = +\delta^a_b$. Some texts write $\Omega = \dd{q^a}\wedge\dd{p_a}$, the opposite sign; this is the same convention fork flagged in the box in \S\ref{sec:poisson}, wearing different clothes.)
-
-The symplectic form has two defining properties, both inherited from the matrix:
-\begin{enumerate}[label=(\roman*)]
-    \item \textbf{Closedness:} $\dd{\Omega} = 0$. In canonical coordinates the components are constant, so this is immediate from \eqref{extd}; but the statement is coordinate-independent (closedness of a form is: $\dd{}$ is chart-independent) and, as we'll see in \S\ref{sec:sympman}, it's the property that carries the entire dynamical content (it will be equivalent to the Jacobi identity).
-    \item \textbf{Nondegeneracy:} the map $X \mapsto i_X\Omega$ from vector fields to one-forms is invertible; equivalently, $\Omega(X, Y) = 0$ for all $Y$ forces $X = 0$; equivalently, $\det \tilde{\Omega}_{\alpha\beta} \neq 0$. In canonical coordinates $\det\tilde{\Omega} = 1$.
-\end{enumerate}
-
-Nondegeneracy deserves a paragraph, because it's the exact structural analogue of something we've already used. Recall the box in \S\ref{sec:covectors}: the metric, a \emph{symmetric} nondegenerate $2$-tensor, converts vectors to covectors by lowering the index, $u^a \mapsto g_{ab}u^b$, and that conversion was how velocities became momenta. The symplectic form is the \emph{antisymmetric} counterpart: nondegeneracy gives an isomorphism
-\begin{flalign}
-    X \longmapsto i_X \Omega, \qquad \text{in components } X^\alpha \mapsto \tilde{\Omega}_{\beta\alpha} X^\alpha,
-\end{flalign}
-between vector fields and one-forms on phase space, with inverse supplied by $\tilde{\Omega}^{\alpha\beta}$. Metric geometry converts vectors to covectors symmetrically; symplectic geometry converts them antisymmetrically. This is the ``second conversion machine'' promised in \S\ref{sec:covectors}, and here is what it's for: it will let us convert the one-form $\dd{H}$ (which every function has, by \S\ref{sec:covectors}) into a vector field (which a dynamics needs, by \S\ref{sec:flows}). That conversion \emph{is} Hamilton's equations, and it's one section away.
-
-As a warm-up with the machinery, contract $\Omega$ with a coordinate vector field, say $\partial/\partial q^b$, using \eqref{wedge}:
-\begin{flalign}
-    i_{\partial/\partial q^b}\,\Omega = i_{\partial/\partial q^b}\br{\dd{p_a}\wedge\dd{q^a}}
-    = \underbrace{\dd{p_a}\br{\tfrac{\partial}{\partial q^b}}}_{=\,0}\dd{q^a} - \dd{p_a}\, \underbrace{\dd{q^a}\br{\tfrac{\partial}{\partial q^b}}}_{=\,\delta^a_b} = -\dd{p_b}, \label{warmup-q}
-\end{flalign}
-and symmetrically $i_{\partial/\partial p_b}\Omega = \dd{q^b}$. Moving in a coordinate direction on phase space corresponds, under the symplectic isomorphism, to the differential of the \emph{conjugate} coordinate (with a sign). The pairing of $q$'s with $p$'s is built into $\Omega$'s bones.
-
-\subsection{The tautological one-form: why $T^*\mc{Q}$ is symplectic for free}
-
-In canonical coordinates, \eqref{sympform} visibly says $\Omega = \dd{\theta}$ for the one-form
-\begin{flalign}
-    \theta = p_a\, \dd{q^a}, \label{taut}
-\end{flalign}
-(so $\Omega$ is not merely closed but exact on a cotangent bundle). The form \eqref{taut} looks coordinate-bound, but it is secretly intrinsic, and Arnold's construction of it is one of the slickest small arguments in the subject. Recall from \S\ref{sec:intro} the standard for the word ``canonical'': built with no choices. Watch how the construction meets it.
-
-\textbf{Theorem.} The cotangent bundle $\Gamma = T^*\mc{Q}$ carries a canonical one-form $\theta$, defined without any choice of coordinates, whose coordinate expression in any chart of the form $(q^a, p_a)$ is \eqref{taut}.
-
-\emph{Proof (construction).} A point of $\Gamma$ is a pair $x = (q, p)$: a configuration $q\in\mc{Q}$ and a covector $p \in T^*_q\mc{Q}$. There is a natural projection $\pi : \Gamma \to \mc{Q}$, $(q,p)\mapsto q$, which simply forgets the momentum, and its induced map $\pi_* : T_x\Gamma \to T_q\mc{Q}$ (as under ``pullback'' in \S\ref{sec:forms}) pushes tangent vectors of phase space down to tangent vectors of configuration space. Now take any tangent vector $\zeta \in T_x\Gamma$ and define
-\begin{empheq}[box=\mathbox]{align}
-    \theta\big|_x(\zeta) \equiv p\br{\pi_*\, \zeta}. \label{taut-intrinsic}
-\end{empheq}
-Read it out loud: to evaluate $\theta$ on a phase-space direction $\zeta$ at the point $(q,p)$, project $\zeta$ down to a configuration-space direction and feed it to \emph{the momentum covector that is the point itself}. The point of phase space is a covector; the tautological form just \emph{uses} it. No structure beyond the bundle itself is involved, hence ``tautological'' (also ``canonical one-form'' or ``Liouville form'' in the literature).
-
-In coordinates: $\zeta = \dot{q}^a\,\partial_{q^a} + \dot{p}_a\,\partial_{p_a}$ projects to $\pi_*\zeta = \dot{q}^a\,\partial_{q^a}$, and $p(\pi_*\zeta) = p_a \dot{q}^a = (p_a\,\dd{q^a})(\zeta)$. So $\theta = p_a\,\dd{q^a}$ in \emph{every} chart induced from configuration-space coordinates, which is the claim. $\blacksquare$
-
-Consequently
-\begin{empheq}[box=\mathbox]{align}
-    \Omega = \dd{\theta} = \dd{p_a}\wedge\dd{q^a}
-\end{empheq}
-is likewise canonical: \emph{every} cotangent bundle is a symplectic manifold, with no choices made. This is the precise sense, promised in \S\ref{sec:phasespace}, in which phase space has more structure than velocity space: $T^*\mc{Q}$ comes symplectic from the factory, while $T\mc{Q}$ acquires such structure only after a Lagrangian is chosen to identify it with $T^*\mc{Q}$ (via \eqref{canmom}). And notice which physical object $\theta$ is: $p_a\,\dd{q^a}$ is the integrand of the abbreviated action $\int p\,\dd{q}$, the quantity whose stationarity gives Maupertuis' principle and whose quantization gives Bohr--Sommerfeld. The tautological form is not a formal device; it's the action integrand, promoted to geometry.
-\section{Hamilton's Equations Without Coordinates}\label{sec:coordfree}
-
-We now have all the pieces to state the dynamics geometrically. A Hamiltonian system is a triple: a phase space $\Gamma$, a symplectic form $\Omega$ on it, and a function $H : \Gamma \to \mathbb{R}$. The dynamics is the flow (in the exact sense of \S\ref{sec:flows}) of the vector field $X_H$ determined by
-\begin{empheq}[box=\mathbox]{align}
-    i_{X_H}\,\Omega = -\dd{H}. \label{coordfree}
-\end{empheq}
-That single equation is Hamilton's equations. Every symbol in it has been built from scratch in these notes: $\dd{H}$ is the differential of \S\ref{sec:covectors}, $i$ is the interior product of \S\ref{sec:forms}, $\Omega$ is the canonical $2$-form of \S\ref{sec:symplectic}, and the equation as a whole says: \emph{$X_H$ is the vector field whose symplectic conversion is $-\dd{H}$}, the conversion existing and being unique by nondegeneracy. Unpack it in canonical coordinates to check. Write $X_H = A^a\,\partial_{q^a} + B_a\,\partial_{p_a}$ for unknown components. Then, using the warm-up contractions \eqref{warmup-q} and linearity,
-\begin{flalign}
-    i_{X_H}\Omega = A^a\br{i_{\partial_{q^a}}\Omega} + B_a\br{i_{\partial_{p_a}}\Omega} = -A^a\, \dd{p_a} + B_a\, \dd{q^a},
-\end{flalign}
-while
-\begin{flalign}
-    -\dd{H} = -\pdv{H}{q^a}\,\dd{q^a} - \pdv{H}{p_a}\,\dd{p_a}.
-\end{flalign}
-Matching coefficients of the independent basis forms $\dd{q^a}$ and $\dd{p_a}$:
-\begin{flalign}
-    A^a = \pdv{H}{p_a}, \qquad B_a = -\pdv{H}{q^a},
-\end{flalign}
-so the integral curves of $X_H$ (curves whose velocity is $X_H$, i.e. $\dot{q}^a = A^a$, $\dot{p}_a = B_a$) satisfy precisely \eqref{hameqs}. Note the role of each hypothesis: \emph{nondegeneracy} of $\Omega$ is what guarantees that \eqref{coordfree} has exactly one solution $X_H$ for a given $H$, i.e. that a Hamiltonian determines a dynamics; \emph{closedness} hasn't been used yet, and its moment comes in \S\ref{sec:symptrans}, where it will be exactly the statement that the resulting flow preserves $\Omega$.
-
-(On the sign in \eqref{coordfree}: with our $\Omega = \dd{p_a}\wedge\dd{q^a}$, the minus sign is what lands on \eqref{hameqs} with the physicists' signs. Texts that take $\Omega = \dd{q^a}\wedge\dd{p_a}$ write $i_{X_H}\Omega = +\dd{H}$; the two sign flips cancel and the physics agrees. Same fork, third costume.)
-
-Energy conservation, third derivation, now purely algebraic: the rate of change of $H$ along its own flow is
-\begin{flalign}
-    \Lie_{X_H} H = \dd{H}(X_H) = -\br{i_{X_H}\Omega}(X_H) = -\Omega(X_H, X_H) = 0, \label{econs-geo}
-\end{flalign}
-where the last step is nothing but the antisymmetry of $\Omega$: any $2$-form vanishes when fed the same vector twice. Compare the coordinate computation \eqref{Hdot}: what looked there like a fortunate cancellation of two sums is here the single word ``antisymmetry''. That's the geometry paying rent. And notice what the argument \emph{didn't} use: nothing about $H$, nothing about coordinates, not even closedness of $\Omega$. Conservation of the generator is a structural fact about antisymmetric dynamics, full stop. (We'll upgrade this observation into a two-line Noether-type theorem in \S\ref{sec:hamvf}.)
-
-The picture to keep: $\dd{H}$ is a covector field, pointing ``uphill'' across the level sets of $H$. The symplectic isomorphism converts it into the vector field $X_H$, and by \eqref{econs-geo} that vector field is everywhere \emph{tangent} to the level sets. The conversion rotates uphill into along-the-contour. This is the coordinate-free version of the ``sideways gradient flow'' picture of \S\ref{sec:phasespace}, and it's exact, not a cartoon.
-\section{Hamiltonian Vector Fields and the Algebra of Observables}\label{sec:hamvf}
-
-\subsection{Every observable generates a flow}
-
-Nothing in the construction \eqref{coordfree} was special to ``the'' Hamiltonian: any observable $f$ defines its \emph{Hamiltonian vector field}
-\begin{empheq}[box=\mathbox]{align}
-    i_{X_f}\,\Omega = -\dd{f}, \qquad X_f = \tilde{\Omega}^{\alpha\beta}\,\partial_\beta f\; \partial_\alpha \;=\; \cbr{\,\cdot\,, f}\text{ as an operator}, \label{hamvf}
-\end{empheq}
-where the middle expression solves the defining equation in canonical coordinates (invert the isomorphism with $\tilde{\Omega}^{\alpha\beta}$) and the last equality is checked by acting on an arbitrary $g$: $X_f\, g = \tilde{\Omega}^{\alpha\beta}\partial_\beta f\, \partial_\alpha g = \cbr{g, f}$. So the derivation $\cbr{\,\cdot\,, f}$ promised in \S\ref{sec:poisson} is a bona fide vector field, and every observable is simultaneously a quantity (a number on each state) and a generator (of a flow $\varphi^f_s \equiv \varphi^{X_f}_s$ on phase space, in the sense of \S\ref{sec:flows}). This dual citizenship of observables, number-valued and transformation-generating at once, is one of the deepest features Hamiltonian mechanics bequeaths to quantum mechanics, where every Hermitian operator is likewise both a measurable and the generator of a unitary flow.
-
-The bracket now acquires its second, flow-theoretic characterization:
-\begin{flalign}
-    \cbr{g, f} = X_f\, g = \dv{s}\bigg|_{s=0}\; g \circ \varphi^{f}_s\,, \label{PB-flow}
-\end{flalign}
-\emph{the Poisson bracket of $g$ with $f$ is the rate of change of $g$ along the flow generated by $f$}. (This is the definition Arnold takes as primary, with his sign convention; see the box in \S\ref{sec:poisson}.) Evolution \eqref{PB-evolution} is the special case $f = H$: dynamics is just the flow generated by the energy. Time evolution loses its privileged status and becomes one flow among many; that demotion is one of the most useful conceptual moves in the subject.
-
-The example promised at the end of \S\ref{sec:flows}, now answerable in one line. Which observable generates the translation flow $\varphi_s(q, p) = (q + s,\, p)$, i.e., the flow of $X = \partial_q$? By \eqref{hamvf} we need $i_{\partial_q}\Omega = -\dd{G}$, and we computed $i_{\partial_q}\Omega = -\dd{p}$ in \eqref{warmup-q}. So $G = p$:
-\begin{empheq}[box=\mathbox]{align}
-    \text{\emph{momentum generates translations},} \qquad \varphi_s(q,p) = (q+s,\,p), \quad G = p.
-\end{empheq}
-Likewise $i_{\partial_p}\Omega = \dd{q} = -\dd{(-q)}$, so $-q$ generates translations in momentum; and the reader should check that the Hamiltonian of the free particle, $H = p^2/2m$, generates $\varphi_t(q,p) = (q + pt/m,\, p)$, uniform straight-line motion, as it had better. The slogan ``momentum generates translations'', usually first met as a quantum fact about $e^{-ia\hat{p}/\hbar}$, is a classical fact about the symplectic form, and the quantum version is its faithful image.
-
-Which flows arise this way? Exactly the question settled in \S\ref{sec:poisson}, which we can now phrase in form language and answer in one line. Given a vector field $X$, it is of the form $X_f$ iff the one-form $-i_X\Omega$ is exact ($= \dd{f}$); it is \emph{locally} of that form iff $-i_X\Omega$ is closed,
-\begin{flalign}
-    \dd{\br{i_X\,\Omega}} = 0 \quad \Longleftrightarrow \quad X \text{ locally Hamiltonian}, \label{locham}
-\end{flalign}
-the Poincar\'e lemma bridging the two as always; and the coordinate condition \eqref{integrability} was nothing but \eqref{locham} in components. The obstruction to ``locally'' upgrading to ``globally'' is the first de Rham cohomology of phase space, as promised\footnote{For the cylinder $\Gamma = S^1\times\mathbb{R}$ of the pendulum, the closed-but-not-exact one-form $\dd{\theta}$ (the angle differential, closed since locally $\theta$ is a function, non-exact since $\theta$ isn't one globally) corresponds to the locally Hamiltonian vector field $-\partial_p$: uniform drift in angular momentum, generated locally by the angle, which fails to exist as a single-valued observable. Topology of phase space $=$ existence of would-be generators. It's a real effect, not a pathology.}.
-
-\subsection{The Lie algebra homomorphism}
-
-We have two bracket-like operations in play: the Poisson bracket of observables, and the commutator of vector fields, $[X, Y] = XY - YX$, which is again a vector field by \eqref{vf-commutator} (the second derivatives cancel, as we saw while proving Jacobi). The central structural theorem of the section is that the map $f \mapsto X_f$ intertwines them.
-
-\textbf{Theorem.} For any observables $f, g$:
-\begin{empheq}[box=\mathbox]{align}
-    \sbr{X_f,\, X_g} = X_{\cbr{g,\,f}}. \label{liehom}
-\end{empheq}
-
-\emph{Proof.} Act with both sides on an arbitrary test observable $h$ and use \eqref{hamvf} three times:
-\begin{flalign}
-    \sbr{X_f, X_g}\, h &= X_f\br{X_g h} - X_g\br{X_f h} = X_f \cbr{h, g} - X_g\cbr{h, f} \notag \\
-    &= \cbr{\cbr{h,g}, f} - \cbr{\cbr{h,f}, g}.
-\end{flalign}
-Now use the Jacobi identity, arranged as $\{\{h,g\},f\} + \{\{g,f\},h\} + \{\{f,h\},g\} = 0$, to rearrange the difference:
-\begin{flalign}
-    \cbr{\cbr{h,g},f} - \cbr{\cbr{h,f},g} &= \cbr{\cbr{h,g},f} + \cbr{\cbr{f,h},g} \notag \\
-    &= -\cbr{\cbr{g,f}, h} = \cbr{h, \cbr{g,f}} = X_{\cbr{g,f}}\, h,
-\end{flalign}
-and since $h$ was arbitrary, \eqref{liehom} follows. $\blacksquare$
-
-(Mind the order on the right of \eqref{liehom}: with our sign conventions it's $\cbr{g,f}$, not $\cbr{f,g}$. Chasing that sign through is a rite of passage; in Arnold's conventions the analogous statement carries the opposite arrangement, and both are correct in their own books. The box in \S\ref{sec:poisson} was not kidding.)
-
-The content of \eqref{liehom}: the observables form a Lie algebra under $\cbr{\cdot,\cdot}$ (antisymmetry, bilinearity, Jacobi: \S\ref{sec:poisson}), the vector fields form a Lie algebra under the commutator, and $f \mapsto X_{f}$ is (up to the sign bookkeeping) a \emph{homomorphism of Lie algebras} between them. Its kernel is the set of observables with $X_f = 0$, i.e. $\dd{f} = 0$ by nondegeneracy: the locally constant functions. So observables that differ by a constant generate identical flows, and no further ambiguity exists; the algebra of observables is a one-dimensional central extension of the algebra of (globally) Hamiltonian vector fields. That sentence, suitably quantized, is why the quantum phase $e^{i\alpha}$ is invisible: states related by constants-in-the-generator differ by nothing observable. The classical seed of the ray structure of quantum mechanics is already here.
-
-\subsection{Symmetries and conservation: a two-line Noether theorem}
-
-The flow characterization \eqref{PB-flow} makes the symmetry--conservation link almost embarrassingly short. Say an observable $g$ is a \emph{symmetry generator} of the dynamics if $H$ is invariant under the flow of $g$, i.e. $\Lie_{X_g}H = \cbr{H, g} = 0$. Say $g$ is \emph{conserved} if it's constant along the dynamics, i.e. $\cbr{g, H} = 0$. But by antisymmetry these are \emph{the same equation}:
-\begin{empheq}[box=\mathbox]{align}
-    \cbr{H, g} = 0 \quad&\Longleftrightarrow\quad \cbr{g, H} = 0 : \label{noether} \\
-    \text{$g$ generates a symmetry of $H$} \quad&\iff\quad \text{$g$ is conserved.} \notag
-\end{empheq}
-Momentum is conserved when $H$ is translation-invariant, and $H$ is translation-invariant when momentum is conserved, and these are one fact, not two facts joined by a theorem. Energy conservation itself is the diagonal case $g = H$. (The Lagrangian Noether theorem, with its variational hypotheses and boundary terms, is the same statement met under worse lighting; on phase space the symmetry--conservation duality is just the antisymmetry of $\Omega$.)
-\section{Symplectic Manifolds}\label{sec:sympman}
-
-\subsection{The abstraction}
-
-Everything from \S\ref{sec:symplectic} onward used exactly two properties of $\Omega$, closedness and nondegeneracy, and nothing else about the cotangent-bundle origin of phase space. So abstract:
-
-\begin{empheq}[box=\mathbox]{align*}
-    &\text{A \emph{symplectic manifold} is a pair } (\mc{M}, \Omega): \\
-    &\text{a smooth manifold equipped with a closed, nondegenerate } 2\text{-form.}
-\end{empheq}
-
-Any such pair supports the entire apparatus we've built: Hamiltonian vector fields via \eqref{hamvf}, Poisson brackets via $\cbr{f,g} = \Omega(X_g, X_f)$ (check in coordinates that this reproduces \eqref{PB}), the evolution law, the Lie algebra homomorphism, and, as we're about to show, canonical transformations and Liouville's theorem. Mechanics runs wherever $(\mc{M},\Omega)$ exists.
-
-The examples to keep in mind:
-\begin{enumerate}[label=(\roman*)]
-    \item $\mathbb{R}^{2n}$ with $\Omega = \dd{p_a}\wedge\dd{q^a}$: the local model, and by Darboux's theorem below, in a precise sense the \emph{only} local model.
-    \item Any cotangent bundle $T^*\mc{Q}$ with $\Omega = \dd{\theta}$: \S\ref{sec:symplectic}. Here $\Omega$ is exact, not merely closed.
-    \item The sphere $S^2$ with $\Omega = $ its area form (in spherical coordinates, $\sin\vartheta\,\dd{\vartheta}\wedge\dd{\varphi}$; ``area form'' in exactly the oriented-area sense of \S\ref{sec:forms}). Nondegenerate because the area form of any oriented surface is (a $2$-form on a $2$-manifold is nondegenerate iff it's nowhere zero); closed because \emph{every} top-degree form is closed (there are no $3$-forms on a $2$-manifold to be equal to). This is the phase space of a classical spin: the observables $(S_x, S_y, S_z)$, the Cartesian embedding functions scaled by the spin magnitude, obey $\cbr{S_x, S_y} = S_z$ and cyclic, and Hamiltonians built from them generate rigid rotations of the sphere. Note $S^2$ is \emph{not} a cotangent bundle of anything: it's compact, and cotangent bundles never are\footnote{Quick reason: on $T^*\mc{Q}$ the symplectic form is exact, $\Omega = \dd{\theta}$; on a compact $\mc{M}$ without boundary, exactness would give $\int_{\mc{M}}\Omega^n = \int_{\mc{M}}\dd{(\theta\wedge\Omega^{n-1})}$, which vanishes by Stokes, contradicting the fact that $\Omega^n$ is a volume form with nonzero total volume (\S\ref{sec:liouville}). So compact symplectic manifolds have closed-but-not-exact $\Omega$, and genuinely enlarge the theory beyond cotangent bundles.}. Spin systems are the standard reminder that ``phase space $= T^*(\text{configuration space})$'' is a common case, not a law.
-\end{enumerate}
-
-\subsection{Symplectic manifolds are even-dimensional}
-
-Not every manifold can carry a symplectic form. The first obstruction is linear-algebraic:
-
-\textbf{Proposition.} A symplectic manifold has even dimension.
-
-\emph{Proof.} At any point, $\Omega$ has an antisymmetric component matrix $\Omega_{\alpha\beta}$ with $\det\Omega_{\alpha\beta}\neq 0$ (nondegeneracy). Antisymmetry says $\Omega^{\mathrm{T}} = -\Omega$ as matrices, so
-\begin{flalign}
-    \det\Omega = \det\Omega^{\mathrm{T}} = \det(-\Omega) = (-1)^{d}\det\Omega,
-\end{flalign}
-with $d = \dim\mc{M}$. If $d$ is odd this forces $\det\Omega = -\det\Omega = 0$, contradicting nondegeneracy. $\blacksquare$
-
-(Odd-dimensional spaces aren't exiled from mechanics; they host the \emph{contact} geometry of constant-energy surfaces and time-extended phase space, a sibling theory we won't develop.)
-
-\subsection{Darboux's theorem: no local invariants}
-
-Here is the theorem that fixes the character of the whole subject.
-
-\textbf{Theorem (Darboux).} Let $(\mc{M}, \Omega)$ be a symplectic manifold of dimension $2n$. Around every point there exist local coordinates $(q^1,\dots,q^n,p_1,\dots,p_n)$ in which
-\begin{flalign}
-    \Omega = \dd{p_a}\wedge\dd{q^a} \qquad \text{with \emph{constant} coefficients, exactly.} \label{darboux}
-\end{flalign}
-
-Pause on what's being claimed, because it's stronger than it may look. For a Riemannian metric, the analogous statement is \emph{false}: one can arrange $g_{ab} = \delta_{ab}$ \emph{at a point} (normal coordinates), but not on a neighbourhood; the obstruction is the curvature tensor, a genuine local invariant that distinguishes a sphere from a plane at arbitrarily small scales. (We saw a baby version in \S\ref{sec:lagrangian}: the polar-coordinates metric had position-dependent components, but there the flat Cartesian chart existed; on a genuinely curved $\mc{Q}$ no chart flattens $g_{ab}$ on any open set.) Darboux says symplectic geometry has \emph{no curvature, no local invariants at all}: every symplectic manifold of a given dimension is locally identical to every other and to the standard $\mathbb{R}^{2n}$. All the information in a symplectic manifold is global (topology, total volumes, and subtler invariants of that kind). This is why the mechanics of \S\S\ref{sec:hamilton}--\ref{sec:poisson}, developed in coordinates on $\mathbb{R}^{2n}$, was secretly fully general: Darboux coordinates make any symplectic manifold look like that, one chart at a time. Canonical coordinates aren't a convenience; they're a theorem.
-
-\emph{Proof sketch (Arnold's induction).} The strategy is induction on $n$, constructing the coordinate pair $(q^1, p_1)$ by hand and splitting it off. Take any function $p_1$ with $\dd{p_1}\neq 0$ near the point (a coordinate function will do). Its Hamiltonian field $X_{p_1}$ is nonvanishing there, so we may choose a function $q^1$ with $X_{p_1}q^1 = 1$, i.e. $\cbr{q^1, p_1} = 1$ (solve the ODE ``$q^1$ increases at unit rate along the flow of $p_1$'', taking $q^1 = 0$ on a hypersurface transverse to the flow; existence and smooth dependence come from the standard straightening theorem for nonvanishing vector fields). The two flows $\varphi^{q^1}_s$ and $\varphi^{p_1}_u$ commute, because by \eqref{liehom} $\sbr{X_{q^1}, X_{p_1}} = X_{\cbr{p_1, q^1}} = X_{-1} = 0$, constants generating nothing. Using the two commuting flows as two of the coordinate directions, one shows the remaining directions, the joint level set of $(q^1, p_1)$ swept out suitably, form a $(2n-2)$-dimensional manifold on which $\Omega$ restricts to a closed nondegenerate form; apply the inductive hypothesis there, and verify that the assembled coordinates give exactly \eqref{darboux} (the cross terms vanish precisely because of the commutation and the normalizations $\cbr{q^1,p_1}=1$). The base case $n=0$ is empty. $\blacksquare$
-
-We've been honest that this is a sketch; the full bookkeeping (that the restricted form is symplectic, that no cross terms survive) is a page of careful checking in Arnold \S43. The two ideas worth retaining are (i) coordinates are \emph{built from dynamics}: the canonical pair $(q^1, p_1)$ is manufactured out of a flow and its clock, and (ii) the Jacobi identity, via \eqref{liehom}, is what makes the construction close, which is the promised sense in which $\dd{\Omega} = 0$ (equivalent to Jacobi, as one can check by expressing the Jacobiator of \eqref{PB} in terms of $\dd{\Omega}$) carries the dynamical content of the subject.
-\section{Symplectic (Canonical) Transformations}\label{sec:symptrans}
-
-\subsection{Definition and the classical propositions}
-
-A \emph{symplectic transformation} (the geometer's name) or \emph{canonical transformation} (the physicist's) is a smooth invertible map $\varphi : \mc{M} \to \mc{M}$ preserving the symplectic form under pullback (the pullback of \S\ref{sec:forms}, now applied to a map from the manifold to itself):
-\begin{empheq}[box=\mathbox]{align}
-    \varphi^*\,\Omega = \Omega. \label{symptrans-def}
-\end{empheq}
-In coordinates, writing the Jacobian $\Lambda^\mu{}_\alpha = \pdv*{\tilde{\xi}^\mu}{\xi^\alpha}$, condition \eqref{symptrans-def} reads $\Lambda^{\mathrm{T}}\tilde{\Omega}^{-1}\Lambda = \tilde{\Omega}^{-1}$, or equivalently for the bracket matrix,
-\begin{flalign}
-    \Lambda\,\tilde{\Omega}\,\Lambda^{\mathrm{T}} = \tilde{\Omega}, \label{symp-matrix}
-\end{flalign}
-which for \emph{linear} maps defines the symplectic group $Sp(2n,\mathbb{R})$. Physically, \eqref{symp-matrix} is the statement that the new coordinates $\tilde{\xi}(\xi)$ again satisfy the fundamental brackets \eqref{fundamental-PB}: canonical transformations are exactly the changes of phase-space variables that leave the fundamental brackets, and hence \emph{all} Poisson brackets, intact. This answers the question deferred at the end of \S\ref{sec:phasespace}: the tidy form \eqref{hameqs-xi} survives precisely the coordinate changes obeying \eqref{symp-matrix}. (Sanity check: the point transformations $\tilde{q}(q)$ with momenta co-transformed by \eqref{momentum-covector} are canonical, as the reader should verify from \eqref{symp-matrix} with block-triangular $\Lambda$; but the canonical group is vastly larger, freely mixing positions and momenta, e.g. $(q,p)\mapsto(p,-q)$.)
-
-Four propositions organize the basic theory; the proofs are short enough to give in full.
-
-\textbf{Proposition 1.} \emph{Symplectic transformations preserve all Poisson brackets:} $\cbr{f\circ\varphi,\, g\circ\varphi} = \cbr{f,g}\circ\varphi$.
-
-\emph{Proof.} The bracket is built from $\Omega$ (via $\cbr{f,g} = \Omega(X_g,X_f)$, or in coordinates from $\tilde{\Omega}^{\alpha\beta}$), and pullback commutes with every ingredient: $\varphi^*$ of a contraction is the contraction of the pullbacks, and $\varphi^*\Omega = \Omega$. In coordinates it's \eqref{symp-matrix} sandwiched between two transformed gradients. $\blacksquare$
-
-\textbf{Proposition 2.} \emph{Symplectic transformations map Hamiltonian flows to Hamiltonian flows: the $\varphi$-image of the flow of $H$ is the flow of $H\circ\varphi^{-1}$.}
-
-\emph{Proof.} Push the field $X_H$ forward by $\varphi$ and test it in the defining equation: for the pushed field $\varphi_*X_H$,
-\begin{flalign}
-    i_{\varphi_* X_H}\,\Omega &= i_{\varphi_* X_H}\,\br{\varphi^{-1}}^*\!\!\;\varphi^*\,\Omega
-    = \br{\varphi^{-1}}^*\br{i_{X_H}\,\varphi^*\Omega} \notag \\
-    &= \br{\varphi^{-1}}^*\br{i_{X_H}\Omega} = -\br{\varphi^{-1}}^*\dd{H} = -\dd{\br{H\circ\varphi^{-1}}},
-\end{flalign}
-using \eqref{symptrans-def} and naturality of $i$ and $\dd{}$ under diffeomorphisms. So $\varphi_* X_H = X_{H\circ\varphi^{-1}}$. $\blacksquare$
-
-This is the invariance property that makes canonical transformations \emph{useful}: transform to variables in which $H$ looks simple (action--angle variables being the apotheosis), solve there, transform back, with the guarantee that Hamiltonian structure survives every step.
-
-\textbf{Proposition 3.} \emph{The symplectic transformations of $(\mc{M},\Omega)$ form a group under composition.}
-
-\emph{Proof.} $(\varphi\circ\psi)^* = \psi^*\circ\varphi^*$ (contravariance of pullback), so if both factors preserve $\Omega$ so does the composite; the identity trivially qualifies; and applying $(\varphi^{-1})^*$ to \eqref{symptrans-def} gives $\Omega = (\varphi^{-1})^*\Omega$, so inverses qualify. $\blacksquare$
-
-\textbf{Proposition 4.} \emph{Hamiltonian flows are one-parameter groups of symplectic transformations: for every observable $f$ and parameter $s$, $\br{\varphi^f_s}^*\,\Omega = \Omega$.}
-
-This is the fundamental theorem of the section, the statement that dynamics itself is a canonical transformation, continuously unfolding, and Cartan's formula makes the proof three lines.
-
-\emph{Proof.} It suffices to show the derivative in $s$ vanishes, i.e. $\Lie_{X_f}\Omega = 0$ (then $\br{\varphi^f_s}^*\Omega$ is $s$-independent and equals its value $\Omega$ at $s=0$). By Cartan \eqref{cartan},
-\begin{flalign}
-    \Lie_{X_f}\,\Omega = i_{X_f}\,\underbrace{\dd{\Omega}}_{=\,0} + \; \dd{\underbrace{\br{i_{X_f}\Omega}}_{=\,-\dd{f}}} = -\dd{}^2 f = 0, \label{flow-preserves}
-\end{flalign}
-using closedness of $\Omega$ in the first slot, the defining equation \eqref{hamvf} in the second, and $\dd{}^2 = 0$ from \eqref{dd0}. $\blacksquare$
-
-Look at the anatomy of \eqref{flow-preserves}: \emph{this} is where closedness of the symplectic form finally earns its keep, exactly as promised in \S\ref{sec:coordfree}. Nondegeneracy made Hamiltonian dynamics exist; closedness makes it symplectic. The converse of Proposition 4 is the local-Hamiltonian criterion \eqref{locham} again: a flow preserves $\Omega$ iff $\dd{(i_X\Omega)} = 0$ iff $X$ is locally Hamiltonian, tying the whole circle of ideas shut.
-
-\subsection{Integral invariants}
-
-Proposition 4 has quantitative teeth. If $\varphi^*\Omega = \Omega$ then also $\varphi^*(\Omega^k) = (\varphi^*\Omega)^k = \Omega^k$ for every wedge power $k = 1, \dots, n$, and hence for any $2k$-dimensional surface $S \subset \mc{M}$,
-\begin{flalign}
-    \int_{\varphi(S)} \Omega^k = \int_S \varphi^*\br{\Omega^k} = \int_S \Omega^k : \label{integral-invariants}
-\end{flalign}
-the integrals of all powers of $\Omega$ are \emph{integral invariants} of every canonical transformation, in particular of Hamiltonian time evolution. The $k = 1$ case has a vivid reading in canonical coordinates: $\int_S \Omega = \sum_a \int_S \dd{p_a}\wedge\dd{q^a}$ is the \emph{sum of the oriented areas of the shadows of $S$} on the $n$ canonical planes $(q^a, p_a)$ (oriented area in precisely the sense computed in \S\ref{sec:forms}), and this sum of shadow-areas is frozen under the dynamics however wildly $S$ itself is stretched and folded. That is the precise cash value of the slogan from \S\ref{sec:forms}: symplectic geometry is the geometry of area, and Hamiltonian dynamics is area-preserving in exactly this sense. For closed surfaces there is a companion \emph{relative} invariant: if $C = \partial S$ is a closed curve, Stokes gives $\oint_C \theta = \int_S \dd{\theta} = \int_S\Omega$ (on a phase space where $\Omega = \dd{\theta}$), so the loop integral of the action form $\oint p_a\,\dd{q^a}$ is likewise preserved, the classical quantity that Bohr--Sommerfeld quantization later declares to be $2\pi\hbar$ times an integer. The $k = n$ case of \eqref{integral-invariants} is a statement about volume, and it's important enough to be the next section.
-\section{Liouville's Theorem}\label{sec:liouville}
-
-\subsection{The symplectic volume and the theorem}
-
-On a symplectic manifold of dimension $2n$, the top wedge power of $\Omega$ is a top form, hence a candidate volume element (\S\ref{sec:forms}); nondegeneracy makes it an actual one (nowhere vanishing). Normalize:
-\begin{empheq}[box=\mathbox]{align}
-    v \equiv \frac{1}{n!}\;\underbrace{\Omega\wedge\Omega\wedge\cdots\wedge\Omega}_{n\ \text{factors}}, \label{liouville-volume}
-\end{empheq}
-the \emph{Liouville volume}. In canonical coordinates, expanding $(\dd{p_a}\wedge\dd{q^a})^{\wedge n}$: the cross terms with any repeated index die by $\dd{p_a}\wedge\dd{p_a} = 0$, the surviving terms are the $n!$ orderings of the distinct pairs, all equal after reshuffling (each pair $\dd{p_a}\wedge\dd{q^a}$ is a $2$-form, and $2$-forms commute past each other under $\wedge$), and the $1/n!$ eats the multiplicity:
-\begin{flalign}
-    v = \dd{p_1}\wedge\dd{q^1}\wedge\cdots\wedge\dd{p_n}\wedge\dd{q^n},
-\end{flalign}
-the ordinary coordinate volume $\dd[n]{q}\,\dd[n]{p}$ up to a conventional sign from reordering. So ``phase space volume'', the object of statistical mechanics, is not extra structure: it is manufactured from the symplectic form alone, and every symplectic manifold comes equipped with it.
-
-\textbf{Theorem (Liouville).} \emph{Hamiltonian flows preserve the Liouville volume:}
-\begin{flalign}
-    (\varphi^H_t)^*\,v = v, \qquad \text{i.e.} \qquad \mathrm{vol}\!\br{\varphi^H_t(R)} = \mathrm{vol}(R) \;\; \text{for every region } R.
-\end{flalign}
-
-\emph{Proof.} $\br{\varphi_t^H}^* v = \frac{1}{n!}\br{\varphi_t^{H*}\Omega}^{\wedge n} = \frac{1}{n!}\,\Omega^{\wedge n} = v$ by Proposition 4. $\blacksquare$
-
-That's the whole proof; it's the $k=n$ instance of \eqref{integral-invariants}. A blob of initial conditions evolves like a drop of incompressible fluid: it may deform grotesquely, filament, and fold (and for chaotic dynamics it does exactly that), but its volume is untouchable. Dissipation, in the phase-space sense of volumes contracting onto attractors, is structurally impossible for Hamiltonian dynamics; this single theorem is the reason equilibrium statistical mechanics (which needs an invariant measure to define ensembles on) is possible at all.
-
-\subsection{The divergence-theorem proof}
-
-Because Liouville's theorem is so load-bearing, let's prove it a second time, with pre-geometric tools, following Arnold. The rate of change of the volume of an evolving region is the flux of the velocity field through its boundary, i.e. the integral of the divergence (the transport/divergence theorem of vector calculus):
-\begin{flalign}
-    \dv{t}\,\mathrm{vol}\br{R_t} = \int_{R_t} \div X \; \dd[2n]{\xi}, \qquad \div X \equiv \partial_\alpha X^\alpha.
-\end{flalign}
-(If one wants this from scratch: $\mathrm{vol}(R_t) = \int_{R_0}\det\pdv*{\varphi_t(\xi)}{\xi}\,\dd[2n]{\xi}$, expand $\varphi_t(\xi) = \xi + tX(\xi) + O(t^2)$, and use the linearization $\det(\mathbbm{1} + tA) = 1 + t\tr A + O(t^2)$, which follows by expanding the determinant and noting every other term is at least quadratic in $t$; the trace of the Jacobian of $X$ is $\div X$.) So the theorem reduces to:
-
-\textbf{Lemma.} Hamiltonian vector fields are divergence-free.
-
-\emph{Proof.} From \eqref{hameqs-xi}, $X_H^\alpha = \tilde{\Omega}^{\alpha\beta}\partial_\beta H$ with constant $\tilde{\Omega}$, so
-\begin{flalign}
-    \div X_H = \partial_\alpha\br{\tilde{\Omega}^{\alpha\beta}\,\partial_\beta H} = \tilde{\Omega}^{\alpha\beta}\,\partial_\alpha\partial_\beta H = 0,
-\end{flalign}
-an antisymmetric matrix contracted with symmetric second partials. $\blacksquare$
-
-Same cancellation as ever, symmetric-against-antisymmetric, now doing volume conservation. In the $q,p$ blocks the lemma reads $\pdv*{\dot{q}^a}{q^a} + \pdv*{\dot{p}_a}{p_a} = \pdv*{}{q^a}\pdv*{H}{p_a} - \pdv*{}{p_a}\pdv*{H}{q^a} = 0$: the phase-space velocity field is incompressible because its $q$-divergence and $p$-divergence are the same mixed derivative with opposite signs. (Contrast a damped oscillator, $\dot{q} = p/m$, $\dot{p} = -kq - \gamma p$: divergence $-\gamma < 0$, volumes shrink, the flow is not Hamiltonian for any $H$, which the geometry knew all along.)
-
-\subsection{Poincar\'e recurrence}
-
-Volume preservation plus bounded phase space has a startling consequence, worth including both for its own sake and as a specimen of how much follows from measure-level information alone.
-
-\textbf{Theorem (Poincar\'e recurrence).} Let $\varphi$ be a volume-preserving invertible map of a bounded region $D$ to itself ($\varphi(D) = D$). Then for any neighbourhood $U$ (however small) of any point of $D$, there is a point of $U$ that returns to $U$ after finitely many applications of $\varphi$.
-
-\emph{Proof.} Consider the images $U, \varphi(U), \varphi^2(U), \dots$. All have the same (positive) volume as $U$. If they were pairwise disjoint, $D$ would contain infinitely many disjoint sets of equal positive volume, contradicting $\mathrm{vol}(D) < \infty$. So some pair intersects: $\varphi^k(U)\cap\varphi^\ell(U)\neq\emptyset$ with $k > \ell \geq 0$. Apply $\varphi^{-\ell}$ (invertibility): $\varphi^{k-\ell}(U)\cap U \neq \emptyset$. Pick $y$ in that intersection: then $y \in U$, and $x \equiv \varphi^{-(k-\ell)}(y)$ lies in $U$ (since $y \in \varphi^{k-\ell}(U)$) with $\varphi^{k-\ell}(x) = y \in U$. So $x$ is a point of $U$ that returns to $U$ after $k - \ell$ steps. $\blacksquare$
-
-Apply it to the time-$\tau$ map of a Hamiltonian flow on a bounded energy shell (bounded, e.g., for confining potentials): \emph{almost every state returns arbitrarily close to itself, infinitely often}. Now the famous paradox: gas in the left half of a box, partition removed, gas spreads; recurrence says the all-molecules-back-in-the-left-half configuration will be revisited to any accuracy. It will. The resolution is quantitative, not logical: the recurrence time for macroscopic $N$ is stupendous (estimates run to $10^{10^{N}}$-ish multiples of any human timescale), and the theorem is silent about \emph{when}. The moral for us is structural: Hamiltonian dynamics is, at the level of the invariant measure, \emph{reversible and recurrent}, and the arrow of time in thermodynamics must therefore be a statement about initial conditions and timescales, not about the mechanics. The mechanics has no arrow; we've just proven it.
-\section{Statistical Distributions and the Liouville Equation}\label{sec:statistical}
-
-\subsection{Distributions on phase space}
-
-A single classical state is a point of $\Gamma$. But points are an idealization: finite-precision preparation, or deliberate statistical description, hands us instead a \emph{probability distribution} $\rho(\xi, t) \geq 0$ on phase space, normalized against the Liouville volume,
-\begin{flalign}
-    \int_\Gamma \rho\;\, v = 1
-\end{flalign}
-(the geometry of \S\ref{sec:liouville} is what makes this well-defined without choosing coordinates), with expectation values
-\begin{flalign}
-    \langle f \rangle_\rho = \int_\Gamma f\, \rho\;\, v. \label{expectation}
-\end{flalign}
-A point state is the limiting case $\rho \to \delta$-function; everything in this section degenerates correctly in that limit.
-
-\subsection{The Liouville equation}
-
-How does $\rho$ evolve? The probability ascribed to a co-moving blob must be constant (states neither appear nor disappear; they just move), and the blob's volume is constant by Liouville's theorem; therefore \emph{the density along a trajectory is constant}:
-\begin{flalign}
-    0 = \dv{t}\,\rho\br{\xi(t), t} = \pdv{\rho}{t} + \dot{\xi}^\alpha\,\partial_\alpha \rho = \pdv{\rho}{t} + \cbr{\rho, H},
-\end{flalign}
-substituting Hamilton's equations \eqref{hameqs-xi} and recognizing the bracket \eqref{PB}. Rearranged:
-\begin{empheq}[box=\mathbox]{align}
-    \pdv{\rho}{t} = -\cbr{\rho, H} = \cbr{H, \rho}. \label{liouville-eq}
-\end{empheq}
-This is the \emph{Liouville equation}, the master evolution law of classical statistical mechanics. Note the sign relative to observable evolution \eqref{PB-evolution}: an observable evolves as $\dot{f} = +\cbr{f, H}$, the distribution as $\dot{\rho} = -\cbr{\rho,H}$. The two evolutions are dual through the pairing \eqref{expectation}, and the opposite signs are exactly what keeps expectation values consistent whether we evolve the observable and freeze the state or vice versa,
-\begin{flalign}
-    \dv{t}\,\langle f\rangle = \int f\,\cbr{H,\rho}\, v = \int \cbr{f, H}\,\rho\; v = \langle \cbr{f,H}\rangle
-\end{flalign}
-(the middle step moves the bracket across the integral by parts, using $\div X_H = 0$ from \S\ref{sec:liouville} to kill the boundary/divergence terms). The reader who has seen the Schr\"odinger--Heisenberg duality of quantum mechanics should be experiencing d\'ej\`a vu, and the next paragraph makes it official. Stationary distributions, $\pdv*{\rho}{t} = 0$, are those with $\cbr{\rho, H} = 0$, in particular any $\rho = F(H)$ (functions of conserved quantities); the microcanonical and canonical ensembles of statistical mechanics are exactly such choices, sitting at the end of this chain of reasoning as the invariant measures Liouville's theorem promised us.
-
-\subsection{The bridge to quantum mechanics}
-
-Assemble the classical structures in one column and their quantum counterparts in the other. Observables: functions on phase space $\longleftrightarrow$ Hermitian operators on Hilbert space. Bracket: $\cbr{f,g} \longleftrightarrow \frac{1}{i\hbar}[\hat{f},\hat{g}]$ (Dirac's correspondence, with the $i\hbar$ mandatory: see the box in \S\ref{sec:poisson}). Fundamental brackets \eqref{fundamental-PB}: $\cbr{q^a,p_b} = \delta^a_b \longleftrightarrow [\hat{q}^a,\hat{p}_b] = i\hbar\,\delta^a_b$. Generators and flows (\S\ref{sec:hamvf}): every observable generates a one-parameter group of canonical transformations $\longleftrightarrow$ every Hermitian operator generates a one-parameter unitary group $e^{-is\hat{f}/\hbar}$. Constants trivial in the generator (\S\ref{sec:hamvf}) $\longleftrightarrow$ global phase invisible. Observable evolution $\dot f = \cbr{f,H}$ $\longleftrightarrow$ Heisenberg's $\dv*{\hat{A}_H}{t} = \frac{1}{i\hbar}[\hat{A}_H, \hat{H}]$. State evolution \eqref{liouville-eq} $\longleftrightarrow$ von Neumann's $\pdv*{\hat\rho}{t} = \frac{1}{i\hbar}[\hat H, \hat\rho]$, sign flip included. Liouville's theorem, evolution preserves the measure $\longleftrightarrow$ unitarity, evolution preserves the inner product. The dictionary is too systematic to be coincidence, and it isn't one: quantization, in every one of its formulations (canonical, path-integral, deformation, geometric), is an attempt to promote precisely the symplectic structures of these notes to operator or amplitude form, and the classical column is not scaffolding to be discarded but the $\hbar \to 0$ skeleton the quantum theory is built on. Which is where these notes hand off to their companions: the path integral is what the tautological form's $\int p\,\dd q - H\,\dd t$ becomes when Dirac's ``$e^{iS/\hbar}$ corresponds to the propagator'' is taken with full seriousness, and the reader is warmly pointed there.
 
 \end{document}

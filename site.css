@@ -481,3 +481,33 @@ mjx-container ::selection, mjx-container::selection { background: rgba(115, 43, 
   .top nav { gap: 1.1rem; }
   #body, .prose { font-size: 1.05rem; }
 }
+
+/* ---- theorem-style environments (shared look with Panopticon's viewer and the printed PDF) ---- */
+#body { --k-result:#b0553d; --k-definition:#3a6ea5; --k-example:#4d7d58; --k-remark:#6d717a; --k-proof:#8a7f70; --k-box:#7e62a8; }
+#body .thm { --k: var(--k-result); margin: 1.5em 0; padding: 0.95em 1.25em 1em; border-radius: 10px;
+  background: color-mix(in srgb, var(--k) 6%, var(--paper)); border: 1px solid color-mix(in srgb, var(--k) 22%, transparent); }
+#body .thm-definition { --k: var(--k-definition); background: color-mix(in srgb, var(--k) 8%, var(--paper)); }
+#body .thm-example { --k: var(--k-example); border-style: dashed; background: color-mix(in srgb, var(--k) 4%, var(--paper)); }
+#body .thm-box { --k: var(--k-box); }
+#body .thm-remark { --k: var(--k-remark); background: none; border: 0; border-left: 2px solid color-mix(in srgb, var(--k) 40%, transparent); border-radius: 0; padding: 0 0 0 1.25em; }
+#body .thm-result { border-width: 0 0 0 3px; border-color: var(--k); border-radius: 4px 10px 10px 4px; font-style: italic; }
+#body .thm-result .thmhead, #body .thm-result mjx-container { font-style: normal; }
+#body .thm p:last-child { margin-bottom: 0; }
+#body .thmhead { font-variant-caps: all-small-caps; letter-spacing: 0.07em; font-weight: 600; color: var(--k); margin-right: 0.35em; }
+#body .thmhead mjx-container { font-variant-caps: normal; letter-spacing: 0; }
+#body .thmhead .th-n { font-variant-numeric: lining-nums; }
+#body .thmhead .thmname { font-variant-caps: normal; letter-spacing: 0; font-weight: 500; font-style: italic; color: var(--ink); }
+#body .thmhead .th-p { color: var(--ink); opacity: 0.5; }
+#body .thm-remark .thmhead { font-style: italic; font-variant-caps: normal; letter-spacing: 0; font-weight: 500; }
+#body .proof { margin: 0.6em 0 1.4em; padding-left: 1.25em; border-left: 1px solid color-mix(in srgb, var(--k-proof) 35%, transparent); }
+#body .pfhead { font-style: italic; font-weight: 500; margin-right: 0.3em; color: var(--k-proof); }
+#body .proof .qed { display: block; text-align: right; margin-top: -1.2em; color: var(--k-proof); font-size: 0.85em; }
+#body .proof.sol { border-left-color: color-mix(in srgb, var(--k-example) 45%, transparent); }
+#body .proof.sol .pfhead { color: var(--k-example); }
+#body h4 { font-size: 1.02em; font-weight: 600; margin: 1.4em 0 0.4em; }
+#body .runin { font-weight: 600; }
+#body .env { margin: 0.8em 0; }
+#body blockquote { margin: 1em 0; padding-left: 1.1em; border-left: 2px solid var(--rule); color: var(--mid); }
+#body .tikzph { display: flex; gap: 0.7em; margin: 1.2em auto; max-width: 34em; padding: 0.8em 1em; border-radius: 8px;
+  font-size: 0.85em; color: var(--mid); border: 1px dashed var(--rule); }
+#body .tex-defs { display: none; }
