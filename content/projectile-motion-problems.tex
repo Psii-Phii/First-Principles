@@ -286,48 +286,48 @@ We begin with a brief recap of projectile motion.
 
 The figure shows the same motion from two perspectives. The observer at the top sees only the orange points: motion along $x$ with uniform velocity. The observer on the right sees only the red points: motion along $y$, just like a ball thrown straight up and caught at the same height.
 
-This is the reliable way to deal with any projectile problem: treat the motion as two independent motions, analyze each direction on its own, and use time to link them. For example, the distance covered in $x$ depends entirely on how long the object spends in the air (ignoring bounces, air resistance, etc.).
+This is the reliable way to deal with any projectile problem: treat the motion as two independent motions, analyze each direction on its own, and use the information obtianed for one component to determine something about the other. For example, the distance covered in $x$ depends entirely on how long the object spends in the air (ignoring bounces, air resistance, etc.).
 
-With that, the four horsemen of kinematics are all we need.
+With that, we recall the kineamtic equations.
 \newpage
 
 \begin{textbox}[Essential Kinematic Equations] You should have a thorough, intuitive understanding of how each of these is derived.
 
 \begin{flalign}
-&v = u + at\\[4pt]
+&v = u + at\\[4pt] 
 &s = ut + \frac{1}{2} at^2\\[4pt]
 &v^2 = u^2 +2as\\[4pt]
-&s = \br{\frac{u +v}{2}} t
+&s = \br{\frac{u +v}{2}} t 
 \end{flalign}
-    Here $u$ is the initial velocity, $v$ the final velocity, $a$ the acceleration, $s$ the displacement and $t$ the time. These hold only when $a$ is constant, which is exactly the case for each component of projectile motion.
+    Here $u$ is the initial velocity, $v$ the final velocity, $a$ the acceleration, $s$ the displacement and $t$ the time. \textbf{These hold only when $a$ is constant}.
 \end{textbox}
 
 \begin{problem}
-    A projectile is launched from level ground with speed $u$ at angle $\theta$
+    A projectile is launched from level ground with speed $u$ and angle $\theta$
 above the horizontal. Find:
 \begin{enumerate}
-  \item[(a)] the time of flight $T$;
-  \item[(b)] the maximum height $H$;
-  \item[(c)] the range $R$, and the angle that maximizes it;
+  \item[(a)] the time of flight $T$.
+  \item[(b)] the maximum height $H$.
+  \item[(c)] the range $R$, and the angle that maximizes it.
   \item[(d)] the trajectory $y(x)$.
 \end{enumerate}
 \end{problem}
 
 \begin{solution}
 
-\textbf{(a)} As noted earlier, the time of flight depends only on the vertical motion, which here is along $\hat{y}$. So we solve
+\textbf{(a)} As noted earlier, the time of flight depends only on the vertical motion, which here is along $\hat{y}$. So 
     \begin{flalign}
         y(T) = 0 = u_y T + \frac{1}{2} a T^2 \label{eq:tof}
     \end{flalign}
-    Equation \eqref{eq:tof} has two solutions, which makes sense: $y = 0$ exactly at the beginning and at the end of the motion. So if one of your roots isn't zero, you've gone astray somewhere. Can you think of a property of this quadratic that makes this obvious?
+    Equation \eqref{eq:tof} has two solutions, which makes sense since $y = 0$ exactly at the beginning and at the end of the motion. So if one of your roots isn't zero, you've gone astray somewhere. Can you think of a property of quadratic equations that makes this obvious?
 
-    Now $u_y = u \sin{\theta}$ (Why?) and $a = -g$ (Why?). Plugging these in and taking the nonzero root,
+    Now $u_y = u \sin{\theta}$ (Why?) and $a = -g$ (Why?). Plugging these in and solvig for $T$ we get,
     \begin{flalign}
         T = \frac{2u \sin{\theta}}{g} \label{eq:T}
     \end{flalign}
     Can you think of another way to derive this same result?
 
-\textbf{(b)} At the maximum height the projectile stops rising for an instant, so $v_y = 0$ (Why?). We don't care about time here, so the horseman that doesn't involve $t$ is the natural choice:
+\textbf{(b)} At the maximum height the projectile stops for an instant, so $v_y = 0$ (Why?). We can use equation $(3)$ here (Why?)
     \begin{flalign}
         0 = u^2\sin^2{\theta} - 2gH
     \end{flalign}
@@ -341,9 +341,9 @@ above the horizontal. Find:
     \begin{flalign}
         R = u_x T = \frac{2u^2 \sin{\theta}\cos{\theta}}{g} = \frac{u^2 \sin{2\theta}}{g} \label{eq:R}
     \end{flalign}
-    This is exactly the point made at the start: the vertical motion sets the time, and the time sets the horizontal distance.
+    
 
-    $R$ is largest when $\sin{2\theta} = 1$, i.e.\ $\theta = 45^\circ$, giving $R_{\max} = u^2/g$. Notice that $\theta$ and $90^\circ - \theta$ give the same range. Why?
+    $R$ is largest when $\sin{2\theta} = 1$, i.e.\ $\theta = 45^\circ$, giving $R_{\max} = u^2/g$. Notice that $\theta$ and $90^\circ - \theta$ give the same range (Why?).
 
 \textbf{(d)} To get $y(x)$ we eliminate $t$. From the $x$-motion,
     \begin{flalign}
@@ -353,12 +353,12 @@ above the horizontal. Find:
     \begin{flalign}
         y(x) = x\tan{\theta} - \frac{g}{2u^2\cos^2{\theta}}\, x^2 \label{eq:traj}
     \end{flalign}
-    This is a downward-opening parabola. As a sanity check, set $y = 0$: you should recover $x = 0$ and $x = R$ from part (c).
+    This is a downward-opening parabola. As a check, set $y = 0$: you should recover $x = 0$ and $x = R$ from part (c).
 \end{solution}
 
 \newpage
 
-Before the next question, a quick word on relative motion.
+Before the next question, a quick review of relative motion.
 
 \begin{textbox}[Relative Motion]
 If $A$ and $B$ have positions $\vec r_A$ and $\vec r_B$, then the position of $A$ as seen by $B$ is
@@ -370,7 +370,7 @@ Differentiating once and then twice,
 &\vec v_{A/B} = \vec v_A - \vec v_B \label{eq:relv}\\[4pt]
 &\vec a_{A/B} = \vec a_A - \vec a_B \label{eq:rela}
 \end{flalign}
-So an observer moving at constant velocity measures the same accelerations we do; only the velocities shift. An accelerating observer sees every acceleration shifted by $-\vec a_B$.
+So an observer moving at constant velocity measures the same accelerations we do; only the velocities shift. An accelerating observer sees acceleration shifted by $-\vec a_B$.
 \end{textbox}
 
 \begin{problem}
@@ -384,21 +384,21 @@ A girl standing on the road holds her umbrella at $45^\circ$ to the vertical to 
 \begin{solution}
 Take $\hat x$ along the direction she runs and $\hat y$ upwards, and write the rain's velocity relative to the ground as $\vec v_r = v_x\,\hat x - v_y\,\hat y$.
 
-\textbf{(a)} While she stands still, the rain she sees is just $\vec v_r$ (Why?). The umbrella at $45^\circ$ tells us the rain arrives at $45^\circ$ to the vertical, so
+\textbf{(a)} While she stands still, the rain she sees is just $\vec v_r$ (Why?). The umbrella at $45^\circ$ tells us the rain falls at $45^\circ$ with respect to the vertical, so
 \begin{flalign}
 \tan{45^\circ} = \frac{v_x}{v_y} \quad\Longrightarrow\quad v_x = v_y
 \end{flalign}
-Once she runs with $\vec v_g = 15\,\hat x$, \eqref{eq:relv} gives the rain relative to her:
+Once she starts running with $\vec v_g = 15\,\hat x$, \eqref{eq:relv} gives the velocity of rain relative to her frame
 \begin{flalign}
 \vec v_{r/g} = \vec v_r - \vec v_g = (v_x - 15)\,\hat x - v_y\,\hat y
 \end{flalign}
-Vertical rain means the $\hat x$ component vanishes, so $v_x = 15$ and therefore $v_y = 15$:
+Vertical motion of rain implies that the $\hat x$ component vanishes, so $v_x = 15$ and therefore $v_y = 15$ thus
 \begin{flalign}
 |\vec v_r| = \sqrt{15^2 + 15^2} = 15\sqrt2 \approx 21.2~\mathrm{km/h}
 \end{flalign}
-at $45^\circ$ to the vertical, moving in the direction she runs. Which way was she tilting her umbrella while standing?
+at $45^\circ$ to the vertical, moving in the direction she runs. 
 
-\textbf{(b)} $\vec v_{r/g} = -15\,\hat y$, so the rain hits her at $15~\mathrm{km/h}$, straight down.
+\textbf{(b)} $\vec v_{r/g} = -15\,\hat y$, so the rain falls on her at $15~\mathrm{km/h}$, straight down.
 
 \begin{center}
 \websvg{figures/tikz-9dbd75f4.svg}
@@ -423,17 +423,17 @@ Everything here comes straight out of Problem 1.
 \begin{flalign}
 \sin{2\theta} = \sin{2\phi}
 \end{flalign}
-Why can't we just conclude $\theta = \phi$? Because $\sin x = \sin(180^\circ - x)$, so on $(0^\circ, 180^\circ)$ each value of sine is hit twice. Since $\theta \neq \phi$, we must have $2\phi = 180^\circ - 2\theta$, i.e.
+Why can't we just conclude $\theta = \phi$? Because $\sin x = \sin(180^\circ - x)$, so on $(0^\circ, 180^\circ)$ each value of sine is achieved twice. Since $\theta \neq \phi$, it  must be the case that $2\phi = 180^\circ - 2\theta$, i.e.
 \begin{flalign}
 \theta + \phi = 90^\circ
 \end{flalign}
 
-\textbf{(b)} From (a), $\sin\phi = \cos\theta$ (Why?). Using \eqref{eq:T} for both,
+\textbf{(b)} From (a), $\sin\phi = \cos\theta$ (Why?). Using \eqref{eq:T} ,
 \begin{flalign}
 t_\theta\, t_\phi = \frac{2u\sin{\theta}}{g}\cdot\frac{2u\cos{\theta}}{g} = \frac{2}{g}\cdot\frac{2u^2\sin{\theta}\cos{\theta}}{g} = \frac{2R}{g}
 \end{flalign}
 
-\textbf{(c)} Using \eqref{eq:H} for both, and $u^2\sin{\theta}\cos{\theta} = Rg/2$ from \eqref{eq:R},
+\textbf{(c)} Using \eqref{eq:H}, and $u^2\sin{\theta}\cos{\theta} = Rg/2$ from \eqref{eq:R},
 \begin{flalign}
 h_\theta\, h_\phi = \frac{u^2\sin^2{\theta}}{2g}\cdot\frac{u^2\cos^2{\theta}}{2g} = \frac{\br{u^2\sin{\theta}\cos{\theta}}^2}{4g^2} = \frac{(Rg/2)^2}{4g^2} = \frac{R^2}{16}
 \end{flalign}
@@ -443,7 +443,7 @@ What happens to $\theta$ and $\phi$ as $R$ approaches its maximum?
 \newpage
 
 \begin{problem}[The Cyclops takes aim]
-Blinded and furious, Polyphemus stands on a cliff $10~\mathrm{m}$ above the shore and hurls two boulders at Odysseus's escaping ship, both with speed $5\sqrt3~\mathrm{m/s}$: one straight out horizontally, the other at $60^\circ$ above the horizontal. Being blind, he throws them one after the other, and the two boulders smash into each other in mid-air at a point $P$, sparing the ship. Take the origin at the foot of the cliff directly below his hand, and $g = 10~\mathrm{m/s^2}$.
+Blinded and furious, Polyphemus stands on a cliff $10~\mathrm{m}$ above the shore and hurls two boulders at Odysseus's escaping ship, both with speed $5\sqrt3~\mathrm{m/s}$: one straight out horizontally, the other at $60^\circ$ above the horizontal. Being blind and guided by his rage, he throws them one after the other, and the two boulders smash into each other in mid-air at a point $P$, sparing the ship. Take the origin at the foot of the cliff directly below his hand, and $g = 10~\mathrm{m/s^2}$.
 \begin{enumerate}
   \item[(a)] Which boulder did he throw first?
   \item[(b)] Find the time interval between the two throws.
@@ -458,27 +458,27 @@ Blinded and furious, Polyphemus stands on a cliff $10~\mathrm{m}$ above the shor
 \begin{solution}
 Both boulders leave Polyphemus's hand at $(0, 10)$. To collide they must be at the same place \emph{at the same instant}.
 
-\textbf{(a)} Compare horizontal speeds. The horizontal boulder has $u_x = 5\sqrt3$, while the $60^\circ$ boulder only has $5\sqrt3\cos{60^\circ} = \tfrac{5\sqrt3}{2}$. So the $60^\circ$ boulder takes twice as long to reach any given $x$, and must be thrown first.
+\textbf{(a)} Compare horizontal speeds. The horizontal boulder has initial velocity $u_x = 5\sqrt3\; m/s$, while the $60^\circ$ boulder has an initial velocity of $5\sqrt3\cos{60^\circ} = \tfrac{5\sqrt3}{2}\; m/s $. So the $60^\circ$ boulder takes twice as long to reach any given $x$, and must be thrown first.
 
 \textbf{(b)} Let the $60^\circ$ boulder be thrown at $t = 0$ and the horizontal boulder a time $\Delta t$ later, so at time $t$ the horizontal boulder has been flying for $t_1 = t - \Delta t$. Then
 \begin{flalign}
 &\text{Horizontal boulder:} \quad x_1 = 5\sqrt3\, t_1, \qquad y_1 = 10 - 5t_1^2\\[4pt]
 &\text{$60^\circ$ boulder:} \quad x_2 = \tfrac{5\sqrt3}{2}\, t, \qquad y_2 = 10 + \tfrac{15}{2}\, t - 5t^2
 \end{flalign}
-Equal $x$ gives $t = 2t_1$, exactly as argued in (a). Equal $y$ then gives
+Equating for position gives $t = 2t_1$, as was surmised in the previous part. Equating the $y$ component then gives
 \begin{flalign}
 10 - 5t_1^2 = 10 + 15t_1 - 20t_1^2 \quad\Longrightarrow\quad 15t_1^2 = 15t_1
 \end{flalign}
-so $t_1 = 0$ or $t_1 = 1~\mathrm{s}$. The $t_1 = 0$ root is both boulders still in his hand (Why do we throw it out?). So $t_1 = 1~\mathrm{s}$, $t = 2~\mathrm{s}$, and
+so $t_1 = 0$ or $t_1 = 1~\mathrm{s}$. The root $t_1 = 0$  is for when both boulders were still in the giant's hand. So $t_1 = 1~\mathrm{s}$, $t = 2~\mathrm{s}$, and
 \begin{flalign}
 \Delta t = 1~\mathrm{s}
 \end{flalign}
 
-\textbf{(c)} Plugging $t_1 = 1~\mathrm{s}$ into the horizontal boulder,
+\textbf{(c)} Plugging $t_1 = 1~\mathrm{s}$ into the equation for the  horizontal boulder,
 \begin{flalign}
 P = \br{5\sqrt3,\ 5}~\mathrm{m} \approx (8.66,\ 5)~\mathrm{m}
 \end{flalign}
-Check with the other boulder: $y_2(2) = 10 + 15 - 20 = 5$.
+verifying with the other boulder: $y_2(2) = 10 + 15 - 20 = 5$.
 \end{solution}
 
 \newpage
@@ -492,15 +492,15 @@ A train moves along a straight track with constant acceleration $a$. Newton, bor
 \end{center}
 
 \begin{solution}
-This is easiest in the train frame. From \eqref{eq:rela}, the ball's acceleration relative to the train is
+First analysing in Newton's frame. From \eqref{eq:rela}, the ball's acceleration relative to the train is
 \begin{flalign}
 \vec a_{b/t} = \vec a_b - \vec a_t = -g\,\hat y - a\,\hat x
 \end{flalign}
-So in the train frame the ball is a projectile with an extra backward acceleration $a$. The speed and angle are given in the train frame, so
+So in the train frame the ball is a projectile with an negeative  acceleration $a$ in the horizontal component. Then using the parameters given in the train's frame of refrence,
 \begin{flalign}
 u_x = 10\cos{60^\circ} = 5, \qquad u_y = 10\sin{60^\circ} = 5\sqrt3
 \end{flalign}
-The vertical motion is unaffected by the train's acceleration (Why?), so \eqref{eq:T} still holds:
+The vertical motion is unaffected by the train's acceleration (Why?), so \eqref{eq:T} still holds
 \begin{flalign}
 T = \frac{2u_y}{g} = \sqrt3~\mathrm{s}
 \end{flalign}
@@ -520,15 +520,19 @@ In the train frame the ball's path looks like this (it drifts forward, then gets
 
 Let's check this in the ground frame. Say the train has speed $v_0$ at the throw. Once released, nothing pushes the ball horizontally, so $x_b = (v_0 + 5)T$. Newton rides the train and walks $1.15~\mathrm{m}$, so $x_{\text{N}} = v_0 T + \frac12 aT^2 + 1.15$. Setting these equal,
 \begin{flalign}
-5T = \frac{1}{2}aT^2 + 1.15
+5T = \frac{1}{2}aT^2 + 1.15.
 \end{flalign}
-the same equation as before. What should $a$ be so Newton catches the ball without moving? Is it safe to travel at such an $a$?
+ What should $a$ be so Newton catches the ball without moving? Is it safe to travel at such an $a$?
 
 Setting the walking distance to zero,
 \begin{flalign}
 5T = \frac{1}{2}aT^2 \quad\Longrightarrow\quad a = \frac{10}{T} = \frac{10}{\sqrt3} \approx 5.77~\mathrm{m/s^2} \approx 0.59\,g
 \end{flalign}
-In the train the effective gravity $\vec g - \vec a$ is tilted $\arctan(a/g) = 30^\circ$ back from the vertical, so the $60^\circ$ throw points straight ``up'' along it (Why?). A seated passenger can handle $0.59\,g$ for a few seconds, but anyone standing would need to lean $30^\circ$ forward to stay upright. Real trains stay around $0.1$--$0.15\,g$.
+In the train the effective gravity $\vec g - \vec a$ is tilted $\arctan(a/g) = 30^\circ$ back from the vertical, so the $60^\circ$ throw points straight ``up''.
+
+A passenger in a commercial airliner experiences atmost $0.4g$ during takeoff. 
+
+
 \end{solution}
 
 \newpage
@@ -548,7 +552,7 @@ From the top the ball starts with $v_y = 0$ (Why?) at height $h$ and falls under
 \begin{flalign}
 h = \frac{1}{2}g't'^2 \quad\Longrightarrow\quad t' = \sqrt{\frac{2h}{g'}} = \sqrt{0.81}\,\sqrt{\frac{2h}{g}} = 0.9\,t_a
 \end{flalign}
-where $t_a = \sqrt{2h/g}$ is the time the fall would have taken under $g$, which is the same as the time to go up (Why?). Gravity is vertical, so $v_x$ is untouched and the second half covers
+where $t_a = \sqrt{2h/g}$ is the time the fall would have taken under $g$, which is the same as the time to go up (Why?). Gravity is vertical, so $v_x$ is unaffected and the second half of the flight covers
 \begin{flalign}
 (v\cos{\theta})(0.9\,t_a) = 0.9\cdot\frac{d}{2} = 0.45\,d
 \end{flalign}
@@ -576,7 +580,7 @@ Two mountain peaks $A$ and $B$ rise from the same flat valley floor. Peak $A$ is
 \end{center}
 
 \begin{solution}
-Put the origin at the summit of $A$, with $x$ towards $B$ and $y$ up. Then the summit of $B$ is at $(40, -20)$. Notice that $B$ is \emph{below} the launch point, so $y$ comes out negative. At $45^\circ$ the two launch components are equal, $u_x = u_y = u/\sqrt2$, which keeps everything below clean.
+Put the origin at the summit of $A$, with $x$ towards $B$ and $y$ up. Then the summit of $B$ is at $(40, -20)$. Notice that $B$ is \emph{below} the launch point, so $y$ comes out negative. At $45^\circ$ the two launch components are equal, $u_x = u_y = u/\sqrt2$. There are other ways to choose the coordiantes one should do whats best for themselves.
 
 \textbf{(a)} We solve this three ways. They all give the same answer, but each one shows something different about the motion.
 
@@ -609,27 +613,27 @@ Now tilt the axes: $x'$ down the slope, $y'$ perpendicular to it. Gravity splits
 &x': \quad u_{x'} = u\cos\alpha, \qquad a_{x'} = +g\sin\beta\\[4pt]
 &y': \quad u_{y'} = u\sin\alpha, \qquad a_{y'} = -g\cos\beta
 \end{flalign}
-The $y'$ motion is the clock. It is an ordinary up-and-down throw under a weaker gravity $g\cos\beta$, and it ends when the ball comes back to the slope. This is Problem 1(a) with $g \to g\cos\beta$:
+The $y'$ component determines the time of flight. This is identical to Problem 1(a) with $g \to g\cos\beta$:
 \begin{flalign}
 T = \frac{2u\sin\alpha}{g\cos\beta} = \frac{3u}{10\sqrt2}
 \end{flalign}
-The $x'$ motion is \emph{not} uniform this time (Why?). Gravity helps the ball down the slope:
+The $x'$ motion is \emph{not} uniform this time (Why?).
 \begin{flalign}
 L = u\cos\alpha\, T + \frac{1}{2}\, g\sin\beta\, T^2 = \frac{3u^2}{20\sqrt5} + \frac{9u^2}{40\sqrt5} = \frac{3u^2}{8\sqrt5}
 \end{flalign}
-The first term is how far the ball's own speed carries it along the slope, the second is the extra distance gravity drags it. Setting $L = 20\sqrt5$,
+The first term is how far the ball's own speed carries it along the slope, the second is the assist from gravity. Setting $L = 20\sqrt5$,
 \begin{flalign}
 u^2 = \frac{800}{3}
 \end{flalign}
-the same as \eqref{eq:u7}. What does this reduce to when $\beta = 0$?
+ same as \eqref{eq:u7}. What does this reduce to when $\beta = 0$?
 
-\textbf{Method 3: falling away from the launch line.} Without gravity the ball would move in a straight line along its $45^\circ$ launch direction, and at $x = 40$ it would be $40~\mathrm{m}$ \emph{above} $A$. Gravity pulls it below that line by $\frac12 gt^2$, exactly like a dropped ball (Why?). To land on $B$, gravity has to pull it down $40 + 20 = 60~\mathrm{m}$:
+\textbf{Method 3: falling away from the launch line.} Without gravity the ball would move in a straight line along its $45^\circ$ launch direction, and at $x = 40$ it would be $40~\mathrm{m}$ \emph{above} $A$. Gravity pulls it below that line by $\frac12 gt^2$. To land on $B$, gravity has to pull it down $40 + 20 = 60~\mathrm{m}$:
 \begin{flalign}
 \frac{1}{2}(10)\,T^2 = 60 \quad\Longrightarrow\quad T = 2\sqrt3~\mathrm{s}
 \end{flalign}
 The horizontal motion is uniform, so
 \begin{flalign}
-u\cos{45^\circ}\cdot T = 40 \quad\Longrightarrow\quad u = \frac{40\sqrt2}{2\sqrt3} = 20\sqrt{\tfrac{2}{3}}
+u\cos{45^\circ}\cdot T = 40 \quad\Longrightarrow\quad u = \frac{40\sqrt2}{2\sqrt3} = 20\sqrt{\tfrac{2}{3}} \; m/s
 \end{flalign}
 No formulas needed, and the time of flight comes out first. Keep this picture in mind for part (d).
 
@@ -637,9 +641,9 @@ No formulas needed, and the time of flight comes out first. Keep this picture in
 \begin{flalign}
 T = 2\sqrt3 \approx 3.46~\mathrm{s}
 \end{flalign}
-Why can't we use $T = 2u\sin\theta/g$ here? That formula assumed the ball lands at the height it was thrown from. Here it lands $20~\mathrm{m}$ lower, so it stays in the air longer.
+Why can't we use $T = 2u\sin\theta/g$ here?
 
-The greatest height is where $v_y = 0$. The climb only depends on $u_y$, not on where the ball lands, so \eqref{eq:H} still holds:
+The greatest height is where $v_y = 0$ and only depends on $u_y$, so \eqref{eq:H} still holds
 \begin{flalign}
 H_A = \frac{u^2\sin^2{45^\circ}}{2g} = \frac{400/3}{20} = \frac{20}{3} \approx 6.7~\mathrm{m}
 \end{flalign}
@@ -663,23 +667,15 @@ The ball comes back down to summit height ($y = -20$) at $x = 10 + \sqrt{500} \a
 \begin{flalign}
 y = x - 60
 \end{flalign}
-This is the launch line shifted down by $60~\mathrm{m}$, the same gap as in Method 3. The ball hits the face when gravity has pulled it $60~\mathrm{m}$ below the launch line:
 \begin{flalign}
 \frac{x^2}{20} = 60 \quad\Longrightarrow\quad x = 20\sqrt3 \approx 34.6~\mathrm{m}, \qquad y \approx -25.4~\mathrm{m}
 \end{flalign}
-Is this point actually on the face? The face reaches the valley floor ($y = -30$) at $x = 30$, so it runs from $x = 30$ to $x = 40$, and our point is inside that range. At $x = 30$ the ball is still at $y = -15$, above the floor, so it doesn't land on the floor first (Why do we need both checks?). Measured along the face, the ball lands
+ The face reaches the valley floor ($y = -30$) at $x = 30$, so it runs from $x = 30$ to $x = 40$, and our point is inside that range. At $x = 30$ the ball is still at $y = -15$, above the floor, so it doesn't land on the floor first. Measured along the face, the ball lands
 \begin{flalign}
 \frac{40 - 20\sqrt3}{\cos{45^\circ}} = \br{40 - 20\sqrt3}\sqrt2 \approx 7.6~\mathrm{m}
 \end{flalign}
 below $B$'s summit. What changes if $B$'s face were at $60^\circ$ instead?
 \end{solution}
-
-
- \href{https://en.wikipedia.org/wiki/Projectile_motion#Projectile_motion_on_a_planetary_scale}{Nice wikipedia section Covering a very advanced case}.
-
-
-\href{https://}{text}
-
 
 
 
