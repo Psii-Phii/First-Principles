@@ -1,0 +1,562 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{physics}
+\usepackage{empheq}
+\usepackage[most]{tcolorbox}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,patterns,decorations.pathmorphing}
+\providecommand{\br}[1]{\left(#1\right)}
+\providecommand{\sbr}[1]{\left[#1\right]}
+\providecommand{\cbr}[1]{\left\{#1\right\}}
+\providecommand{\mc}[1]{\mathcal{#1}}
+\providecommand{\bk}[2]{\left\langle#1\middle|#2\right\rangle}
+\providecommand{\kb}[2]{\left|#1\middle\rangle\middle\langle#2\right|}
+\providecommand{\com}[2]{\left[#1,#2\right]}
+\providecommand{\mat}[1]{\begin{bmatrix}#1\end{bmatrix}}
+\providecommand{\R}{\mathbb{R}}
+\providecommand{\C}{\mathbb{C}}
+\newtcbox{\mathbox}{nobeforeafter,colback=white,colframe=black,boxrule=0.5pt,arc=3pt}
+% ==== Panopticon · Format (change it in the Format panel, or edit here) ====
+% panopticon-format: {"paper": "a4", "margin_top": 25, "margin_bottom": 25, "margin_left": 20, "margin_right": 20, "size": "12pt", "font": "cm", "spacing": 1.0, "paragraphs": "space", "head_l": "", "head_c": "", "head_r": "", "foot_l": "", "foot_c": "{page}", "foot_r": "", "head_rule": false, "theorems": "boxes", "colors": {}, "air": "comfortable"}
+\usepackage[a4paper,top=25mm,bottom=25mm,left=20mm,right=20mm,headheight=15pt]{geometry}
+\setlength{\parskip}{0.7em plus 0.2em minus 0.1em}\setlength{\parindent}{0pt}
+\setlength{\jot}{0.6em}\allowdisplaybreaks[2]
+\makeatletter\g@addto@macro\normalsize{\setlength\abovedisplayskip{0.9em plus 0.3em minus 0.2em}\setlength\belowdisplayskip{0.9em plus 0.3em minus 0.2em}\setlength\abovedisplayshortskip{0.4em plus 0.2em}\setlength\belowdisplayshortskip{0.7em plus 0.2em minus 0.1em}}\makeatother
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\usepackage{fancyhdr}\pagestyle{fancy}\fancyhf{}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\cfoot{\thepage}\renewcommand{\headrulewidth}{0pt}}
+\usepackage{panopticon-thm}  % boxed theorems, like the viewer
+% ==== end Format ====
+\makeatletter\providecommand{\websvg}{}\renewcommand{\websvg}[1]{\filename@parse{#1}\IfFileExists{\filename@area\filename@base.pdf}{\begingroup\centering\includegraphics[width=0.75\linewidth]{\filename@area\filename@base.pdf}\par\endgroup}{\fbox{\small figure on the website: \texttt{\detokenize{#1}}}}}\makeatother  % Panopticon: \websvg prints the .pdf beside each .svg
+\usepackage[hidelinks]{hyperref}
+
+\title{Rabi Flopping I: The Atom--Field Interaction}
+\author{RK}
+\date{}
+% your extra \newcommand lines go here (one per line)
+\newcommand{\dge}{\mel{g}{\vu{d}}{e}}
+\newcommand{\HA}{\hat{H}_{\mathrm{A}}}
+\newcommand{\HAF}{\hat{H}_{\mathrm{AF}}}
+\newcommand{\HI}{\hat{H}_{I}}
+\newcommand{\sig}{\hat{\sigma}}
+\newcommand{\UA}{\hat{U}_{\mathrm{A}}}
+\definecolor{kept}{HTML}{1D9E75}
+\definecolor{dropped}{HTML}{D85A30}
+\definecolor{axisgray}{HTML}{888780}
+\tikzset{photon/.style={decorate,decoration={snake,amplitude=1.6pt,segment length=5pt,post length=5pt},-{Stealth[length=5pt]}}}
+\tikzset{lvl/.style={line width=1.1pt}}
+
+
+%% ---- definitions from your own packages, so the website can show the same maths ----
+\newtheorem{#1}{#3}[section]}{\newtheorem{#1}[#2]{#3}}}
+\newtheorem{#1}[#2]{#3}}}
+\newtheorem{theorem}{Theorem}[section]}{}
+\newtheorem{claim}{Claim}}{\newtheorem{claim}{Claim}[theorem]}}{}
+\newtheorem{claim}{Claim}[theorem]}}{}
+\newtheorem{corollary}[claim]{Corollary}}}{}
+\newtheorem{definition}{Definition}[section]}{}
+\newtheorem{axiom}{Axiom}[section]}{}
+\newtheorem{example}{Example}[section]}{}
+\newtheorem*{remark}{Remark}}{}
+\newtheorem*{note}{Note}}{}
+\let\Axiom\axiom\let\endAxiom\endaxiom}{}   % dhortthms spelling%
+\let\endAxiom\endaxiom}{}   % dhortthms spelling%
+\newtheorem{exercise}{Exercise}[section]}{}%
+\newtheorem{problem}{Problem}[section]}{}%
+\newtheorem{question}{Question}[section]}{}%
+%% ----
+\begin{document}
+\maketitle
+
+% Transcribed from handwritten notes (Sep 15 2026 notebook, pp. 15-29), reorganized into one linear
+% pass following Steck, Quantum and Atom Optics, 5.1-5.1.5.2. Repeated passages merged; asides kept
+% only where they carry content. Sections 6.1 and 6.2 are ADDED from Steck (screenshots provided by
+% RK), written in the spirit of the notes. Chat-derived augmentations marked % ADDED.
+% Notation pass (RK request): hats on ALL operators; classical fields and numbers bare; tilde marks
+% rotating-frame quantities (on operators the tilde replaces the hat to avoid stacked accents).
+
+
+
+\section{The setup}\label{sec:setup}
+
+We shine a laser at an atom, i.e.\ an electromagnetic field. We wish to model this atom--field interaction. The Hamiltonian splits as
+\begin{flalign}
+\hat{H} &= \HA + \HAF, &&
+\end{flalign}
+where $\HA$ describes the atom alone and $\HAF$ the atom--field coupling. For a hydrogen-like atom,
+\begin{flalign}
+\HA &= \frac{\hat{p}^2}{2m} - \frac{e^2}{4\pi\varepsilon_0 \hat{r}}, \qquad \hat r = \abs{\vu{r}_{\mathrm{e}}}, &&
+\end{flalign}
+which has infinitely many eigenstates (energy levels).
+
+\subsection*{The field}
+
+We assume the field is monochromatic,
+\begin{flalign}
+\vb{E}(t) &= \vu*{\varepsilon}\, E_0 \cos(\omega t), \qquad \vu*{\varepsilon} \equiv \text{unit polarization vector}. &&
+\end{flalign}
+We can evaluate the field at the atom's position and drop its spatial dependence, the \emph{dipole} (long-wavelength) approximation, valid since $\lambda \gg \text{length of the atom}$: the field is essentially uniform across the atom. We further split the field into its two frequency components,
+\begin{flalign}
+\vb{E}(t) &= \vu*{\varepsilon}\,\frac{E_0}{2}\br{e^{-i\omega t} + e^{i\omega t}}
+= \vb{E}_0^{(+)} e^{-i\omega t} + \vb{E}_0^{(-)} e^{i\omega t}
+\equiv \vb{E}^{(+)}(t) + \vb{E}^{(-)}(t). &&
+\end{flalign}
+By convention $e^{-i\omega t}$ is called the \emph{positive-frequency} component (the same form as a stationary state $e^{-iEt/\hbar}$ with $E>0$) and $e^{+i\omega t}$ the \emph{negative-frequency} component. The two are complex conjugates, so their sum is real.
+
+The interaction Hamiltonian is
+\begin{flalign}
+\HAF &= -\vu{d}\cdot\vb{E}, \qquad \vu{d} = -e\,\vu{r}_{\mathrm{e}}, &&
+\end{flalign}
+with $\vu{r}_{\mathrm{e}}$ the position operator of the electron relative to the nucleus and $e>0$ the fundamental charge (electron charge $q=-e$). Note $\vu d\cdot\vb E = \hat d_x E_x + \hat d_y E_y + \hat d_z E_z$ is a single scalar operator: a vector of operators dotted into a vector of numbers.
+% ADDED: sign check from chat (Griffiths 4.1) - the notes cite this result without derivation
+\begin{remark}
+The minus sign is the classical dipole energy $U = -\vb{p}\cdot\vb{E}$. Quick check: a uniform field comes from the potential $V(\vb{r}) = -\vb{E}\cdot\vb{r}$, and the electron's potential energy is $qV(\vb{r}_{\mathrm{e}}) = (-e)(-\vb{E}\cdot\vb{r}_{\mathrm{e}}) = -\vu{d}\cdot\vb{E}$ using $\vu d = -e\vu r_{\mathrm{e}}$. Energy is lowest when the dipole is aligned along the field, similar to a compass needle along $\vb B$.
+\end{remark}
+
+\section{Two-level atom}\label{sec:twolevel}
+
+We will approximate the atom to be a two-level system. However the atom's state is in actuality a superposition over \emph{all} its eigenstates ($\HA\ket{m} = E_m\ket{m}$, $\bk{n}{m} = \delta_{nm}$),
+\begin{flalign}
+\ket{\psi(t)} &= \sum_m c_m(t)\ket{m}. &&
+\end{flalign}
+Apply the Schr\"odinger equation $i\hbar\,\partial_t\ket\psi = \hat H\ket\psi$ with $\hat H = \HA - \vu d\cdot\vb E$. The kets are fixed basis vectors,so the time dpendanc is carried by the coefficents.
+\begin{flalign}
+i\hbar \sum_m \dot{c}_m \ket{m}
+&= \sum_m c_m E_m \ket{m} - \sum_m c_m \br{\vu{d}\cdot\vb{E}}\ket{m}. &&
+\end{flalign}
+Separate the classical field from the operator content,
+\begin{flalign}
+\vu{d}\cdot\vb{E}(t) &= E_0\cos(\omega t)\,\br{\vu*{\varepsilon}\cdot\vu{d}}, &&
+\end{flalign}
+and project onto $\bra{n}$; orthonormality collapses the first two sums to their $m=n$ terms, while the interaction sum survives because the matrix $\br{\vu*{\varepsilon}\cdot\vb d}_{nm} \equiv \mel{n}{\vu*{\varepsilon}\cdot\vu d}{m}$ is not diagonal:
+\begin{flalign}
+i\hbar\,\dot c_n &= E_n c_n - E_0\cos(\omega t)\sum_m \br{\vu*{\varepsilon}\cdot\vb{d}}_{nm} c_m, &&
+\label{eq:multilevel}
+\end{flalign}
+a coupling of every level to every other level. (The diagonal term alone is pure phase rotation, $c_n \propto e^{-iE_n t/\hbar}$; all population transfer comes through the off-diagonal matrix elements.)
+
+\subsection{Parity and the dipole operator}\label{sec:parity}
+
+The parity operator $\hat\Pi$ flips the sign of the position operator; it is defined by
+\begin{flalign}
+\hat\Pi\, \vu{r}_{\mathrm{e}}\, \hat\Pi^\dagger &= -\vu{r}_{\mathrm{e}}, \qquad \hat\Pi = \hat\Pi^{-1} = \hat\Pi^\dagger, \qquad \hat\Pi^2 = 1, &&
+\end{flalign}
+and since $\vu d = -e\vu r_{\mathrm{e}}$ it flips the dipole operator too: $\hat\Pi\vu d\,\hat\Pi^\dagger = -\vu d$. Multiplying the first relation by $\hat\Pi$ from the right,
+\begin{flalign}
+\hat\Pi\, \vu{r}_{\mathrm{e}} &= -\vu{r}_{\mathrm{e}}\, \hat\Pi
+\quad\Longrightarrow\quad
+\cbr{\hat\Pi, \vu{r}_{\mathrm{e}}} = 0,
+&&
+\end{flalign}
+% CHECK: the notes write [Pi, r_e] = 0 (commutator) but the computation that follows uses
+% Pi r + r Pi, i.e. the anticommutator; the anticommutator is the correct statement.
+so $\hat\Pi$ and $\vu r_{\mathrm{e}}$ \emph{anticommute}. Sandwich this between parity eigenstates $\ket{a}, \ket{b}$ with eigenvalues $\pi_a, \pi_b = \pm 1$:
+\begin{flalign}
+0 = \mel{a}{\br{\hat\Pi \vu r_{\mathrm{e}} + \vu r_{\mathrm{e}} \hat\Pi}}{b}
+&= \br{\pi_a + \pi_b} \mel{a}{\vu r_{\mathrm{e}}}{b}. &&
+\end{flalign}
+Hence
+\begin{flalign}
+\mel{n}{\vu{d}}{m} \neq 0 \quad\Longleftrightarrow\quad \ket{n} \text{ and } \ket{m} \text{ have opposite parity} \;(\pi_n \pi_m = -1). &&
+\end{flalign}
+In particular the diagonal elements vanish:
+\begin{flalign}
+\mel{g}{\vu d}{g} &= \mel{e}{\vu d}{e} = 0. &&
+\label{eq:nodiag}
+\end{flalign}
+An atom in an energy eigenstate has no permanent dipole moment.
+
+Selection rules therefore sparsify the sum in \eqref{eq:multilevel}. Heuristically, we then consider \emph{near-resonant} interactions, so that transitions to all the other levels are negligible: a drive detuned from a transition by $\delta$ can only ever move population $\sim(\Omega/\delta)^2$ into it, and every level but one is very far detuned. Let the two surviving states be
+\begin{flalign}
+\text{ground state } \ket{g}, \qquad \text{excited state } \ket{e}, \qquad \text{resonant frequency } \omega_0, &&
+\end{flalign}
+and define the \emph{detuning}
+\begin{flalign}
+\Delta &\coloneqq \omega - \omega_0. &&
+\end{flalign}
+Keeping only $n, m \in \cbr{g, e}$ in \eqref{eq:multilevel} and using \eqref{eq:nodiag}, the multi-level system collapses to two coupled equations,
+\begin{flalign}
+i\hbar\,\dot{c}_g &= E_g c_g - E_0\cos(\omega t)\br{\vu*{\varepsilon}\cdot\vb{d}}_{ge}\, c_e, \qquad
+i\hbar\,\dot{c}_e = E_e c_e - E_0\cos(\omega t)\br{\vu*{\varepsilon}\cdot\vb{d}}_{eg}\, c_g, &&
+\label{eq:twolevelODE}
+\end{flalign}
+which we will reproduce from the two-level Hamiltonian below.
+
+\begin{figure}[h]\centering
+\websvg{figures/tikz-606032eb.svg}
+\caption{The two-level atom. The laser photon $\hbar\omega$ nearly bridges the gap $\hbar\omega_0$; the shortfall is the detuning $\Delta = \omega - \omega_0$ (drawn with $\Delta < 0$).}
+\label{fig:twolevel}
+\end{figure}
+
+\subsection{The free atomic Hamiltonian}\label{sec:HA}
+
+Within the two-level approximation the free Hamiltonian is
+\begin{flalign}
+\HA &= \hbar\omega_0 \kb{e}{e}, &&
+\label{eq:HA}
+\end{flalign}
+if we take the ground-state energy to be zero. Why? Any Hamiltonian can be written in terms of its own eigenstates: from $\HA\ket{n} = E_n\ket{n}$ with $\bk{m}{n} = \delta_{mn}$,
+\begin{flalign}
+\HA &= \sum_n E_n \kb{n}{n} &&
+\end{flalign}
+(check by acting on any $\ket{m}$). Keeping only two levels,
+\begin{flalign}
+\HA &= E_g \kb{g}{g} + E_e \kb{e}{e}. &&
+\end{flalign}
+
+To see that we may set $E_g = 0$, follow the state. In the Schr\"odinger picture, with $\ket{\psi(0)} = c_g\ket{g} + c_e\ket{e}$ and $\HA$ time independent, the coefficients obey (projecting the Schr\"odinger equation onto $\bra{g}$ and $\bra{e}$, which decouples because we are in the eigenbasis of $\HA$)
+\begin{flalign}
+i\hbar\,\partial_t c_g = E_g c_g, \qquad i\hbar\,\partial_t c_e = E_e c_e
+\quad\Longrightarrow\quad
+\ket{\psi(t)} = c_g e^{-iE_g t/\hbar}\ket{g} + c_e e^{-iE_e t/\hbar}\ket{e}. &&
+\label{eq:freeevo}
+\end{flalign}
+The same follows from the propagator $\hat U = e^{-i\HA t/\hbar}$, expanding the exponential as its power series and letting each $\HA^k$ act on the eigenstates ($\HA^k\ket{g} = E_g^k\ket{g}$, and likewise for $\ket e$):
+\begin{flalign}
+\hat U \ket{\psi(0)}
+&= \sum_k \frac{1}{k!}\br{\frac{-it}{\hbar}}^k \HA^k \br{c_g\ket g + c_e\ket e} \nonumber\\
+&= c_g \sum_k \frac{1}{k!}\br{\frac{-itE_g}{\hbar}}^k \ket{g} + c_e \sum_k \frac{1}{k!}\br{\frac{-itE_e}{\hbar}}^k \ket{e}
+= c_g e^{-iE_g t/\hbar}\ket{g} + c_e e^{-iE_e t/\hbar}\ket{e}: &&
+\end{flalign}
+on an eigenstate, the operator exponential collapses to an ordinary exponential of the eigenvalue. Factoring out the ground-state phase,
+\begin{flalign}
+\ket{\psi(t)} &= e^{-iE_g t/\hbar}\sbr{c_g\ket{g} + c_e e^{-i\omega_0 t}\ket{e}},
+\qquad \omega_0 = \frac{E_e - E_g}{\hbar}. &&
+\end{flalign}
+The prefactor is a global phase, $e^{i\alpha}$ with $\alpha = -E_g t/\hbar$: it cancels in every probability and expectation value, and in the density operator,
+\begin{flalign}
+\abs{\bk{\phi}{\psi}}^2 = \abs{e^{i\alpha}}^2 \abs{\bk{\phi}{\psi'}}^2, \qquad
+\expval{\hat A}{\psi} = e^{-i\alpha} e^{i\alpha} \expval{\hat A}{\psi'}, \qquad
+\kb{\psi}{\psi} = \kb{\psi'}{\psi'}, &&
+\end{flalign}
+where $\ket{\psi'}$ is the bracketed state. So it is unobservable and we drop it,
+\begin{flalign}
+\ket{\psi(t)} &= c_g\ket{g} + c_e e^{-i\omega_0 t}\ket{e}. &&
+\label{eq:freestate}
+\end{flalign}
+Only the \emph{relative} phase $e^{-i\omega_0 t}$ survives, and it is physical (it is what makes $\expval{\vu d}$ oscillate at $\omega_0$). Differentiating \eqref{eq:freestate},
+\begin{flalign}
+i\hbar\,\dv{t}\ket{\psi(t)} &= 0 + \hbar\omega_0\, c_e e^{-i\omega_0 t}\ket{e}, &&
+\end{flalign}
+and the operator that produces exactly this when acting on $\ket{\psi(t)}$ is $\hbar\omega_0\kb{e}{e}$. That is \eqref{eq:HA}: compare $\hat H = \sum_n E_n\kb{E_n}{E_n}$ with $E_g = 0$.
+
+\subsection{The dipole operator in the two-level basis}\label{sec:dipole}
+
+Insert the identity $1 = \kb{g}{g} + \kb{e}{e}$ on both sides of $\vu d$ and use \eqref{eq:nodiag}:
+\begin{flalign}
+\vu{d} = 1\,\vu d\,1
+&= \mel{g}{\vu d}{g}\kb{g}{g} + \dge \kb{g}{e} + \mel{e}{\vu d}{g} \kb{e}{g} + \mel{e}{\vu d}{e}\kb{e}{e} \nonumber\\
+&= \dge \kb{g}{e} + \mel{e}{\vu d}{g} \kb{e}{g}. &&
+\end{flalign}
+We can choose the phases of $\ket g, \ket e$ such that $\dge$ is real; then $\mel{e}{\vu d}{g} = \dge^{*} = \dge$ and both matrix elements are equal. Defining the \emph{atomic lowering operator}
+\begin{flalign}
+\sig &\coloneqq \kb{g}{e}, &&
+\end{flalign}
+we can write the dipole operator as
+\begin{empheq}[box=\mathbox]{align}
+\vu{d} = \dge \br{\sig + \sig^\dagger}.
+\label{eq:dipoletwo}
+\end{empheq}
+Note $\sig^\dagger\sig = \kb{e}{g}\!\cdot\!\kb{g}{e} = \kb{e}{e}$. The total Hamiltonian becomes
+\begin{empheq}[box=\mathbox]{align}
+\hat H = \HA + \HAF = \hbar\omega_0\, \sig^\dagger\sig \;-\; \dge\cdot\vb{E}\,\br{\sig + \sig^\dagger}.
+\label{eq:Htotal}
+\end{empheq}
+
+\section{Rotating-wave approximation}\label{sec:rwa}
+
+Just like we decomposed the field into positive- and negative-rotating parts, we can do the same for the dipole operator:
+\begin{flalign}
+\vu d &= \dge\br{\sig + \sig^\dagger} = \vu d^{(+)} + \vu d^{(-)},
+\qquad \vu d^{(+)} = \dge\,\sig, \quad \vu d^{(-)} = \dge\,\sig^\dagger. &&
+\end{flalign}
+We do this because $\expval{\sig}$ has the unperturbed time dependence $e^{-i\omega_0 t}$ (the free evolution of $\ket{e}$), and thus corresponds to a positive frequency: from \eqref{eq:freestate},
+\begin{flalign}
+\expval{\sig} = \bk{\psi}{g}\bk{e}{\psi} = c_g^* c_e\, e^{-i\omega_0 t},
+\qquad
+\expval{\sig^\dagger} = \expval{\sig}^* = c_e^* c_g\, e^{+i\omega_0 t} \;\;\text{(negative frequency)}. &&
+\end{flalign}
+The interaction then splits into four terms,
+\begin{flalign}
+\HAF &= -\br{\vu d^{(+)} + \vu d^{(-)}}\cdot\br{\vb E^{(+)} + \vb E^{(-)}} \nonumber \\
+&= -\vu d^{(+)}\!\cdot\vb E^{(+)} - \vu d^{(-)}\!\cdot\vb E^{(-)} - \vu d^{(+)}\!\cdot\vb E^{(-)} - \vu d^{(-)}\!\cdot\vb E^{(+)}. &&
+\label{eq:fourterms}
+\end{flalign}
+
+To sort these by speed, go to the \textbf{interaction picture}: factor the known free rotation out of the state. With
+\begin{flalign}
+\UA(t) &\equiv e^{-i\HA t/\hbar} = \kb{g}{g} + e^{-i\omega_0 t}\kb{e}{e},
+\qquad
+\ket{\psi(t)} = \UA(t)\ket{\psi_I(t)} &&
+\end{flalign}
+($\ket{\psi_I}$ is stationary if the laser is off), the Schr\"odinger equation gives
+\begin{flalign}
+i\hbar\br{\partial_t \UA\ket{\psi_I} + \UA\,\partial_t\ket{\psi_I}}
+&= \br{\HA + \HAF} \UA \ket{\psi_I}. &&
+\end{flalign}
+Differentiating $\UA$ directly (only the second projector carries a $t$),
+\begin{flalign}
+i\hbar\,\partial_t \UA = i\hbar\br{-i\omega_0} e^{-i\omega_0 t}\kb{e}{e} = \hbar\omega_0\, e^{-i\omega_0 t}\kb{e}{e} = \HA\, \UA, &&
+\end{flalign}
+so the $\HA$ terms cancel, and applying $\UA^\dagger$ from the left,
+\begin{flalign}
+i\hbar\,\partial_t \ket{\psi_I} &= \underbrace{\UA^\dagger \HAF \UA}_{\textstyle \HI(t)} \ket{\psi_I}. &&
+\label{eq:intpic}
+\end{flalign}
+The sandwiches are computed directly. Using $\sig = \kb{g}{e}$,
+\begin{flalign}
+\UA^\dagger\, \sig &= \br{\kb{g}{g} + e^{i\omega_0 t}\kb{e}{e}} \kb{g}{e} = \kb{g}{e}, \\
+\kb{g}{e}\, \UA &= \kb{g}{e}\br{\kb{g}{g} + e^{-i\omega_0 t}\kb{e}{e}} = e^{-i\omega_0 t}\kb{g}{e}, &&
+\end{flalign}
+and taking the dagger of the first result gives the $\sig^\dagger$ version (daggering reverses the order and conjugates the phase), so
+\begin{empheq}[box=\mathbox]{align}
+\UA^\dagger\, \sig\, \UA = \sig\, e^{-i\omega_0 t},
+\qquad
+\UA^\dagger\, \sig^\dagger\, \UA = \sig^\dagger e^{+i\omega_0 t}.
+\label{eq:sandwich}
+\end{empheq}
+The field is a c-number and passes through, so
+\begin{flalign}
+\HI(t) &= -\dge\cdot\vb E(t)\,\br{\sig\, e^{-i\omega_0 t} + \sig^\dagger e^{+i\omega_0 t}}. &&
+\end{flalign}
+Multiplying out against $\vb E = \vb E_0^{(+)}e^{-i\omega t} + \vb E_0^{(-)}e^{+i\omega t}$, the four terms of \eqref{eq:fourterms} appear with their phases explicit:
+\begin{flalign}
+\HI(t) = -\dge\cdot\Big[
+&\vb E_0^{(-)}\,\sig\, e^{+i(\omega-\omega_0)t}
++ \vb E_0^{(+)}\,\sig^\dagger e^{-i(\omega-\omega_0)t} \nonumber\\
+{}+{} &\vb E_0^{(+)}\,\sig\, e^{-i(\omega+\omega_0)t}
++ \vb E_0^{(-)}\,\sig^\dagger e^{+i(\omega+\omega_0)t}
+\Big]. &&
+\label{eq:HIfour}
+\end{flalign}
+In summary:
+\begin{center}
+\begin{tabular}{lll}
+term & time dependence & speed \\
+\hline
+$\vu d^{(+)}\!\cdot\vb E^{(-)} \;(\sim\sig)$ & $e^{-i\omega_0 t}e^{+i\omega t} = e^{+i\Delta t}$ & slow \\
+$\vu d^{(-)}\!\cdot\vb E^{(+)} \;(\sim\sig^\dagger)$ & $e^{+i\omega_0 t}e^{-i\omega t} = e^{-i\Delta t}$ & slow \\
+$\vu d^{(+)}\!\cdot\vb E^{(+)} \;(\sim\sig)$ & $e^{-i(\omega_0+\omega)t}$ & fast, $\approx 2\omega$ \\
+$\vu d^{(-)}\!\cdot\vb E^{(-)} \;(\sim\sig^\dagger)$ & $e^{+i(\omega_0+\omega)t}$ & fast, $\approx 2\omega$ \\
+\end{tabular}
+\end{center}
+
+Now, assuming
+\begin{flalign}
+\abs{\omega_0 - \omega} &\ll \omega + \omega_0, &&
+\end{flalign}
+we make the \textbf{rotating-wave approximation} (RWA)
+\begin{empheq}[box=\mathbox]{align}
+\HAF \simeq -\vu d^{(+)}\!\cdot\vb E^{(-)} - \vu d^{(-)}\!\cdot\vb E^{(+)}.
+\label{eq:HAFRWA}
+\end{empheq}
+
+\begin{figure}[h]\centering
+\websvg{figures/tikz-2005efe2.svg}
+\caption{The drive $\cos\omega t$ is two arrows of length $\tfrac12$ spinning at $\omega$ in opposite senses; their sum stays on the real axis. The atom's coherence rotates as $e^{-i\omega_0 t}$: one arrow turns \emph{with} it (co-rotating, kept, relative rate $\Delta$), the other \emph{against} it (counter-rotating, dropped, relative rate $\omega+\omega_0$).}
+\label{fig:phasors}
+\end{figure}
+
+\begin{figure}[h]\centering
+\websvg{figures/tikz-657c6c38.svg}
+\caption{The four terms of $-\vu d\cdot\vb E$ as energy bookkeeping (wavy arrow = one photon exchanged with the field). The kept terms nearly conserve energy: the photon pays for the jump. The dropped terms miss by $\approx 2\hbar\omega_0$: the atom is raised \emph{and} a photon is created, or the atom is lowered \emph{and} a photon is destroyed.}
+\label{fig:fourterms}
+\end{figure}
+
+% ADDED: the "why the fast terms do nothing" mechanism, from chat discussion
+\begin{remark}[Why the fast terms are negligible]
+The relative phase, not the strength, decides what a drive term accomplishes over time. To first order the excited amplitude is a sum of contributions from each instant, $c_e(t) \approx -\tfrac{i\Omega}{2}\int_0^t \sbr{e^{-i\Delta t'} + e^{i(\omega+\omega_0)t'}} \dd t'$. The slow term's contributions all point nearly the same way and add up ($\int \to t$ on resonance); the fast term's phase sweeps through all values at $\omega+\omega_0$, so its contributions interfere destructively with themselves and the integral stays bounded by $2/(\omega+\omega_0)$, never growing. It is pushing a swing at the wrong rhythm: half the pushes help, half oppose, and the phase slips out of step \emph{in time}. The ratio of accumulated effects is $\sim \Omega/\omega_0 \approx 10^{-9}$ for an optical transition. What little survives is not damping but a tiny shift of the resonance (the Bloch--Siegert shift, $\sim \Omega^2/4\omega_0$).
+\end{remark}
+
+\section{Rabi frequency}\label{sec:rabifreq}
+
+Writing out \eqref{eq:HAFRWA} explicitly, with $\vb E^{(\pm)}(t) = \vb E_0^{(\pm)} e^{\mp i\omega t}$, $\vb E_0^{(\pm)} = \vu*{\varepsilon}\, E_0/2$, and $\vu d^{(\pm)}$ from \eqref{eq:dipoletwo}:
+\begin{flalign}
+\HAF &= -\dge\cdot\vb E_0^{(-)}\, \sig\, e^{+i\omega t} - \dge\cdot\vb E_0^{(+)}\, \sig^\dagger e^{-i\omega t} \nonumber\\
+&= -\mel{g}{\vu*{\varepsilon}\cdot\vu d}{e}\,\frac{E_0}{2} \br{\sig\, e^{i\omega t} + \sig^\dagger e^{-i\omega t}}
+= \frac{\hbar\Omega}{2}\br{\sig\, e^{i\omega t} + \sig^\dagger e^{-i\omega t}}, &&
+\label{eq:HAFOmega}
+\end{flalign}
+where we have defined the \emph{Rabi frequency}.
+
+\begin{definition}[Rabi frequency]
+\begin{flalign}
+\Omega &\coloneqq -\frac{2\mel{g}{\vu*{\varepsilon}\cdot\vu{d}}{e}\, E_0^{(+)}}{\hbar}
+= -\frac{\mel{g}{\vu*{\varepsilon}\cdot\vu{d}}{e}\, E_0}{\hbar}
+\;\;\overset{\text{lin.\ pol.}}{=}\; -\frac{\mel{g}{\hat d_z}{e}\, E_0}{\hbar}. &&
+\end{flalign}
+$\Omega$ characterizes the strength of the atom--field coupling.
+\end{definition}
+
+% ADDED: interpretation from chat
+The name ``coupling strength'' is literal: $\hbar\Omega/2$ will appear below as the off-diagonal matrix element of the Hamiltonian, the energy that links $\ket g$ and $\ket e$ (with it zero, populations never change). It is a product of three factors: how strongly the transition responds to a field ($\dge$, a property of the atom), how well the polarization is aligned with the transition dipole ($\vu*{\varepsilon}$ in the dot product), and how strong the field is ($E_0 \propto \sqrt{I}$).
+
+\section{Schr\"odinger equation}\label{sec:SE}
+
+Take $\ket{\psi} = c_g\ket{g} + c_e\ket{e}$ in the Schr\"odinger picture with $\hat H = \hbar\omega_0\sig^\dagger\sig + \HAF$ from \eqref{eq:HAFOmega}. Act with $\hat H$ term by term, using $\sig\ket g = 0$, $\sig\ket e = \ket g$, $\sig^\dagger\ket g = \ket e$, $\sig^\dagger\ket e = 0$:
+\begin{flalign}
+\hbar\omega_0\,\sig^\dagger\sig \ket\psi &= \hbar\omega_0\, c_e\ket{e}, \\
+\frac{\hbar\Omega}{2}\br{\sig\, e^{i\omega t} + \sig^\dagger e^{-i\omega t}}\ket\psi
+&= \frac{\hbar\Omega}{2}\br{e^{i\omega t} c_e \ket{g} + e^{-i\omega t} c_g \ket{e}}. &&
+\end{flalign}
+Then $i\hbar\,\partial_t\ket{\psi} = \hat H\ket{\psi}$ reads (dividing through by $i\hbar$)
+\begin{flalign}
+\partial_t c_g \ket{g} + \partial_t c_e \ket{e}
+&= -i\omega_0\, c_e \ket{e} - \frac{i\Omega}{2} e^{i\omega t} c_e \ket{g} - \frac{i\Omega}{2} e^{-i\omega t} c_g \ket{e}. &&
+\end{flalign}
+Projecting onto $\bra{g}$ and $\bra{e}$, we get a set of coupled equations that involve oscillatory terms at optical frequencies:
+\begin{flalign}
+\partial_t c_g &= -\frac{i\Omega}{2}\, e^{i\omega t} c_e, \qquad
+\partial_t c_e = -i\omega_0\, c_e - \frac{i\Omega}{2}\, e^{-i\omega t} c_g. &&
+\label{eq:labframe}
+\end{flalign}
+(These are \eqref{eq:twolevelODE} with $E_g = 0$, $E_e = \hbar\omega_0$, and the fast half of the cosine already dropped by the RWA.)
+
+\section{Rotating frame}\label{sec:rotframe}
+
+At resonance ($\Delta = 0$, i.e.\ $\omega = \omega_0$) the precessions are phase-locked and should vanish in the proper coordinates: the atom's coherence and the laser phase both go round the complex plane at the same optical rate, so their \emph{relative} phase is constant, and all the fast rotation is common. Thus it is convenient to transform into a frame rotating at the laser frequency to eliminate the fast rotations. Let
+\begin{flalign}
+\tilde{c}_e &\coloneqq c_e\, e^{i\omega t} \qquad (\tilde c_g = c_g). &&
+\end{flalign}
+Product rule, then substitute $\partial_t c_e$ from \eqref{eq:labframe} and $c_e = \tilde c_e e^{-i\omega t}$:
+\begin{flalign}
+\partial_t \tilde{c}_e
+&= \br{\partial_t c_e} e^{i\omega t} + i\omega\, c_e\, e^{i\omega t} \nonumber\\
+&= \br{-i\omega_0\, c_e - \frac{i\Omega}{2} e^{-i\omega t} c_g} e^{i\omega t} + i\omega\, \tilde c_e
+= i\underbrace{\br{\omega - \omega_0}}_{\Delta}\tilde c_e - \frac{i\Omega}{2}\, c_g, &&
+\end{flalign}
+while in the $c_g$ equation the exponentials cancel exactly, $e^{i\omega t} c_e = \tilde c_e$:
+\begin{flalign}
+\partial_t c_g &= -\frac{i\Omega}{2}\, \tilde{c}_e, \qquad
+\partial_t \tilde{c}_e = i\Delta\, \tilde{c}_e - \frac{i\Omega}{2}\, c_g, &&
+\end{flalign}
+which is the system
+\begin{empheq}[box=\mathbox]{align}
+i\hbar \dv{t}
+\begin{pmatrix} \tilde c_g \\ \tilde c_e \end{pmatrix}
+=
+\begin{pmatrix} 0 & \hbar\Omega/2 \\ \hbar\Omega/2 & -\hbar\Delta \end{pmatrix}
+\begin{pmatrix} \tilde c_g \\ \tilde c_e \end{pmatrix}.
+\label{eq:rotframe}
+\end{empheq}
+The Hamiltonian is now \emph{time independent}. The cross terms denote the coupling between the two states: as $\abs{\Omega}$ goes up, the strength of the link between them goes up. So in the rotating frame we have
+\begin{flalign}
+\tilde H_{\mathrm{A}} &= -\hbar\Delta \kb{e}{e}, \qquad
+\tilde H_{\mathrm{AF}} = \frac{\hbar\Omega}{2}\br{\sig + \sig^\dagger}. &&
+\label{eq:rotH}
+\end{flalign}
+
+% ADDED: clarification from chat - two different "fast" removals
+\begin{remark}
+Two different fast things have now been removed, by two different moves. The RWA \emph{deleted} the counter-rotating terms at $\omega + \omega_0$ (an approximation). The rotating frame \emph{absorbed} the remaining common rotation at $\omega$ into the variables (an exact change of coordinates; nothing is lost, and $\abs{\tilde c_e}^2 = \abs{c_e}^2$). What is left of the optical frequencies is only the mismatch $\Delta$ on the diagonal, and at resonance even that vanishes.
+\end{remark}
+
+\subsection{Unitary transformations}\label{sec:unitary}
+% ADDED: section from Steck 5.1.5.1 (not in the handwritten notes), written to match them
+
+The rotating frame is a special case of a general fact worth having on its own: how does the Hamiltonian transform under a time-dependent unitary change of state, $\ket*{\tilde\psi} = \hat U\ket{\psi}$? Both states must satisfy the Schr\"odinger equation,
+\begin{flalign}
+i\hbar\,\partial_t \ket{\psi} = \hat H\ket{\psi}, \qquad
+i\hbar\,\partial_t \ket*{\tilde\psi} = \tilde H \ket*{\tilde\psi}, &&
+\end{flalign}
+where $\tilde H$ is the transformed Hamiltonian we want. Write the first equation in terms of $\ket*{\tilde\psi}$, using $\ket\psi = \hat U^\dagger\ket*{\tilde\psi}$:
+\begin{flalign}
+i\hbar\,\partial_t \br{\hat U^\dagger \ket*{\tilde\psi}} &= \hat H \hat U^\dagger \ket*{\tilde\psi}. &&
+\end{flalign}
+Expand the time derivative and operate on the left by $\hat U$:
+\begin{flalign}
+i\hbar\,\partial_t \ket*{\tilde\psi} + i\hbar\, \hat U \br{\partial_t \hat U^\dagger} \ket*{\tilde\psi} &= \hat U \hat H \hat U^\dagger \ket*{\tilde\psi}. &&
+\end{flalign}
+Noting that $\partial_t\br{\hat U \hat U^\dagger} = \br{\partial_t \hat U} \hat U^\dagger + \hat U\,\partial_t \hat U^\dagger = 0$ (unitarity), we can trade $\hat U\,\partial_t \hat U^\dagger = -\br{\partial_t \hat U}\hat U^\dagger$ and rewrite this as
+\begin{flalign}
+i\hbar\,\partial_t \ket*{\tilde\psi} &= \sbr{\, \hat U \hat H \hat U^\dagger + i\hbar \br{\partial_t \hat U} \hat U^\dagger \,} \ket*{\tilde\psi}. &&
+\end{flalign}
+Comparing to the Schr\"odinger equation in the transformed variables, we identify the transformation law:
+\begin{empheq}[box=\mathbox]{align}
+\tilde H = \hat U \hat H \hat U^\dagger + i\hbar\br{\partial_t \hat U} \hat U^\dagger
+\qquad \text{(time-dependent transformation)}.
+\label{eq:translaw}
+\end{empheq}
+The second term is the price of a moving frame; for time-independent $\hat U$ it reduces to the familiar $\tilde H = \hat U\hat H\hat U^\dagger$.
+
+The rotating frame of Section~\ref{sec:rotframe} is generated by
+\begin{flalign}
+\hat U &= e^{i\omega t \kb{e}{e}} = \kb{g}{g} + e^{i\omega t}\kb{e}{e}, &&
+\end{flalign}
+since
+\begin{flalign}
+\ket*{\tilde\psi} = \hat U\ket\psi = \hat U\br{c_g\ket g + c_e \ket e} = c_g \ket{g} + c_e e^{i\omega t}\ket{e} = c_g\ket g + \tilde c_e \ket e, &&
+\end{flalign}
+which is exactly the substitution $\tilde c_e = c_e e^{i\omega t}$. Now apply the law \eqref{eq:translaw} to $\hat H = \HA + \HAF$, piece by piece. The free part is diagonal, so it commutes with $\hat U$ and is unchanged:
+\begin{flalign}
+\hat U\, \hbar\omega_0\kb{e}{e}\, \hat U^\dagger &= \hbar\omega_0\, e^{i\omega t}\kb{e}{e} e^{-i\omega t} = \hbar\omega_0\kb{e}{e}. &&
+\end{flalign}
+The sandwich of the lowering operator works exactly as in \eqref{eq:sandwich}, with $\omega$ in place of $\omega_0$ and the roles of $\hat U, \hat U^\dagger$ swapped:
+\begin{flalign}
+\hat U \sig\, \hat U^\dagger = \sig\, e^{-i\omega t}, \qquad \hat U \sig^\dagger \hat U^\dagger = \sig^\dagger e^{+i\omega t}, &&
+\end{flalign}
+which kills the $e^{\pm i\omega t}$ factors in \eqref{eq:HAFOmega}:
+\begin{flalign}
+\hat U \HAF \hat U^\dagger &= \frac{\hbar\Omega}{2}\br{\sig\, e^{-i\omega t} e^{i\omega t} + \sig^\dagger e^{+i\omega t} e^{-i\omega t}} = \frac{\hbar\Omega}{2}\br{\sig + \sig^\dagger}. &&
+\end{flalign}
+The derivative term contributes
+\begin{flalign}
+i\hbar\br{\partial_t \hat U}\hat U^\dagger = i\hbar\br{i\omega\, e^{i\omega t}\kb{e}{e}} \br{\kb{g}{g} + e^{-i\omega t}\kb{e}{e}} = -\hbar\omega\kb{e}{e}. &&
+\end{flalign}
+Assembling,
+\begin{flalign}
+\tilde H &= \hbar\omega_0\kb{e}{e} + \frac{\hbar\Omega}{2}\br{\sig+\sig^\dagger} - \hbar\omega\kb{e}{e}
+= -\hbar\Delta\kb{e}{e} + \frac{\hbar\Omega}{2}\br{\sig+\sig^\dagger}, &&
+\end{flalign}
+recovering \eqref{eq:rotH}.
+
+\subsection{Digression: field operators}\label{sec:fieldops}
+% ADDED: section from Steck 5.1.5.2 (not in the handwritten notes), written to match them
+
+The rotating-frame transformation, where $\ket g$ and $\ket e$ become nearly degenerate, has a nice interpretation in the fully quantum treatment, where the field itself is an operator. The detailed derivation comes later (field quantization); the two facts we need on credit are these. A single-mode field is a quantum harmonic oscillator of frequency $\omega$ whose $n$th level means ``$n$ photons present''; and the positive-rotating field amplitude is proportional to the \emph{annihilation operator},
+\begin{flalign}
+\vb E^{(+)} \sim \hat a, \qquad \hat a = \sum_{n=1}^\infty \kb{n-1}{n}\sqrt{n},
+\qquad \vb E^{(-)} \sim \hat a^\dagger. &&
+\end{flalign}
+($\hat a$ removes one photon, $n \to n-1$; $\hat a^\dagger$ adds one. Expectation values of these operators reproduce the classical $e^{\mp i\omega t}$ time dependence.)
+
+In terms of the quantized field the combined Hamiltonian becomes
+\begin{flalign}
+\hat H_{\text{quantum}} &= \hbar\omega_0 \kb{e}{e} + \hbar g \br{\sig \hat a^\dagger e^{i\omega t} + \sig^\dagger \hat a\, e^{-i\omega t}}, &&
+\label{eq:Hquantum}
+\end{flalign}
+where $2g$ is called the \emph{one-photon Rabi frequency} (Jaynes--Cummings model, later). Compare the semiclassical
+\begin{flalign}
+\hat H_{\text{semiclassical}} &= \hbar\omega_0\kb{e}{e} + \frac{\hbar\Omega}{2}\br{\sig e^{i\omega t} + \sig^\dagger e^{-i\omega t}}: &&
+\end{flalign}
+same form, with field operators in place of numbers and a different coupling constant. Equation \eqref{eq:Hquantum} is in the interaction picture with respect to the field (the field operators carry the explicit $e^{\pm i\omega t}$), the field's own free Hamiltonian being
+\begin{flalign}
+\hat H_{\mathrm{F}} &= \hbar\omega\br{\hat a^\dagger \hat a + \tfrac12}. &&
+\end{flalign}
+Transforming \emph{out} of that picture with $\hat U_I = e^{i\hat H_{\mathrm{F}}t/\hbar}$ (the same transformation law \eqref{eq:translaw}, run backwards) gives the fully Schr\"odinger-picture Hamiltonian
+\begin{flalign}
+\tilde H_{\text{quantum}} &= \hbar\omega_0\kb{e}{e} + \hbar g\br{\sig \hat a^\dagger + \sig^\dagger \hat a} + \hbar\omega\br{\hat a^\dagger \hat a + \tfrac12}
+= \tilde H_{\mathrm{A}} + \tilde H_{\mathrm{AF}} + \tilde H_{\mathrm{F}}, &&
+\end{flalign}
+with no explicit time dependence anywhere. This Hamiltonian couples states of the form
+\begin{flalign}
+\ket{g, n+1} \longleftrightarrow \ket{e, n} &&
+\end{flalign}
+(atom down with one extra photon $\leftrightarrow$ atom up, photon absorbed), and the energy splitting between these two states is
+\begin{flalign}
+\br{E_e + n\hbar\omega} - \br{E_g + (n+1)\hbar\omega} = \hbar\omega_0 - \hbar\omega = -\hbar\Delta, &&
+\end{flalign}
+exactly the splitting we found in the semiclassical rotating frame \eqref{eq:rotH}. So the rotating frame was never a trick: it is the frame in which the bookkeeping ``atom $+$ photons'' is done, and the near-degeneracy of $\ket{g,n+1}$ with $\ket{e,n}$ \emph{is} the smallness of $\Delta$. (Steck notes we didn't shift $\ket e$ down; in a sense we shifted $\ket g$ up by one photon.)
+
+In the classical limit the average photon number $N$ of the laser is huge and its fractional uncertainty vanishes (coherent state), so $\hat a \to \sqrt{N}$, and with the identification
+\begin{flalign}
+\frac{\Omega}{2} &= g\sqrt{N} &&
+\end{flalign}
+the quantum Hamiltonian reduces to the semiclassical rotating-frame one. This also gives the cleanest statement of the RWA: the kept terms $\sig^\dagger \hat a$ and $\sig \hat a^\dagger$ are the \emph{energy-conserving} processes (atom up $+$ photon destroyed; atom down $+$ photon created), while the dropped terms $\sig \hat a$ and $\sig^\dagger \hat a^\dagger$ (atom down $+$ photon destroyed; atom up $+$ photon created) violate energy conservation by about two photons' worth, $\hbar(\omega + \omega_0)$. Invoking the RWA amounts to keeping only the energy-conserving (resonant) terms in the interaction Hamiltonian. Note each term exchanges exactly \emph{one} photon with the field: the photon the atom emits is the same photon added to the laser mode.
+
+\end{document}
